@@ -99,11 +99,13 @@ export function EditorLayout() {
   const form = useForm<CvConfig>({
     resolver: zodResolver(CvConfigSchema),
     defaultValues: defaultCvConfig,
+    mode: 'onBlur',
   })
 
   const { control, setValue, getValues, reset } = form
   const watchedValues = useWatch({ control })
-  const debouncedValues = useDebounce(watchedValues, 500)
+  const debouncedSave = useDebounce(watchedValues, 600)
+  const debouncedPreview = useDebounce(watchedValues, 1800)
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -121,7 +123,7 @@ export function EditorLayout() {
     })
   }, [reset])
 
-  // Auto-save on changes (debounced)
+  // Auto-save on changes (debounced 600ms)
   useEffect(() => {
     if (!hydrated) return
     const data = getValues()
@@ -130,14 +132,14 @@ export function EditorLayout() {
       setSaveStatus('saved')
       setTimeout(() => setSaveStatus('idle'), 2000)
     })
-  }, [debouncedValues, hydrated, getValues])
+  }, [debouncedSave, hydrated, getValues])
 
-  // Update preview config with debounce
+  // Update preview config with longer debounce (1800ms) to reduce flickering
   useEffect(() => {
     if (!hydrated) return
     const data = getValues()
     setPreviewConfig(data as CvConfig)
-  }, [debouncedValues, hydrated, getValues])
+  }, [debouncedPreview, hydrated, getValues])
 
   function handleTemplateChange(template: 'classic' | 'modern' | 'minimal') {
     setValue('meta.template', template, { shouldDirty: true })

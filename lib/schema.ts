@@ -6,10 +6,10 @@ export const MetaSchema = z.object({
 })
 
 export const PersonalSchema = z.object({
-  firstName: z.string(),
-  lastName: z.string(),
-  email: z.string(),
-  phone: z.string(),
+  firstName: z.string().min(1, 'Pole wymagane'),
+  lastName: z.string().min(1, 'Pole wymagane'),
+  email: z.string().min(1, 'Pole wymagane'),
+  phone: z.string().min(1, 'Pole wymagane'),
   city: z.string(),
   linkedin: z.string(),
   website: z.string(),

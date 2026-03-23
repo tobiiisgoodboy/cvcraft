@@ -3,311 +3,151 @@
 import { Page, View, Text, Image, StyleSheet } from '@react-pdf/renderer'
 import { CvConfig } from '@/lib/schema'
 
-function buildStyles(accentColor: string) {
-  return StyleSheet.create({
-    page: {
-      fontFamily: 'Helvetica',
-      fontSize: 10,
-      flexDirection: 'row',
-    },
-    sidebar: {
-      width: '35%',
-      backgroundColor: accentColor,
-      paddingTop: 40,
-      paddingBottom: 40,
-      paddingHorizontal: 20,
-    },
-    main: {
-      width: '65%',
-      paddingTop: 40,
-      paddingBottom: 40,
-      paddingHorizontal: 28,
-      backgroundColor: '#ffffff',
-    },
-    photoContainer: {
-      alignItems: 'center',
-      marginBottom: 20,
-    },
-    photo: {
-      width: 80,
-      height: 80,
-      borderRadius: 40,
-      borderWidth: 3,
-      borderColor: '#ffffff',
-    },
-    sidebarName: {
-      fontSize: 14,
-      fontFamily: 'Helvetica-Bold',
-      color: '#ffffff',
-      textAlign: 'center',
-      marginBottom: 16,
-    },
-    sidebarSectionTitle: {
-      fontSize: 9,
-      fontFamily: 'Helvetica-Bold',
-      color: '#ffffff',
-      textTransform: 'uppercase',
-      letterSpacing: 1,
-      marginBottom: 6,
-      paddingBottom: 3,
-      borderBottomWidth: 1,
-      borderBottomColor: 'rgba(255,255,255,0.4)',
-    },
-    sidebarSection: {
-      marginBottom: 16,
-    },
-    contactItem: {
-      fontSize: 8.5,
-      color: 'rgba(255,255,255,0.9)',
-      marginBottom: 4,
-      lineHeight: 1.4,
-    },
-    skillItem: {
-      marginBottom: 5,
-    },
-    skillName: {
-      fontSize: 8.5,
-      color: 'rgba(255,255,255,0.9)',
-      marginBottom: 2,
-    },
-    skillBarBg: {
-      height: 4,
-      backgroundColor: 'rgba(255,255,255,0.3)',
-      borderRadius: 2,
-    },
-    skillBarFill: {
-      height: 4,
-      backgroundColor: '#ffffff',
-      borderRadius: 2,
-    },
-    langItem: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginBottom: 4,
-    },
-    langName: {
-      fontSize: 8.5,
-      color: 'rgba(255,255,255,0.9)',
-    },
-    langLevel: {
-      fontSize: 8.5,
-      color: 'rgba(255,255,255,0.7)',
-    },
-    mainSectionTitle: {
-      fontSize: 11,
-      fontFamily: 'Helvetica-Bold',
-      color: accentColor,
-      marginBottom: 8,
-      paddingBottom: 3,
-      borderBottomWidth: 1.5,
-      borderBottomColor: accentColor,
-    },
-    mainSection: {
-      marginBottom: 14,
-    },
-    mainName: {
-      fontSize: 24,
-      fontFamily: 'Helvetica-Bold',
-      color: '#111111',
-      marginBottom: 16,
-    },
-    summaryText: {
-      fontSize: 10,
-      lineHeight: 1.5,
-      color: '#333333',
-    },
-    expItem: {
-      marginBottom: 10,
-    },
-    expHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'baseline',
-    },
-    expPosition: {
-      fontSize: 10,
-      fontFamily: 'Helvetica-Bold',
-      color: '#111111',
-    },
-    expDates: {
-      fontSize: 8.5,
-      color: '#888888',
-    },
-    expCompany: {
-      fontSize: 9,
-      color: accentColor,
-      marginBottom: 2,
-    },
-    expDescription: {
-      fontSize: 9,
-      lineHeight: 1.5,
-      color: '#444444',
-    },
-    eduItem: {
-      marginBottom: 8,
-    },
-    eduHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-    },
-    eduSchool: {
-      fontSize: 10,
-      fontFamily: 'Helvetica-Bold',
-      color: '#111111',
-    },
-    eduDates: {
-      fontSize: 8.5,
-      color: '#888888',
-    },
-    eduDegree: {
-      fontSize: 9,
-      color: '#555555',
-    },
-    interestRow: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: 5,
-    },
-    interestTag: {
-      fontSize: 8.5,
-      color: '#555555',
-      borderWidth: 1,
-      borderColor: '#cccccc',
-      paddingVertical: 2,
-      paddingHorizontal: 6,
-      borderRadius: 10,
-    },
-  })
-}
-
-function skillBarWidth(level: string): string {
-  if (level === 'basic') return '33%'
-  if (level === 'advanced') return '100%'
-  return '66%'
-}
-
-function formatDateRange(start: string, end: string, current: boolean) {
-  const s = start || ''
-  const e = current ? 'obecnie' : end || ''
-  if (!s && !e) return ''
-  if (!s) return e
-  if (!e) return s
-  return `${s} - ${e}`
-}
-
-interface Props {
-  config: CvConfig
-}
+interface Props { config: CvConfig }
 
 export function ModernTemplate({ config }: Props) {
-  const { personal, summary, experience, education, skills, languages, interests, meta } = config
-  const styles = buildStyles(meta.accentColor)
+  const accent = config.meta.accentColor || '#2563eb'
+  const { personal, summary, experience, education, skills, languages, interests } = config
+
+  const styles = StyleSheet.create({
+    page: { fontFamily: 'Helvetica', fontSize: 10, flexDirection: 'row' },
+    sidebar: { width: '32%', backgroundColor: accent, minHeight: '100%', paddingBottom: 36 },
+    sidebarPhoto: { width: '100%', height: 130 },
+    sidebarContent: { paddingHorizontal: 18, paddingTop: 16 },
+    sidebarName: { fontSize: 16, fontFamily: 'Helvetica-Bold', color: '#ffffff', marginBottom: 3, lineHeight: 1.2 },
+    sidebarSection: { marginTop: 18 },
+    sidebarSectionTitle: { fontSize: 8, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', letterSpacing: 1.5, color: 'rgba(255,255,255,0.7)', marginBottom: 8, paddingBottom: 4, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.25)' },
+    sidebarText: { fontSize: 8.5, color: 'rgba(255,255,255,0.9)', marginBottom: 4 },
+    sidebarSkillItem: { marginBottom: 7 },
+    sidebarSkillName: { fontSize: 8.5, color: '#ffffff', marginBottom: 2.5 },
+    sidebarBarBg: { backgroundColor: 'rgba(255,255,255,0.25)', height: 3, borderRadius: 2, width: '100%' },
+    main: { flex: 1, paddingHorizontal: 28, paddingTop: 32, paddingBottom: 36 },
+    mainSection: { marginBottom: 16 },
+    mainSectionTitle: { fontSize: 9, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', letterSpacing: 1, color: '#374151', marginBottom: 8, paddingBottom: 4, borderBottomWidth: 1.5, borderBottomColor: accent },
+    expItem: { marginBottom: 10, paddingLeft: 10, borderLeftWidth: 2, borderLeftColor: '#e5e7eb' },
+    expPosition: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#111827' },
+    expCompany: { fontSize: 8.5, color: accent, fontFamily: 'Helvetica-Oblique', marginBottom: 2 },
+    expDates: { fontSize: 8, color: '#9ca3af' },
+    expDesc: { fontSize: 8.5, lineHeight: 1.55, color: '#374151', marginTop: 3 },
+    eduItem: { marginBottom: 8 },
+    eduSchool: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#111827' },
+    eduDegree: { fontSize: 9, color: '#6b7280' },
+    eduDates: { fontSize: 8, color: '#9ca3af' },
+    interestRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 5 },
+    interestTag: { fontSize: 8.5, color: accent, backgroundColor: '#eff6ff', paddingVertical: 2.5, paddingHorizontal: 7, borderRadius: 10, borderWidth: 1, borderColor: '#bfdbfe' },
+  })
+
+  function SidebarSkillBar({ level }: { level: string }) {
+    const pct = level === 'basic' ? '33%' : level === 'advanced' ? '100%' : '66%'
+    return (
+      <View style={styles.sidebarBarBg}>
+        <View style={{ backgroundColor: '#ffffff', height: 3, borderRadius: 2, width: pct }} />
+      </View>
+    )
+  }
+
+  function formatDate(start: string, end: string, current: boolean) {
+    const s = start || ''
+    const e = current ? 'obecnie' : (end || '')
+    if (!s && !e) return ''
+    if (!s) return e
+    if (!e) return s
+    return `${s} \u2013 ${e}`
+  }
 
   return (
     <Page size="A4" style={styles.page}>
       {/* Sidebar */}
       <View style={styles.sidebar}>
-        {personal.photo ? (
-          <View style={styles.photoContainer}>
-            <Image src={personal.photo} style={styles.photo} />
-          </View>
-        ) : null}
+        {personal.photo
+          ? <Image src={personal.photo} style={styles.sidebarPhoto} />
+          : <View style={[styles.sidebarPhoto, { backgroundColor: 'rgba(0,0,0,0.15)' }]} />
+        }
+        <View style={styles.sidebarContent}>
+          <Text style={styles.sidebarName}>{personal.firstName}{'\n'}{personal.lastName}</Text>
 
-        <Text style={styles.sidebarName}>
-          {personal.firstName} {personal.lastName}
-        </Text>
-
-        {(personal.email || personal.phone || personal.city || personal.linkedin || personal.website) ? (
           <View style={styles.sidebarSection}>
             <Text style={styles.sidebarSectionTitle}>Kontakt</Text>
-            {personal.email ? <Text style={styles.contactItem}>{personal.email}</Text> : null}
-            {personal.phone ? <Text style={styles.contactItem}>{personal.phone}</Text> : null}
-            {personal.city ? <Text style={styles.contactItem}>{personal.city}</Text> : null}
-            {personal.linkedin ? <Text style={styles.contactItem}>{personal.linkedin}</Text> : null}
-            {personal.website ? <Text style={styles.contactItem}>{personal.website}</Text> : null}
+            {personal.email ? <Text style={styles.sidebarText}>{'\u2709'}  {personal.email}</Text> : null}
+            {personal.phone ? <Text style={styles.sidebarText}>{'\u260E'}  {personal.phone}</Text> : null}
+            {personal.city ? <Text style={styles.sidebarText}>{'\u25CE'}  {personal.city}</Text> : null}
+            {personal.linkedin ? <Text style={styles.sidebarText}>{'in'}  {personal.linkedin}</Text> : null}
+            {personal.website ? <Text style={styles.sidebarText}>{'\u2197'}  {personal.website}</Text> : null}
           </View>
-        ) : null}
 
-        {skills.length > 0 ? (
-          <View style={styles.sidebarSection}>
-            <Text style={styles.sidebarSectionTitle}>Umiejetnosci</Text>
-            {skills.map((skill) => (
-              <View key={skill.id} style={styles.skillItem}>
-                <Text style={styles.skillName}>{skill.name}</Text>
-                <View style={styles.skillBarBg}>
-                  <View style={[styles.skillBarFill, { width: skillBarWidth(skill.level) }]} />
+          {skills.length > 0 && (
+            <View style={styles.sidebarSection}>
+              <Text style={styles.sidebarSectionTitle}>Umiejetnosci</Text>
+              {skills.map(skill => (
+                <View key={skill.id} style={styles.sidebarSkillItem}>
+                  <Text style={styles.sidebarSkillName}>{skill.name}</Text>
+                  <SidebarSkillBar level={skill.level} />
                 </View>
-              </View>
-            ))}
-          </View>
-        ) : null}
+              ))}
+            </View>
+          )}
 
-        {languages.length > 0 ? (
-          <View style={styles.sidebarSection}>
-            <Text style={styles.sidebarSectionTitle}>Jezyki obce</Text>
-            {languages.map((lang) => (
-              <View key={lang.id} style={styles.langItem}>
-                <Text style={styles.langName}>{lang.name}</Text>
-                {lang.level ? <Text style={styles.langLevel}>{lang.level}</Text> : null}
-              </View>
-            ))}
-          </View>
-        ) : null}
+          {languages.length > 0 && (
+            <View style={styles.sidebarSection}>
+              <Text style={styles.sidebarSectionTitle}>Jezyki</Text>
+              {languages.map(lang => (
+                <Text key={lang.id} style={styles.sidebarText}>
+                  {lang.name}{lang.level ? ` \u2014 ${lang.level}` : ''}
+                </Text>
+              ))}
+            </View>
+          )}
+        </View>
       </View>
 
       {/* Main content */}
       <View style={styles.main}>
-        <Text style={styles.mainName}>
-          {personal.firstName} {personal.lastName}
-        </Text>
+        {!personal.photo && (
+          <Text style={{ fontSize: 22, fontFamily: 'Helvetica-Bold', color: '#111827', marginBottom: 16 }}>
+            {personal.firstName} {personal.lastName}
+          </Text>
+        )}
+        {personal.photo && (
+          <Text style={{ fontSize: 22, fontFamily: 'Helvetica-Bold', color: '#111827', marginBottom: 16 }}>
+            {personal.firstName} {personal.lastName}
+          </Text>
+        )}
 
         {summary ? (
           <View style={styles.mainSection}>
-            <Text style={styles.mainSectionTitle}>O mnie</Text>
-            <Text style={styles.summaryText}>{summary}</Text>
+            <Text style={styles.mainSectionTitle}>Podsumowanie</Text>
+            <Text style={{ fontSize: 9.5, lineHeight: 1.6, color: '#374151' }}>{summary}</Text>
           </View>
         ) : null}
 
-        {experience.length > 0 ? (
+        {experience.length > 0 && (
           <View style={styles.mainSection}>
             <Text style={styles.mainSectionTitle}>Doswiadczenie zawodowe</Text>
-            {experience.map((exp) => (
+            {experience.map(exp => (
               <View key={exp.id} style={styles.expItem}>
-                <View style={styles.expHeader}>
-                  <Text style={styles.expPosition}>{exp.position}</Text>
-                  <Text style={styles.expDates}>
-                    {formatDateRange(exp.startDate, exp.endDate, exp.current)}
-                  </Text>
-                </View>
+                <Text style={styles.expPosition}>{exp.position}</Text>
                 <Text style={styles.expCompany}>{exp.company}</Text>
-                {exp.description ? (
-                  <Text style={styles.expDescription}>{exp.description}</Text>
-                ) : null}
+                <Text style={styles.expDates}>{formatDate(exp.startDate, exp.endDate, exp.current)}</Text>
+                {exp.description ? <Text style={styles.expDesc}>{exp.description}</Text> : null}
               </View>
             ))}
           </View>
-        ) : null}
+        )}
 
-        {education.length > 0 ? (
+        {education.length > 0 && (
           <View style={styles.mainSection}>
             <Text style={styles.mainSectionTitle}>Wyksztalcenie</Text>
-            {education.map((edu) => (
+            {education.map(edu => (
               <View key={edu.id} style={styles.eduItem}>
-                <View style={styles.eduHeader}>
-                  <Text style={styles.eduSchool}>{edu.school}</Text>
-                  <Text style={styles.eduDates}>
-                    {formatDateRange(edu.startDate, edu.endDate, false)}
-                  </Text>
-                </View>
-                <Text style={styles.eduDegree}>
-                  {edu.degree}{edu.field ? `, ${edu.field}` : ''}
-                </Text>
+                <Text style={styles.eduSchool}>{edu.school}</Text>
+                <Text style={styles.eduDegree}>{edu.degree}{edu.field ? `, ${edu.field}` : ''}</Text>
+                <Text style={styles.eduDates}>{formatDate(edu.startDate, edu.endDate, false)}</Text>
               </View>
             ))}
           </View>
-        ) : null}
+        )}
 
-        {interests.length > 0 ? (
+        {interests.length > 0 && (
           <View style={styles.mainSection}>
             <Text style={styles.mainSectionTitle}>Zainteresowania</Text>
             <View style={styles.interestRow}>
@@ -316,7 +156,7 @@ export function ModernTemplate({ config }: Props) {
               ))}
             </View>
           </View>
-        ) : null}
+        )}
       </View>
     </Page>
   )

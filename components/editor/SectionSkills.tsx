@@ -9,7 +9,7 @@ interface Props {
 }
 
 const inputClass =
-  'w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white placeholder:text-gray-300'
+  'w-full px-3 py-2 text-sm text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white placeholder:text-gray-300'
 
 const LEVELS = [
   { value: 'basic', label: 'Podstawowy' },
@@ -50,7 +50,7 @@ export function SectionSkills({ form }: Props) {
             />
             <select
               {...register(`skills.${index}.level`)}
-              className="px-2 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white text-gray-700 cursor-pointer flex-shrink-0"
+              className="px-2 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white text-gray-900 cursor-pointer flex-shrink-0"
             >
               {LEVELS.map((l) => (
                 <option key={l.value} value={l.value}>
