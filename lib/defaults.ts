@@ -9,7 +9,7 @@ export const defaultCvConfig: CvConfig = {
     photoPosition: 'right',
     font: 'Helvetica',
     skillLayout: 'bars' as const,
-    sectionOrder: ['summary', 'experience', 'projects', 'education', 'certificates', 'skills', 'languages', 'interests'],
+    sectionOrder: ['summary', 'experience', 'projects', 'education', 'certificates', 'awards', 'skills', 'languages', 'interests'],
   },
   personal: {
     firstName: '',
@@ -29,6 +29,7 @@ export const defaultCvConfig: CvConfig = {
   interests: [],
   certificates: [],
   projects: [],
+  awards: [],
 }
 
 export const STORAGE_KEY = 'cvcraft-config'

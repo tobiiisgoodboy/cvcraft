@@ -69,6 +69,14 @@ export const ProjectItemSchema = z.object({
   technologies: z.string(),
 })
 
+export const AwardItemSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  issuer: z.string(),
+  date: z.string(),
+  description: z.string(),
+})
+
 export const CvConfigSchema = z.object({
   meta: MetaSchema,
   personal: PersonalSchema,
@@ -80,6 +88,7 @@ export const CvConfigSchema = z.object({
   interests: z.array(z.string()),
   certificates: z.array(CertificateItemSchema),
   projects: z.array(ProjectItemSchema),
+  awards: z.array(AwardItemSchema),
 })
 
 export type CvConfig = z.infer<typeof CvConfigSchema>
@@ -91,3 +100,4 @@ export type LanguageItem = z.infer<typeof LanguageItemSchema>
 export type MetaData = z.infer<typeof MetaSchema>
 export type CertificateItem = z.infer<typeof CertificateItemSchema>
 export type ProjectItem = z.infer<typeof ProjectItemSchema>
+export type AwardItem = z.infer<typeof AwardItemSchema>

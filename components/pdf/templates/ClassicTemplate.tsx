@@ -15,7 +15,7 @@ export function ClassicTemplate({ config }: Props) {
   const textColor = config.meta.textColor || '#111827'
   const photoPosition = config.meta.photoPosition ?? 'right'
   const skillLayout = config.meta.skillLayout ?? 'bars'
-  const { personal, summary, experience, education, skills, languages, interests, certificates, projects } = config
+  const { personal, summary, experience, education, skills, languages, interests, certificates, projects, awards } = config
 
   const boldExtra = font === 'Roboto' ? { fontWeight: 700 as const } : {}
   const italicExtra = font === 'Roboto' ? { fontStyle: 'italic' as const } : {}
@@ -153,7 +153,7 @@ export function ClassicTemplate({ config }: Props) {
     return `${s} \u2013 ${e}`
   }
 
-  const DEFAULT_ORDER = ['summary', 'experience', 'projects', 'education', 'certificates', 'skills', 'languages', 'interests']
+  const DEFAULT_ORDER = ['summary', 'experience', 'projects', 'education', 'certificates', 'awards', 'skills', 'languages', 'interests']
   const sectionOrder = config.meta.sectionOrder && config.meta.sectionOrder.length > 0 ? config.meta.sectionOrder : DEFAULT_ORDER
 
   const plainContactItems = [personal.email, personal.phone, personal.city].filter(Boolean)
@@ -240,6 +240,23 @@ export function ClassicTemplate({ config }: Props) {
                     {cert.url}
                   </Link>
                 ) : null}
+              </View>
+            ))}
+          </View>
+        ) : null
+
+      case 'awards':
+        return awards && awards.length > 0 ? (
+          <View key="awards" style={styles.section}>
+            <Text style={styles.sectionTitle}>Nagrody i wyroznienia</Text>
+            {awards.map((award) => (
+              <View key={award.id} style={styles.expItem}>
+                <View style={styles.expRow}>
+                  <Text style={styles.expPosition}>{award.title}</Text>
+                  {award.date ? <Text style={styles.expDates}>{award.date}</Text> : null}
+                </View>
+                {award.issuer ? <Text style={styles.expCompany}>{award.issuer}</Text> : null}
+                {award.description ? <Text style={styles.expDesc}>{award.description}</Text> : null}
               </View>
             ))}
           </View>

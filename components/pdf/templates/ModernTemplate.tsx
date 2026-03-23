@@ -15,7 +15,7 @@ export function ModernTemplate({ config }: Props) {
   const textColor = config.meta.textColor || '#111827'
   const photoPosition = config.meta.photoPosition ?? 'right'
   const skillLayout = config.meta.skillLayout ?? 'bars'
-  const { personal, summary, experience, education, skills, languages, interests, certificates, projects } = config
+  const { personal, summary, experience, education, skills, languages, interests, certificates, projects, awards } = config
 
   const boldExtra = font === 'Roboto' ? { fontWeight: 700 as const } : {}
   const italicExtra = font === 'Roboto' ? { fontStyle: 'italic' as const } : {}
@@ -137,9 +137,9 @@ export function ModernTemplate({ config }: Props) {
     return `${s} \u2013 ${e}`
   }
 
-  const DEFAULT_ORDER = ['summary', 'experience', 'projects', 'education', 'certificates', 'skills', 'languages', 'interests']
+  const DEFAULT_ORDER = ['summary', 'experience', 'projects', 'education', 'certificates', 'awards', 'skills', 'languages', 'interests']
   // In ModernTemplate, skills and languages are in the sidebar; only remaining sections go in main column
-  const MAIN_SECTIONS = ['summary', 'experience', 'projects', 'education', 'certificates', 'interests']
+  const MAIN_SECTIONS = ['summary', 'experience', 'projects', 'education', 'certificates', 'awards', 'interests']
   const rawOrder = config.meta.sectionOrder && config.meta.sectionOrder.length > 0 ? config.meta.sectionOrder : DEFAULT_ORDER
   const sectionOrder = rawOrder.filter(id => MAIN_SECTIONS.includes(id))
 
@@ -219,6 +219,23 @@ export function ModernTemplate({ config }: Props) {
                     {cert.url}
                   </Link>
                 ) : null}
+              </View>
+            ))}
+          </View>
+        ) : null
+
+      case 'awards':
+        return awards && awards.length > 0 ? (
+          <View key="awards" style={styles.mainSection}>
+            <Text style={styles.mainSectionTitle}>Nagrody i wyroznienia</Text>
+            {awards.map((award) => (
+              <View key={award.id} style={styles.expItem}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <Text style={styles.expPosition}>{award.title}</Text>
+                  {award.date ? <Text style={styles.expDates}>{award.date}</Text> : null}
+                </View>
+                {award.issuer ? <Text style={styles.expCompany}>{award.issuer}</Text> : null}
+                {award.description ? <Text style={styles.expDesc}>{award.description}</Text> : null}
               </View>
             ))}
           </View>

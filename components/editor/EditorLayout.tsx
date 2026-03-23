@@ -17,6 +17,7 @@ import {
   Award,
   FolderGit2,
   LayoutList,
+  Trophy,
 } from 'lucide-react'
 import { CvConfig, CvConfigSchema } from '@/lib/schema'
 import { defaultCvConfig, STORAGE_KEY } from '@/lib/defaults'
@@ -33,6 +34,7 @@ import { SectionLanguages } from './SectionLanguages'
 import { SectionInterests } from './SectionInterests'
 import { SectionCertificates } from './SectionCertificates'
 import { SectionProjects } from './SectionProjects'
+import { SectionAwards } from './SectionAwards'
 import { SectionOrder } from './SectionOrder'
 import { CompletionBar } from './CompletionBar'
 import { ConfigControls } from '@/components/ConfigControls'
@@ -60,6 +62,7 @@ const TABS = [
   { id: 'languages', label: 'Jezyki', icon: Globe },
   { id: 'interests', label: 'Zainteresowania', icon: Heart },
   { id: 'certificates', label: 'Certyfikaty', icon: Award },
+  { id: 'awards', label: 'Nagrody', icon: Trophy },
   { id: 'projects', label: 'Projekty', icon: FolderGit2 },
   { id: 'order', label: 'Kolejnosc', icon: LayoutList },
 ]
@@ -110,6 +113,7 @@ function mergeWithDefaults(saved: unknown): CvConfig {
     interests: Array.isArray(raw.interests) ? raw.interests : [],
     certificates: Array.isArray(raw.certificates) ? raw.certificates : [],
     projects: Array.isArray(raw.projects) ? raw.projects : [],
+    awards: Array.isArray(raw.awards) ? raw.awards : [],
   }
 }
 
@@ -253,6 +257,7 @@ export function EditorLayout() {
             {activeTab === 'languages' && <SectionLanguages form={form} />}
             {activeTab === 'interests' && <SectionInterests form={form} />}
             {activeTab === 'certificates' && <SectionCertificates form={form} />}
+            {activeTab === 'awards' && <SectionAwards form={form} />}
             {activeTab === 'projects' && <SectionProjects form={form} />}
             {activeTab === 'order' && <SectionOrder form={form} />}
           </form>
