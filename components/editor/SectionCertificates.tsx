@@ -16,26 +16,25 @@ const labelClass = 'text-sm font-semibold text-gray-800'
 function newItem() {
   return {
     id: crypto.randomUUID(),
-    school: '',
-    degree: '',
-    field: '',
-    startDate: '',
-    endDate: '',
+    name: '',
+    issuer: '',
+    date: '',
+    url: '',
   }
 }
 
-export function SectionEducation({ form }: Props) {
+export function SectionCertificates({ form }: Props) {
   const { register, control } = form
   const { fields, append, remove, move } = useFieldArray({
     control,
-    name: 'education',
+    name: 'certificates',
   })
 
   return (
     <div className="space-y-4">
       {fields.length === 0 && (
         <p className="text-sm text-gray-400 text-center py-6">
-          Brak dodanych pozycji. Kliknij przycisk ponizej, aby dodac wyksztalcenie.
+          Brak certyfikatow. Dodaj kursy, szkolenia, certyfikaty zawodowe.
         </p>
       )}
 
@@ -46,7 +45,7 @@ export function SectionEducation({ form }: Props) {
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
-              Wyksztalcenie {index + 1}
+              Certyfikat {index + 1}
             </span>
             <div className="flex items-center gap-1">
               <button
@@ -76,50 +75,39 @@ export function SectionEducation({ form }: Props) {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className={labelClass}>Szkola / Uczelnia</label>
+            <label className={labelClass}>Nazwa certyfikatu</label>
             <input
-              {...register(`education.${index}.school`)}
-              placeholder="Politechnika Warszawska"
+              {...register(`certificates.${index}.name`)}
+              placeholder="AWS Certified Developer"
               className={inputClass}
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1">
-              <label className={labelClass}>Stopien</label>
-              <input
-                {...register(`education.${index}.degree`)}
-                placeholder="Inzynier / Magister"
-                className={inputClass}
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className={labelClass}>Kierunek</label>
-              <input
-                {...register(`education.${index}.field`)}
-                placeholder="Informatyka"
-                className={inputClass}
-              />
-            </div>
+          <div className="flex flex-col gap-1">
+            <label className={labelClass}>Wystawca (firma / organizacja)</label>
+            <input
+              {...register(`certificates.${index}.issuer`)}
+              placeholder="Amazon Web Services"
+              className={inputClass}
+            />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1">
-              <label className={labelClass}>Data rozpoczecia</label>
-              <input
-                {...register(`education.${index}.startDate`)}
-                placeholder="10/2016"
-                className={inputClass}
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className={labelClass}>Data ukonczenia</label>
-              <input
-                {...register(`education.${index}.endDate`)}
-                placeholder="06/2021"
-                className={inputClass}
-              />
-            </div>
+          <div className="flex flex-col gap-1">
+            <label className={labelClass}>Data uzyskania</label>
+            <input
+              {...register(`certificates.${index}.date`)}
+              placeholder="06/2023"
+              className={inputClass}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className={labelClass}>URL (link do certyfikatu, opcjonalny)</label>
+            <input
+              {...register(`certificates.${index}.url`)}
+              placeholder="https://..."
+              className={inputClass}
+            />
           </div>
         </div>
       ))}
@@ -130,7 +118,7 @@ export function SectionEducation({ form }: Props) {
         className="w-full flex items-center justify-center gap-2 py-2.5 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-500 hover:border-blue-400 hover:text-blue-600 transition-all"
       >
         <Plus size={16} />
-        Dodaj wyksztalcenie
+        Dodaj certyfikat
       </button>
     </div>
   )

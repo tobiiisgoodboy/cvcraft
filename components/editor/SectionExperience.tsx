@@ -12,7 +12,7 @@ interface Props {
 const inputClass =
   'w-full px-3 py-2 text-sm text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white placeholder:text-gray-300'
 
-const labelClass = 'text-xs font-medium text-gray-600'
+const labelClass = 'text-sm font-semibold text-gray-800'
 
 function newItem() {
   return {

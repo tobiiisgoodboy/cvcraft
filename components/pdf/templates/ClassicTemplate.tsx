@@ -1,13 +1,14 @@
 'use client'
 
-import { Page, View, Text, Image, StyleSheet } from '@react-pdf/renderer'
+import { Page, View, Text, Image, StyleSheet, Link } from '@react-pdf/renderer'
 import { CvConfig } from '@/lib/schema'
 
 interface Props { config: CvConfig }
 
 export function ClassicTemplate({ config }: Props) {
   const accent = config.meta.accentColor || '#2563eb'
-  const { personal, summary, experience, education, skills, languages, interests } = config
+  const photoPosition = config.meta.photoPosition ?? 'right'
+  const { personal, summary, experience, education, skills, languages, interests, certificates, projects } = config
 
   const styles = StyleSheet.create({
     page: { fontFamily: 'Helvetica', fontSize: 10, color: '#1f2937', backgroundColor: '#ffffff', paddingTop: 0, paddingBottom: 36, paddingHorizontal: 0 },
@@ -64,25 +65,46 @@ export function ClassicTemplate({ config }: Props) {
     return `${s} \u2013 ${e}`
   }
 
-  const contactItems = [personal.email, personal.phone, personal.city, personal.linkedin, personal.website].filter(Boolean)
+  const plainContactItems = [personal.email, personal.phone, personal.city].filter(Boolean)
 
   return (
     <Page size="A4" style={styles.page}>
       <View style={styles.topBar} />
       <View style={styles.content}>
         <View style={styles.header}>
+          {personal.photo && photoPosition === 'left' && (
+            <Image src={personal.photo} style={[styles.photo, { marginRight: 16, marginLeft: 0 }]} />
+          )}
           <View style={styles.headerLeft}>
             <Text style={styles.name}>{personal.firstName} {personal.lastName}</Text>
             <View style={styles.contactRow}>
-              {contactItems.map((item, i) => (
+              {plainContactItems.map((item, i) => (
                 <View key={i} style={{ flexDirection: 'row' }}>
                   {i > 0 && <Text style={styles.contactSep}>{'\u2022'}</Text>}
                   <Text style={styles.contactItem}>{item}</Text>
                 </View>
               ))}
+              {personal.linkedin ? (
+                <View style={{ flexDirection: 'row' }}>
+                  {(plainContactItems.length > 0) && <Text style={styles.contactSep}>{'\u2022'}</Text>}
+                  <Link src={personal.linkedin.startsWith('http') ? personal.linkedin : `https://${personal.linkedin}`} style={styles.contactItem}>
+                    {personal.linkedin}
+                  </Link>
+                </View>
+              ) : null}
+              {personal.website ? (
+                <View style={{ flexDirection: 'row' }}>
+                  {(plainContactItems.length > 0 || personal.linkedin) && <Text style={styles.contactSep}>{'\u2022'}</Text>}
+                  <Link src={personal.website.startsWith('http') ? personal.website : `https://${personal.website}`} style={styles.contactItem}>
+                    {personal.website}
+                  </Link>
+                </View>
+              ) : null}
             </View>
           </View>
-          {personal.photo && <Image src={personal.photo} style={styles.photo} />}
+          {personal.photo && photoPosition === 'right' && (
+            <Image src={personal.photo} style={styles.photo} />
+          )}
         </View>
 
         {summary ? (
@@ -108,6 +130,28 @@ export function ClassicTemplate({ config }: Props) {
           </View>
         )}
 
+        {projects.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Projekty</Text>
+            {projects.map(proj => (
+              <View key={proj.id} style={{ marginBottom: 10 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#111827' }}>{proj.name}</Text>
+                  {proj.technologies ? (
+                    <Text style={{ fontSize: 8.5, color: '#6b7280', fontFamily: 'Helvetica-Oblique' }}>{proj.technologies}</Text>
+                  ) : null}
+                </View>
+                {proj.description ? <Text style={{ fontSize: 8.5, lineHeight: 1.55, color: '#374151', marginTop: 2 }}>{proj.description}</Text> : null}
+                {proj.url ? (
+                  <Link src={proj.url.startsWith('http') ? proj.url : `https://${proj.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 2 }}>
+                    {proj.url}
+                  </Link>
+                ) : null}
+              </View>
+            ))}
+          </View>
+        )}
+
         {education.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Wyksztalcenie</Text>
@@ -118,6 +162,26 @@ export function ClassicTemplate({ config }: Props) {
                   <Text style={styles.eduDegree}>{edu.degree}{edu.field ? `, ${edu.field}` : ''}</Text>
                 </View>
                 <Text style={styles.eduDates}>{formatDate(edu.startDate, edu.endDate, false)}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {certificates.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Certyfikaty i kursy</Text>
+            {certificates.map(cert => (
+              <View key={cert.id} style={{ marginBottom: 8 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#111827' }}>{cert.name}</Text>
+                  {cert.date ? <Text style={{ fontSize: 8.5, color: '#9ca3af' }}>{cert.date}</Text> : null}
+                </View>
+                {cert.issuer ? <Text style={{ fontSize: 9, color: accent, fontFamily: 'Helvetica-Oblique' }}>{cert.issuer}</Text> : null}
+                {cert.url ? (
+                  <Link src={cert.url.startsWith('http') ? cert.url : `https://${cert.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 1 }}>
+                    {cert.url}
+                  </Link>
+                ) : null}
               </View>
             ))}
           </View>

@@ -57,7 +57,7 @@ export function SectionInterests({ form }: Props) {
     <div className="space-y-4">
       {/* Preset suggestions */}
       <div>
-        <p className="text-xs font-medium text-gray-600 mb-2">Sugestie — kliknij aby dodac:</p>
+        <p className="text-sm font-semibold text-gray-800 mb-2">Sugestie — kliknij aby dodac:</p>
         <div className="flex flex-wrap gap-1.5">
           {PRESET_INTERESTS.map((preset) => {
             const isAdded = interests.includes(preset)
@@ -84,7 +84,7 @@ export function SectionInterests({ form }: Props) {
 
       {/* Custom interest input */}
       <div>
-        <p className="text-xs font-medium text-gray-600 mb-2">Wlasne zainteresowanie:</p>
+        <p className="text-sm font-semibold text-gray-800 mb-2">Wlasne zainteresowanie:</p>
         {/* Tags display */}
         <div className="min-h-[48px] flex flex-wrap gap-2 p-3 border border-gray-200 rounded-xl bg-white focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all">
           {interests.map((interest, i) => (

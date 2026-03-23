@@ -16,26 +16,25 @@ const labelClass = 'text-sm font-semibold text-gray-800'
 function newItem() {
   return {
     id: crypto.randomUUID(),
-    school: '',
-    degree: '',
-    field: '',
-    startDate: '',
-    endDate: '',
+    name: '',
+    description: '',
+    url: '',
+    technologies: '',
   }
 }
 
-export function SectionEducation({ form }: Props) {
+export function SectionProjects({ form }: Props) {
   const { register, control } = form
   const { fields, append, remove, move } = useFieldArray({
     control,
-    name: 'education',
+    name: 'projects',
   })
 
   return (
     <div className="space-y-4">
       {fields.length === 0 && (
         <p className="text-sm text-gray-400 text-center py-6">
-          Brak dodanych pozycji. Kliknij przycisk ponizej, aby dodac wyksztalcenie.
+          Brak projektow. Dodaj wlasne projekty, portfolio, open source.
         </p>
       )}
 
@@ -46,7 +45,7 @@ export function SectionEducation({ form }: Props) {
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
-              Wyksztalcenie {index + 1}
+              Projekt {index + 1}
             </span>
             <div className="flex items-center gap-1">
               <button
@@ -76,50 +75,40 @@ export function SectionEducation({ form }: Props) {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className={labelClass}>Szkola / Uczelnia</label>
+            <label className={labelClass}>Nazwa projektu</label>
             <input
-              {...register(`education.${index}.school`)}
-              placeholder="Politechnika Warszawska"
+              {...register(`projects.${index}.name`)}
+              placeholder="Moja aplikacja"
               className={inputClass}
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1">
-              <label className={labelClass}>Stopien</label>
-              <input
-                {...register(`education.${index}.degree`)}
-                placeholder="Inzynier / Magister"
-                className={inputClass}
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className={labelClass}>Kierunek</label>
-              <input
-                {...register(`education.${index}.field`)}
-                placeholder="Informatyka"
-                className={inputClass}
-              />
-            </div>
+          <div className="flex flex-col gap-1">
+            <label className={labelClass}>Technologie</label>
+            <input
+              {...register(`projects.${index}.technologies`)}
+              placeholder="React, Node.js, PostgreSQL"
+              className={inputClass}
+            />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1">
-              <label className={labelClass}>Data rozpoczecia</label>
-              <input
-                {...register(`education.${index}.startDate`)}
-                placeholder="10/2016"
-                className={inputClass}
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className={labelClass}>Data ukonczenia</label>
-              <input
-                {...register(`education.${index}.endDate`)}
-                placeholder="06/2021"
-                className={inputClass}
-              />
-            </div>
+          <div className="flex flex-col gap-1">
+            <label className={labelClass}>Opis</label>
+            <textarea
+              {...register(`projects.${index}.description`)}
+              rows={3}
+              placeholder="Krotki opis projektu, jego celu i funkcjonalnosci..."
+              className={inputClass + ' resize-none leading-relaxed'}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className={labelClass}>Link do projektu (opcjonalny)</label>
+            <input
+              {...register(`projects.${index}.url`)}
+              placeholder="https://github.com/..."
+              className={inputClass}
+            />
           </div>
         </div>
       ))}
@@ -130,7 +119,7 @@ export function SectionEducation({ form }: Props) {
         className="w-full flex items-center justify-center gap-2 py-2.5 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-500 hover:border-blue-400 hover:text-blue-600 transition-all"
       >
         <Plus size={16} />
-        Dodaj wyksztalcenie
+        Dodaj projekt
       </button>
     </div>
   )

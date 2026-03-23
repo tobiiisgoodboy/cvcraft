@@ -4,6 +4,7 @@ export const defaultCvConfig: CvConfig = {
   meta: {
     template: 'classic',
     accentColor: '#2563eb',
+    photoPosition: 'right',
   },
   personal: {
     firstName: '',
@@ -21,6 +22,8 @@ export const defaultCvConfig: CvConfig = {
   skills: [],
   languages: [],
   interests: [],
+  certificates: [],
+  projects: [],
 }
 
 export const STORAGE_KEY = 'cvcraft-config'

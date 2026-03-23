@@ -14,6 +14,8 @@ import {
   Heart,
   Save,
   CheckCircle,
+  Award,
+  FolderGit2,
 } from 'lucide-react'
 import { CvConfig, CvConfigSchema } from '@/lib/schema'
 import { defaultCvConfig, STORAGE_KEY } from '@/lib/defaults'
@@ -25,6 +27,8 @@ import { SectionEducation } from './SectionEducation'
 import { SectionSkills } from './SectionSkills'
 import { SectionLanguages } from './SectionLanguages'
 import { SectionInterests } from './SectionInterests'
+import { SectionCertificates } from './SectionCertificates'
+import { SectionProjects } from './SectionProjects'
 import { ConfigControls } from '@/components/ConfigControls'
 import { cn } from '@/lib/utils'
 
@@ -49,6 +53,8 @@ const TABS = [
   { id: 'skills', label: 'Umiejetnosci', icon: Zap },
   { id: 'languages', label: 'Jezyki', icon: Globe },
   { id: 'interests', label: 'Zainteresowania', icon: Heart },
+  { id: 'certificates', label: 'Certyfikaty', icon: Award },
+  { id: 'projects', label: 'Projekty', icon: FolderGit2 },
 ]
 
 type TabId = (typeof TABS)[number]['id']
@@ -70,6 +76,7 @@ function mergeWithDefaults(saved: unknown): CvConfig {
     meta: {
       template: ((raw.meta as Record<string, unknown>)?.template as CvConfig['meta']['template']) ?? 'classic',
       accentColor: ((raw.meta as Record<string, unknown>)?.accentColor as string) ?? '#2563eb',
+      photoPosition: ((raw.meta as Record<string, unknown>)?.photoPosition as CvConfig['meta']['photoPosition']) ?? 'right',
     },
     personal: {
       firstName: ((raw.personal as Record<string, unknown>)?.firstName as string) ?? '',
@@ -87,6 +94,8 @@ function mergeWithDefaults(saved: unknown): CvConfig {
     skills: Array.isArray(raw.skills) ? raw.skills : [],
     languages: Array.isArray(raw.languages) ? raw.languages : [],
     interests: Array.isArray(raw.interests) ? raw.interests : [],
+    certificates: Array.isArray(raw.certificates) ? raw.certificates : [],
+    projects: Array.isArray(raw.projects) ? raw.projects : [],
   }
 }
 
@@ -151,6 +160,11 @@ export function EditorLayout() {
     setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, accentColor: color } }))
   }
 
+  function handlePhotoPositionChange(position: 'left' | 'right' | 'none') {
+    setValue('meta.photoPosition', position, { shouldDirty: true })
+    setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, photoPosition: position } }))
+  }
+
   if (!hydrated) {
     return (
       <div className="flex items-center justify-center flex-1 text-gray-400">
@@ -201,6 +215,8 @@ export function EditorLayout() {
             {activeTab === 'skills' && <SectionSkills form={form} />}
             {activeTab === 'languages' && <SectionLanguages form={form} />}
             {activeTab === 'interests' && <SectionInterests form={form} />}
+            {activeTab === 'certificates' && <SectionCertificates form={form} />}
+            {activeTab === 'projects' && <SectionProjects form={form} />}
           </form>
         </div>
 
@@ -233,6 +249,7 @@ export function EditorLayout() {
           config={previewConfig}
           onTemplateChange={handleTemplateChange}
           onAccentColorChange={handleAccentColorChange}
+          onPhotoPositionChange={handlePhotoPositionChange}
         />
       </div>
     </div>

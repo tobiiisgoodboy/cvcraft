@@ -42,11 +42,19 @@ export function SectionLanguages({ form }: Props) {
               placeholder="Angielski"
               className={inputClass}
             />
-            <input
+            <select
               {...register(`languages.${index}.level`)}
-              placeholder="B2, C1, native..."
-              className={inputClass}
-            />
+              className="px-2 py-2 text-sm text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white cursor-pointer flex-shrink-0"
+            >
+              <option value="" disabled>Wybierz poziom</option>
+              <option value="A1">A1 — Poczatkujacy</option>
+              <option value="A2">A2 — Podstawowy</option>
+              <option value="B1">B1 — Sredni</option>
+              <option value="B2">B2 — Sredniozaawansowany</option>
+              <option value="C1">C1 — Zaawansowany</option>
+              <option value="C2">C2 — Biegly</option>
+              <option value="Ojczysty">Ojczysty / Native</option>
+            </select>
             <button
               type="button"
               onClick={() => remove(index)}

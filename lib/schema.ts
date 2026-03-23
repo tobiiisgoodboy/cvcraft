@@ -3,6 +3,7 @@ import { z } from 'zod'
 export const MetaSchema = z.object({
   template: z.enum(['classic', 'modern', 'minimal']),
   accentColor: z.string(),
+  photoPosition: z.enum(['left', 'right', 'none']),
 })
 
 export const PersonalSchema = z.object({
@@ -47,6 +48,22 @@ export const LanguageItemSchema = z.object({
   level: z.string(),
 })
 
+export const CertificateItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  issuer: z.string(),
+  date: z.string(),
+  url: z.string(),
+})
+
+export const ProjectItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  url: z.string(),
+  technologies: z.string(),
+})
+
 export const CvConfigSchema = z.object({
   meta: MetaSchema,
   personal: PersonalSchema,
@@ -56,6 +73,8 @@ export const CvConfigSchema = z.object({
   skills: z.array(SkillItemSchema),
   languages: z.array(LanguageItemSchema),
   interests: z.array(z.string()),
+  certificates: z.array(CertificateItemSchema),
+  projects: z.array(ProjectItemSchema),
 })
 
 export type CvConfig = z.infer<typeof CvConfigSchema>
@@ -65,3 +84,5 @@ export type EducationItem = z.infer<typeof EducationItemSchema>
 export type SkillItem = z.infer<typeof SkillItemSchema>
 export type LanguageItem = z.infer<typeof LanguageItemSchema>
 export type MetaData = z.infer<typeof MetaSchema>
+export type CertificateItem = z.infer<typeof CertificateItemSchema>
+export type ProjectItem = z.infer<typeof ProjectItemSchema>

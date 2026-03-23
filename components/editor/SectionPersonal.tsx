@@ -20,7 +20,7 @@ function Field({
 }) {
   return (
     <div className={cn('flex flex-col gap-1', className)}>
-      <label className="text-xs font-medium text-gray-600">{label}</label>
+      <label className="text-sm font-semibold text-gray-800">{label}</label>
       {children}
     </div>
   )
@@ -44,7 +44,7 @@ export function SectionPersonal({ form }: Props) {
     <div className="space-y-4">
       {/* Photo */}
       <div className="pb-4 border-b border-gray-100">
-        <p className="text-xs font-medium text-gray-600 mb-3">Zdjecie</p>
+        <p className="text-sm font-semibold text-gray-800 mb-3">Zdjecie</p>
         <PhotoUpload
           value={photo}
           onChange={(val) => setValue('personal.photo', val, { shouldDirty: true })}

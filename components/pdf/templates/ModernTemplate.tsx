@@ -1,13 +1,14 @@
 'use client'
 
-import { Page, View, Text, Image, StyleSheet } from '@react-pdf/renderer'
+import { Page, View, Text, Image, StyleSheet, Link } from '@react-pdf/renderer'
 import { CvConfig } from '@/lib/schema'
 
 interface Props { config: CvConfig }
 
 export function ModernTemplate({ config }: Props) {
   const accent = config.meta.accentColor || '#2563eb'
-  const { personal, summary, experience, education, skills, languages, interests } = config
+  const photoPosition = config.meta.photoPosition ?? 'right'
+  const { personal, summary, experience, education, skills, languages, interests, certificates, projects } = config
 
   const styles = StyleSheet.create({
     page: { fontFamily: 'Helvetica', fontSize: 10, flexDirection: 'row' },
@@ -59,9 +60,9 @@ export function ModernTemplate({ config }: Props) {
     <Page size="A4" style={styles.page}>
       {/* Sidebar */}
       <View style={styles.sidebar}>
-        {personal.photo
+        {photoPosition !== 'none' && personal.photo
           ? <Image src={personal.photo} style={styles.sidebarPhoto} />
-          : <View style={[styles.sidebarPhoto, { backgroundColor: 'rgba(0,0,0,0.15)' }]} />
+          : photoPosition !== 'none' ? <View style={[styles.sidebarPhoto, { backgroundColor: 'rgba(0,0,0,0.15)' }]} /> : null
         }
         <View style={styles.sidebarContent}>
           <Text style={styles.sidebarName}>{personal.firstName}{'\n'}{personal.lastName}</Text>
@@ -71,8 +72,16 @@ export function ModernTemplate({ config }: Props) {
             {personal.email ? <Text style={styles.sidebarText}>{'\u2709'}  {personal.email}</Text> : null}
             {personal.phone ? <Text style={styles.sidebarText}>{'\u260E'}  {personal.phone}</Text> : null}
             {personal.city ? <Text style={styles.sidebarText}>{'\u25CE'}  {personal.city}</Text> : null}
-            {personal.linkedin ? <Text style={styles.sidebarText}>{'in'}  {personal.linkedin}</Text> : null}
-            {personal.website ? <Text style={styles.sidebarText}>{'\u2197'}  {personal.website}</Text> : null}
+            {personal.linkedin ? (
+              <Link src={personal.linkedin.startsWith('http') ? personal.linkedin : `https://${personal.linkedin}`} style={styles.sidebarText}>
+                {'in'}  {personal.linkedin}
+              </Link>
+            ) : null}
+            {personal.website ? (
+              <Link src={personal.website.startsWith('http') ? personal.website : `https://${personal.website}`} style={styles.sidebarText}>
+                {'\u2197'}  {personal.website}
+              </Link>
+            ) : null}
           </View>
 
           {skills.length > 0 && (
@@ -134,6 +143,26 @@ export function ModernTemplate({ config }: Props) {
           </View>
         )}
 
+        {projects.length > 0 && (
+          <View style={styles.mainSection}>
+            <Text style={styles.mainSectionTitle}>Projekty</Text>
+            {projects.map(proj => (
+              <View key={proj.id} style={{ marginBottom: 10, paddingLeft: 10, borderLeftWidth: 2, borderLeftColor: '#e5e7eb' }}>
+                <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#111827' }}>{proj.name}</Text>
+                {proj.technologies ? (
+                  <Text style={{ fontSize: 8.5, color: accent, fontFamily: 'Helvetica-Oblique', marginBottom: 2 }}>{proj.technologies}</Text>
+                ) : null}
+                {proj.description ? <Text style={{ fontSize: 8.5, lineHeight: 1.55, color: '#374151', marginTop: 2 }}>{proj.description}</Text> : null}
+                {proj.url ? (
+                  <Link src={proj.url.startsWith('http') ? proj.url : `https://${proj.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 2 }}>
+                    {proj.url}
+                  </Link>
+                ) : null}
+              </View>
+            ))}
+          </View>
+        )}
+
         {education.length > 0 && (
           <View style={styles.mainSection}>
             <Text style={styles.mainSectionTitle}>Wyksztalcenie</Text>
@@ -142,6 +171,26 @@ export function ModernTemplate({ config }: Props) {
                 <Text style={styles.eduSchool}>{edu.school}</Text>
                 <Text style={styles.eduDegree}>{edu.degree}{edu.field ? `, ${edu.field}` : ''}</Text>
                 <Text style={styles.eduDates}>{formatDate(edu.startDate, edu.endDate, false)}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {certificates.length > 0 && (
+          <View style={styles.mainSection}>
+            <Text style={styles.mainSectionTitle}>Certyfikaty i kursy</Text>
+            {certificates.map(cert => (
+              <View key={cert.id} style={{ marginBottom: 8 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#111827' }}>{cert.name}</Text>
+                  {cert.date ? <Text style={{ fontSize: 8, color: '#9ca3af' }}>{cert.date}</Text> : null}
+                </View>
+                {cert.issuer ? <Text style={{ fontSize: 8.5, color: accent, fontFamily: 'Helvetica-Oblique' }}>{cert.issuer}</Text> : null}
+                {cert.url ? (
+                  <Link src={cert.url.startsWith('http') ? cert.url : `https://${cert.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 1 }}>
+                    {cert.url}
+                  </Link>
+                ) : null}
               </View>
             ))}
           </View>

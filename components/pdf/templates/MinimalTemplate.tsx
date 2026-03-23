@@ -1,13 +1,14 @@
 'use client'
 
-import { Page, View, Text, Image, StyleSheet } from '@react-pdf/renderer'
+import { Page, View, Text, Image, StyleSheet, Link } from '@react-pdf/renderer'
 import { CvConfig } from '@/lib/schema'
 
 interface Props { config: CvConfig }
 
 export function MinimalTemplate({ config }: Props) {
   const accent = config.meta.accentColor || '#2563eb'
-  const { personal, summary, experience, education, skills, languages, interests } = config
+  const photoPosition = config.meta.photoPosition ?? 'right'
+  const { personal, summary, experience, education, skills, languages, interests, certificates, projects } = config
 
   const styles = StyleSheet.create({
     page: { fontFamily: 'Helvetica', fontSize: 10, color: '#111827', backgroundColor: '#ffffff', paddingHorizontal: 56, paddingTop: 44, paddingBottom: 44 },
@@ -48,24 +49,45 @@ export function MinimalTemplate({ config }: Props) {
   }
 
   const levelMap: Record<string, string> = { basic: 'podstawowy', medium: 'srednio zaawansowany', advanced: 'zaawansowany' }
-  const contactItems = [personal.email, personal.phone, personal.city, personal.linkedin, personal.website].filter(Boolean)
+  const plainContactItems = [personal.email, personal.phone, personal.city].filter(Boolean)
 
   return (
     <Page size="A4" style={styles.page}>
       <View style={styles.header}>
+        {personal.photo && photoPosition === 'left' && (
+          <Image src={personal.photo} style={[styles.photo, { marginLeft: 0, marginRight: 20 }]} />
+        )}
         <View style={styles.headerLeft}>
           <Text style={styles.name}>{personal.firstName}{'\n'}{personal.lastName}</Text>
         </View>
-        {personal.photo && <Image src={personal.photo} style={styles.photo} />}
+        {personal.photo && photoPosition === 'right' && (
+          <Image src={personal.photo} style={styles.photo} />
+        )}
       </View>
       <View style={styles.accentLine} />
       <View style={styles.contactRow}>
-        {contactItems.map((item, i) => (
+        {plainContactItems.map((item, i) => (
           <View key={i} style={{ flexDirection: 'row' }}>
             {i > 0 && <Text style={styles.contactSep}>{'\u00B7'}</Text>}
             <Text style={styles.contactItem}>{item}</Text>
           </View>
         ))}
+        {personal.linkedin ? (
+          <View style={{ flexDirection: 'row' }}>
+            {(plainContactItems.length > 0) && <Text style={styles.contactSep}>{'\u00B7'}</Text>}
+            <Link src={personal.linkedin.startsWith('http') ? personal.linkedin : `https://${personal.linkedin}`} style={styles.contactItem}>
+              {personal.linkedin}
+            </Link>
+          </View>
+        ) : null}
+        {personal.website ? (
+          <View style={{ flexDirection: 'row' }}>
+            {(plainContactItems.length > 0 || personal.linkedin) && <Text style={styles.contactSep}>{'\u00B7'}</Text>}
+            <Link src={personal.website.startsWith('http') ? personal.website : `https://${personal.website}`} style={styles.contactItem}>
+              {personal.website}
+            </Link>
+          </View>
+        ) : null}
       </View>
 
       {summary ? (
@@ -96,6 +118,32 @@ export function MinimalTemplate({ config }: Props) {
         </View>
       )}
 
+      {projects.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Projekty</Text>
+          {projects.map((proj, i) => (
+            <View key={proj.id}>
+              <View style={{ marginBottom: 10 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 1 }}>
+                  <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold' }}>{proj.name}</Text>
+                </View>
+                {proj.technologies ? (
+                  <Text style={{ fontSize: 9, color: '#6b7280', fontFamily: 'Helvetica-Oblique', marginBottom: 2 }}>{proj.technologies}</Text>
+                ) : null}
+                {proj.description ? <Text style={{ fontSize: 8.5, lineHeight: 1.6, color: '#374151' }}>{proj.description}</Text> : null}
+                {proj.url ? (
+                  <Link src={proj.url.startsWith('http') ? proj.url : `https://${proj.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 2 }}>
+                    {proj.url}
+                  </Link>
+                ) : null}
+              </View>
+              {i < projects.length - 1 && <View style={{ borderBottomWidth: 0.5, borderBottomColor: '#f3f4f6', marginBottom: 8 }} />}
+            </View>
+          ))}
+          <View style={styles.separator} />
+        </View>
+      )}
+
       {education.length > 0 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Wyksztalcenie</Text>
@@ -106,6 +154,27 @@ export function MinimalTemplate({ config }: Props) {
                 <Text style={styles.eduDegree}>{edu.degree}{edu.field ? `, ${edu.field}` : ''}</Text>
               </View>
               <Text style={styles.eduDates}>{formatDate(edu.startDate, edu.endDate, false)}</Text>
+            </View>
+          ))}
+          <View style={styles.separator} />
+        </View>
+      )}
+
+      {certificates.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Certyfikaty i kursy</Text>
+          {certificates.map(cert => (
+            <View key={cert.id} style={{ marginBottom: 8 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 1 }}>
+                <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold' }}>{cert.name}</Text>
+                {cert.date ? <Text style={{ fontSize: 8.5, color: '#9ca3af' }}>{cert.date}</Text> : null}
+              </View>
+              {cert.issuer ? <Text style={{ fontSize: 9, color: '#6b7280', fontFamily: 'Helvetica-Oblique' }}>{cert.issuer}</Text> : null}
+              {cert.url ? (
+                <Link src={cert.url.startsWith('http') ? cert.url : `https://${cert.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 1 }}>
+                  {cert.url}
+                </Link>
+              ) : null}
             </View>
           ))}
           <View style={styles.separator} />

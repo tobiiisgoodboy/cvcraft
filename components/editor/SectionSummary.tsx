@@ -12,7 +12,7 @@ export function SectionSummary({ form }: Props) {
 
   return (
     <div>
-      <p className="text-xs text-gray-500 mb-3">
+      <p className="text-sm text-gray-600 mb-3">
         Krotkie podsumowanie zawodowe — kim jestes, co oferujesz, jakie sa Twoje cele.
       </p>
       <textarea
