@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { Page, View, Text, Image, StyleSheet, Link } from '@react-pdf/renderer'
 import { CvConfig } from '@/lib/schema'
 
@@ -51,6 +52,140 @@ export function MinimalTemplate({ config }: Props) {
   const levelMap: Record<string, string> = { basic: 'podstawowy', medium: 'srednio zaawansowany', advanced: 'zaawansowany' }
   const plainContactItems = [personal.email, personal.phone, personal.city].filter(Boolean)
 
+  const DEFAULT_ORDER = ['summary', 'experience', 'projects', 'education', 'certificates', 'skills', 'languages', 'interests']
+  const sectionOrder = config.meta.sectionOrder && config.meta.sectionOrder.length > 0 ? config.meta.sectionOrder : DEFAULT_ORDER
+
+  function renderSection(id: string): React.ReactNode {
+    switch (id) {
+      case 'summary':
+        return summary ? (
+          <View key="summary" style={styles.section}>
+            <Text style={styles.sectionTitle}>O mnie</Text>
+            <Text style={{ fontSize: 9.5, lineHeight: 1.7, color: '#374151' }}>{summary}</Text>
+            <View style={styles.separator} />
+          </View>
+        ) : null
+
+      case 'experience':
+        return experience.length > 0 ? (
+          <View key="experience" style={styles.section}>
+            <Text style={styles.sectionTitle}>Doswiadczenie</Text>
+            {experience.map((exp, i) => (
+              <View key={exp.id}>
+                <View style={styles.expItem}>
+                  <View style={styles.expRow}>
+                    <Text style={styles.expPosition}>{exp.position}</Text>
+                    <Text style={styles.expDates}>{formatDate(exp.startDate, exp.endDate, exp.current)}</Text>
+                  </View>
+                  <Text style={styles.expCompany}>{exp.company}</Text>
+                  {exp.description ? <Text style={styles.expDesc}>{exp.description}</Text> : null}
+                </View>
+                {i < experience.length - 1 && <View style={{ borderBottomWidth: 0.5, borderBottomColor: '#f3f4f6', marginBottom: 8 }} />}
+              </View>
+            ))}
+            <View style={styles.separator} />
+          </View>
+        ) : null
+
+      case 'projects':
+        return projects.length > 0 ? (
+          <View key="projects" style={styles.section}>
+            <Text style={styles.sectionTitle}>Projekty</Text>
+            {projects.map((proj, i) => (
+              <View key={proj.id}>
+                <View style={{ marginBottom: 10 }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 1 }}>
+                    <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold' }}>{proj.name}</Text>
+                  </View>
+                  {proj.technologies ? (
+                    <Text style={{ fontSize: 9, color: '#6b7280', fontFamily: 'Helvetica-Oblique', marginBottom: 2 }}>{proj.technologies}</Text>
+                  ) : null}
+                  {proj.description ? <Text style={{ fontSize: 8.5, lineHeight: 1.6, color: '#374151' }}>{proj.description}</Text> : null}
+                  {proj.url ? (
+                    <Link src={proj.url.startsWith('http') ? proj.url : `https://${proj.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 2 }}>
+                      {proj.url}
+                    </Link>
+                  ) : null}
+                </View>
+                {i < projects.length - 1 && <View style={{ borderBottomWidth: 0.5, borderBottomColor: '#f3f4f6', marginBottom: 8 }} />}
+              </View>
+            ))}
+            <View style={styles.separator} />
+          </View>
+        ) : null
+
+      case 'education':
+        return education.length > 0 ? (
+          <View key="education" style={styles.section}>
+            <Text style={styles.sectionTitle}>Wyksztalcenie</Text>
+            {education.map(edu => (
+              <View key={edu.id} style={styles.eduItem}>
+                <View style={styles.eduLeft}>
+                  <Text style={styles.eduSchool}>{edu.school}</Text>
+                  <Text style={styles.eduDegree}>{edu.degree}{edu.field ? `, ${edu.field}` : ''}</Text>
+                </View>
+                <Text style={styles.eduDates}>{formatDate(edu.startDate, edu.endDate, false)}</Text>
+              </View>
+            ))}
+            <View style={styles.separator} />
+          </View>
+        ) : null
+
+      case 'certificates':
+        return certificates.length > 0 ? (
+          <View key="certificates" style={styles.section}>
+            <Text style={styles.sectionTitle}>Certyfikaty i kursy</Text>
+            {certificates.map(cert => (
+              <View key={cert.id} style={{ marginBottom: 8 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 1 }}>
+                  <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold' }}>{cert.name}</Text>
+                  {cert.date ? <Text style={{ fontSize: 8.5, color: '#9ca3af' }}>{cert.date}</Text> : null}
+                </View>
+                {cert.issuer ? <Text style={{ fontSize: 9, color: '#6b7280', fontFamily: 'Helvetica-Oblique' }}>{cert.issuer}</Text> : null}
+                {cert.url ? (
+                  <Link src={cert.url.startsWith('http') ? cert.url : `https://${cert.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 1 }}>
+                    {cert.url}
+                  </Link>
+                ) : null}
+              </View>
+            ))}
+            <View style={styles.separator} />
+          </View>
+        ) : null
+
+      case 'skills':
+        return skills.length > 0 ? (
+          <View key="skills" style={styles.section}>
+            <Text style={styles.sectionTitle}>Umiejetnosci</Text>
+            <Text style={styles.skillText}>
+              {skills.map((s, i) => `${s.name} (${levelMap[s.level] ?? s.level})${i < skills.length - 1 ? ',  ' : ''}`).join('')}
+            </Text>
+          </View>
+        ) : null
+
+      case 'languages':
+        return languages.length > 0 ? (
+          <View key="languages" style={styles.section}>
+            <Text style={styles.sectionTitle}>Jezyki</Text>
+            <Text style={styles.langText}>
+              {languages.map((l, i) => `${l.name}${l.level ? ` \u2014 ${l.level}` : ''}${i < languages.length - 1 ? ',  ' : ''}`).join('')}
+            </Text>
+          </View>
+        ) : null
+
+      case 'interests':
+        return interests.length > 0 ? (
+          <View key="interests" style={styles.section}>
+            <Text style={styles.sectionTitle}>Zainteresowania</Text>
+            <Text style={styles.interestText}>{interests.join(',  ')}</Text>
+          </View>
+        ) : null
+
+      default:
+        return null
+    }
+  }
+
   return (
     <Page size="A4" style={styles.page}>
       <View style={styles.header}>
@@ -90,121 +225,7 @@ export function MinimalTemplate({ config }: Props) {
         ) : null}
       </View>
 
-      {summary ? (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>O mnie</Text>
-          <Text style={{ fontSize: 9.5, lineHeight: 1.7, color: '#374151' }}>{summary}</Text>
-          <View style={styles.separator} />
-        </View>
-      ) : null}
-
-      {experience.length > 0 && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Doswiadczenie</Text>
-          {experience.map((exp, i) => (
-            <View key={exp.id}>
-              <View style={styles.expItem}>
-                <View style={styles.expRow}>
-                  <Text style={styles.expPosition}>{exp.position}</Text>
-                  <Text style={styles.expDates}>{formatDate(exp.startDate, exp.endDate, exp.current)}</Text>
-                </View>
-                <Text style={styles.expCompany}>{exp.company}</Text>
-                {exp.description ? <Text style={styles.expDesc}>{exp.description}</Text> : null}
-              </View>
-              {i < experience.length - 1 && <View style={{ borderBottomWidth: 0.5, borderBottomColor: '#f3f4f6', marginBottom: 8 }} />}
-            </View>
-          ))}
-          <View style={styles.separator} />
-        </View>
-      )}
-
-      {projects.length > 0 && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Projekty</Text>
-          {projects.map((proj, i) => (
-            <View key={proj.id}>
-              <View style={{ marginBottom: 10 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 1 }}>
-                  <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold' }}>{proj.name}</Text>
-                </View>
-                {proj.technologies ? (
-                  <Text style={{ fontSize: 9, color: '#6b7280', fontFamily: 'Helvetica-Oblique', marginBottom: 2 }}>{proj.technologies}</Text>
-                ) : null}
-                {proj.description ? <Text style={{ fontSize: 8.5, lineHeight: 1.6, color: '#374151' }}>{proj.description}</Text> : null}
-                {proj.url ? (
-                  <Link src={proj.url.startsWith('http') ? proj.url : `https://${proj.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 2 }}>
-                    {proj.url}
-                  </Link>
-                ) : null}
-              </View>
-              {i < projects.length - 1 && <View style={{ borderBottomWidth: 0.5, borderBottomColor: '#f3f4f6', marginBottom: 8 }} />}
-            </View>
-          ))}
-          <View style={styles.separator} />
-        </View>
-      )}
-
-      {education.length > 0 && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Wyksztalcenie</Text>
-          {education.map(edu => (
-            <View key={edu.id} style={styles.eduItem}>
-              <View style={styles.eduLeft}>
-                <Text style={styles.eduSchool}>{edu.school}</Text>
-                <Text style={styles.eduDegree}>{edu.degree}{edu.field ? `, ${edu.field}` : ''}</Text>
-              </View>
-              <Text style={styles.eduDates}>{formatDate(edu.startDate, edu.endDate, false)}</Text>
-            </View>
-          ))}
-          <View style={styles.separator} />
-        </View>
-      )}
-
-      {certificates.length > 0 && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Certyfikaty i kursy</Text>
-          {certificates.map(cert => (
-            <View key={cert.id} style={{ marginBottom: 8 }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 1 }}>
-                <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold' }}>{cert.name}</Text>
-                {cert.date ? <Text style={{ fontSize: 8.5, color: '#9ca3af' }}>{cert.date}</Text> : null}
-              </View>
-              {cert.issuer ? <Text style={{ fontSize: 9, color: '#6b7280', fontFamily: 'Helvetica-Oblique' }}>{cert.issuer}</Text> : null}
-              {cert.url ? (
-                <Link src={cert.url.startsWith('http') ? cert.url : `https://${cert.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 1 }}>
-                  {cert.url}
-                </Link>
-              ) : null}
-            </View>
-          ))}
-          <View style={styles.separator} />
-        </View>
-      )}
-
-      {skills.length > 0 && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Umiejetnosci</Text>
-          <Text style={styles.skillText}>
-            {skills.map((s, i) => `${s.name} (${levelMap[s.level] ?? s.level})${i < skills.length - 1 ? ',  ' : ''}`).join('')}
-          </Text>
-        </View>
-      )}
-
-      {languages.length > 0 && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Jezyki</Text>
-          <Text style={styles.langText}>
-            {languages.map((l, i) => `${l.name}${l.level ? ` \u2014 ${l.level}` : ''}${i < languages.length - 1 ? ',  ' : ''}`).join('')}
-          </Text>
-        </View>
-      )}
-
-      {interests.length > 0 && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Zainteresowania</Text>
-          <Text style={styles.interestText}>{interests.join(',  ')}</Text>
-        </View>
-      )}
+      {sectionOrder.map(id => renderSection(id))}
     </Page>
   )
 }

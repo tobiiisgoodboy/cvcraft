@@ -16,6 +16,7 @@ import {
   CheckCircle,
   Award,
   FolderGit2,
+  LayoutList,
 } from 'lucide-react'
 import { CvConfig, CvConfigSchema } from '@/lib/schema'
 import { defaultCvConfig, STORAGE_KEY } from '@/lib/defaults'
@@ -29,6 +30,7 @@ import { SectionLanguages } from './SectionLanguages'
 import { SectionInterests } from './SectionInterests'
 import { SectionCertificates } from './SectionCertificates'
 import { SectionProjects } from './SectionProjects'
+import { SectionOrder } from './SectionOrder'
 import { ConfigControls } from '@/components/ConfigControls'
 import { cn } from '@/lib/utils'
 
@@ -55,6 +57,7 @@ const TABS = [
   { id: 'interests', label: 'Zainteresowania', icon: Heart },
   { id: 'certificates', label: 'Certyfikaty', icon: Award },
   { id: 'projects', label: 'Projekty', icon: FolderGit2 },
+  { id: 'order', label: 'Kolejnosc', icon: LayoutList },
 ]
 
 type TabId = (typeof TABS)[number]['id']
@@ -77,6 +80,9 @@ function mergeWithDefaults(saved: unknown): CvConfig {
       template: ((raw.meta as Record<string, unknown>)?.template as CvConfig['meta']['template']) ?? 'classic',
       accentColor: ((raw.meta as Record<string, unknown>)?.accentColor as string) ?? '#2563eb',
       photoPosition: ((raw.meta as Record<string, unknown>)?.photoPosition as CvConfig['meta']['photoPosition']) ?? 'right',
+      sectionOrder: Array.isArray((raw.meta as Record<string, unknown>)?.sectionOrder)
+        ? ((raw.meta as Record<string, unknown>).sectionOrder as string[])
+        : ['summary', 'experience', 'projects', 'education', 'certificates', 'skills', 'languages', 'interests'],
     },
     personal: {
       firstName: ((raw.personal as Record<string, unknown>)?.firstName as string) ?? '',
@@ -217,6 +223,7 @@ export function EditorLayout() {
             {activeTab === 'interests' && <SectionInterests form={form} />}
             {activeTab === 'certificates' && <SectionCertificates form={form} />}
             {activeTab === 'projects' && <SectionProjects form={form} />}
+            {activeTab === 'order' && <SectionOrder form={form} />}
           </form>
         </div>
 

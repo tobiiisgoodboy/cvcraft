@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { Page, View, Text, Image, StyleSheet, Link } from '@react-pdf/renderer'
 import { CvConfig } from '@/lib/schema'
 
@@ -54,6 +55,110 @@ export function ModernTemplate({ config }: Props) {
     if (!s) return e
     if (!e) return s
     return `${s} \u2013 ${e}`
+  }
+
+  const DEFAULT_ORDER = ['summary', 'experience', 'projects', 'education', 'certificates', 'skills', 'languages', 'interests']
+  // In ModernTemplate, skills and languages are in the sidebar; only remaining sections go in main column
+  const MAIN_SECTIONS = ['summary', 'experience', 'projects', 'education', 'certificates', 'interests']
+  const rawOrder = config.meta.sectionOrder && config.meta.sectionOrder.length > 0 ? config.meta.sectionOrder : DEFAULT_ORDER
+  const sectionOrder = rawOrder.filter(id => MAIN_SECTIONS.includes(id))
+
+  function renderSection(id: string): React.ReactNode {
+    switch (id) {
+      case 'summary':
+        return summary ? (
+          <View key="summary" style={styles.mainSection}>
+            <Text style={styles.mainSectionTitle}>Podsumowanie</Text>
+            <Text style={{ fontSize: 9.5, lineHeight: 1.6, color: '#374151' }}>{summary}</Text>
+          </View>
+        ) : null
+
+      case 'experience':
+        return experience.length > 0 ? (
+          <View key="experience" style={styles.mainSection}>
+            <Text style={styles.mainSectionTitle}>Doswiadczenie zawodowe</Text>
+            {experience.map(exp => (
+              <View key={exp.id} style={styles.expItem}>
+                <Text style={styles.expPosition}>{exp.position}</Text>
+                <Text style={styles.expCompany}>{exp.company}</Text>
+                <Text style={styles.expDates}>{formatDate(exp.startDate, exp.endDate, exp.current)}</Text>
+                {exp.description ? <Text style={styles.expDesc}>{exp.description}</Text> : null}
+              </View>
+            ))}
+          </View>
+        ) : null
+
+      case 'projects':
+        return projects.length > 0 ? (
+          <View key="projects" style={styles.mainSection}>
+            <Text style={styles.mainSectionTitle}>Projekty</Text>
+            {projects.map(proj => (
+              <View key={proj.id} style={{ marginBottom: 10, paddingLeft: 10, borderLeftWidth: 2, borderLeftColor: '#e5e7eb' }}>
+                <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#111827' }}>{proj.name}</Text>
+                {proj.technologies ? (
+                  <Text style={{ fontSize: 8.5, color: accent, fontFamily: 'Helvetica-Oblique', marginBottom: 2 }}>{proj.technologies}</Text>
+                ) : null}
+                {proj.description ? <Text style={{ fontSize: 8.5, lineHeight: 1.55, color: '#374151', marginTop: 2 }}>{proj.description}</Text> : null}
+                {proj.url ? (
+                  <Link src={proj.url.startsWith('http') ? proj.url : `https://${proj.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 2 }}>
+                    {proj.url}
+                  </Link>
+                ) : null}
+              </View>
+            ))}
+          </View>
+        ) : null
+
+      case 'education':
+        return education.length > 0 ? (
+          <View key="education" style={styles.mainSection}>
+            <Text style={styles.mainSectionTitle}>Wyksztalcenie</Text>
+            {education.map(edu => (
+              <View key={edu.id} style={styles.eduItem}>
+                <Text style={styles.eduSchool}>{edu.school}</Text>
+                <Text style={styles.eduDegree}>{edu.degree}{edu.field ? `, ${edu.field}` : ''}</Text>
+                <Text style={styles.eduDates}>{formatDate(edu.startDate, edu.endDate, false)}</Text>
+              </View>
+            ))}
+          </View>
+        ) : null
+
+      case 'certificates':
+        return certificates.length > 0 ? (
+          <View key="certificates" style={styles.mainSection}>
+            <Text style={styles.mainSectionTitle}>Certyfikaty i kursy</Text>
+            {certificates.map(cert => (
+              <View key={cert.id} style={{ marginBottom: 8 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#111827' }}>{cert.name}</Text>
+                  {cert.date ? <Text style={{ fontSize: 8, color: '#9ca3af' }}>{cert.date}</Text> : null}
+                </View>
+                {cert.issuer ? <Text style={{ fontSize: 8.5, color: accent, fontFamily: 'Helvetica-Oblique' }}>{cert.issuer}</Text> : null}
+                {cert.url ? (
+                  <Link src={cert.url.startsWith('http') ? cert.url : `https://${cert.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 1 }}>
+                    {cert.url}
+                  </Link>
+                ) : null}
+              </View>
+            ))}
+          </View>
+        ) : null
+
+      case 'interests':
+        return interests.length > 0 ? (
+          <View key="interests" style={styles.mainSection}>
+            <Text style={styles.mainSectionTitle}>Zainteresowania</Text>
+            <View style={styles.interestRow}>
+              {interests.map((interest, i) => (
+                <Text key={i} style={styles.interestTag}>{interest}</Text>
+              ))}
+            </View>
+          </View>
+        ) : null
+
+      default:
+        return null
+    }
   }
 
   return (
@@ -122,90 +227,7 @@ export function ModernTemplate({ config }: Props) {
           </Text>
         )}
 
-        {summary ? (
-          <View style={styles.mainSection}>
-            <Text style={styles.mainSectionTitle}>Podsumowanie</Text>
-            <Text style={{ fontSize: 9.5, lineHeight: 1.6, color: '#374151' }}>{summary}</Text>
-          </View>
-        ) : null}
-
-        {experience.length > 0 && (
-          <View style={styles.mainSection}>
-            <Text style={styles.mainSectionTitle}>Doswiadczenie zawodowe</Text>
-            {experience.map(exp => (
-              <View key={exp.id} style={styles.expItem}>
-                <Text style={styles.expPosition}>{exp.position}</Text>
-                <Text style={styles.expCompany}>{exp.company}</Text>
-                <Text style={styles.expDates}>{formatDate(exp.startDate, exp.endDate, exp.current)}</Text>
-                {exp.description ? <Text style={styles.expDesc}>{exp.description}</Text> : null}
-              </View>
-            ))}
-          </View>
-        )}
-
-        {projects.length > 0 && (
-          <View style={styles.mainSection}>
-            <Text style={styles.mainSectionTitle}>Projekty</Text>
-            {projects.map(proj => (
-              <View key={proj.id} style={{ marginBottom: 10, paddingLeft: 10, borderLeftWidth: 2, borderLeftColor: '#e5e7eb' }}>
-                <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#111827' }}>{proj.name}</Text>
-                {proj.technologies ? (
-                  <Text style={{ fontSize: 8.5, color: accent, fontFamily: 'Helvetica-Oblique', marginBottom: 2 }}>{proj.technologies}</Text>
-                ) : null}
-                {proj.description ? <Text style={{ fontSize: 8.5, lineHeight: 1.55, color: '#374151', marginTop: 2 }}>{proj.description}</Text> : null}
-                {proj.url ? (
-                  <Link src={proj.url.startsWith('http') ? proj.url : `https://${proj.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 2 }}>
-                    {proj.url}
-                  </Link>
-                ) : null}
-              </View>
-            ))}
-          </View>
-        )}
-
-        {education.length > 0 && (
-          <View style={styles.mainSection}>
-            <Text style={styles.mainSectionTitle}>Wyksztalcenie</Text>
-            {education.map(edu => (
-              <View key={edu.id} style={styles.eduItem}>
-                <Text style={styles.eduSchool}>{edu.school}</Text>
-                <Text style={styles.eduDegree}>{edu.degree}{edu.field ? `, ${edu.field}` : ''}</Text>
-                <Text style={styles.eduDates}>{formatDate(edu.startDate, edu.endDate, false)}</Text>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {certificates.length > 0 && (
-          <View style={styles.mainSection}>
-            <Text style={styles.mainSectionTitle}>Certyfikaty i kursy</Text>
-            {certificates.map(cert => (
-              <View key={cert.id} style={{ marginBottom: 8 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#111827' }}>{cert.name}</Text>
-                  {cert.date ? <Text style={{ fontSize: 8, color: '#9ca3af' }}>{cert.date}</Text> : null}
-                </View>
-                {cert.issuer ? <Text style={{ fontSize: 8.5, color: accent, fontFamily: 'Helvetica-Oblique' }}>{cert.issuer}</Text> : null}
-                {cert.url ? (
-                  <Link src={cert.url.startsWith('http') ? cert.url : `https://${cert.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 1 }}>
-                    {cert.url}
-                  </Link>
-                ) : null}
-              </View>
-            ))}
-          </View>
-        )}
-
-        {interests.length > 0 && (
-          <View style={styles.mainSection}>
-            <Text style={styles.mainSectionTitle}>Zainteresowania</Text>
-            <View style={styles.interestRow}>
-              {interests.map((interest, i) => (
-                <Text key={i} style={styles.interestTag}>{interest}</Text>
-              ))}
-            </View>
-          </View>
-        )}
+        {sectionOrder.map(id => renderSection(id))}
       </View>
     </Page>
   )

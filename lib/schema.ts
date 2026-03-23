@@ -4,6 +4,7 @@ export const MetaSchema = z.object({
   template: z.enum(['classic', 'modern', 'minimal']),
   accentColor: z.string(),
   photoPosition: z.enum(['left', 'right', 'none']),
+  sectionOrder: z.array(z.string()),
 })
 
 export const PersonalSchema = z.object({
