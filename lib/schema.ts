@@ -4,6 +4,7 @@ export const MetaSchema = z.object({
   template: z.enum(['classic', 'modern', 'minimal']),
   accentColor: z.string(),
   photoPosition: z.enum(['left', 'right', 'none']),
+  font: z.enum(['Helvetica', 'Times-Roman', 'Roboto']),
   sectionOrder: z.array(z.string()),
 })
 

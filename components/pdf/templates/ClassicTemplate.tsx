@@ -3,36 +3,42 @@
 import React from 'react'
 import { Page, View, Text, Image, StyleSheet, Link } from '@react-pdf/renderer'
 import { CvConfig } from '@/lib/schema'
+import { registerFonts, getFontFamily, getBoldFont, getItalicFont, CvFont } from '@/lib/fonts'
 
 interface Props { config: CvConfig }
 
 export function ClassicTemplate({ config }: Props) {
+  registerFonts()
+  const font = (config.meta.font ?? 'Helvetica') as CvFont
   const accent = config.meta.accentColor || '#2563eb'
   const photoPosition = config.meta.photoPosition ?? 'right'
   const { personal, summary, experience, education, skills, languages, interests, certificates, projects } = config
 
+  const boldExtra = font === 'Roboto' ? { fontWeight: 700 as const } : {}
+  const italicExtra = font === 'Roboto' ? { fontStyle: 'italic' as const } : {}
+
   const styles = StyleSheet.create({
-    page: { fontFamily: 'Helvetica', fontSize: 10, color: '#1f2937', backgroundColor: '#ffffff', paddingTop: 0, paddingBottom: 36, paddingHorizontal: 0 },
+    page: { fontFamily: getFontFamily(font), fontSize: 10, color: '#1f2937', backgroundColor: '#ffffff', paddingTop: 0, paddingBottom: 36, paddingHorizontal: 0 },
     topBar: { height: 5, backgroundColor: accent },
     content: { paddingHorizontal: 48, paddingTop: 28 },
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 },
     headerLeft: { flex: 1, paddingRight: 16 },
-    name: { fontSize: 26, fontFamily: 'Helvetica-Bold', color: '#111827', marginBottom: 3, letterSpacing: -0.5 },
+    name: { fontSize: 26, fontFamily: getBoldFont(font), ...boldExtra, color: '#111827', marginBottom: 3, letterSpacing: -0.5 },
     contactRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 0, marginTop: 6 },
     contactItem: { fontSize: 8.5, color: '#6b7280' },
     contactSep: { fontSize: 8.5, color: '#d1d5db', marginHorizontal: 5 },
     photo: { width: 72, height: 88, borderRadius: 3 },
-    sectionTitle: { fontSize: 8.5, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', letterSpacing: 1.2, color: accent, marginBottom: 8, paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' },
+    sectionTitle: { fontSize: 8.5, fontFamily: getBoldFont(font), ...boldExtra, textTransform: 'uppercase', letterSpacing: 1.2, color: accent, marginBottom: 8, paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' },
     section: { marginBottom: 16 },
     expItem: { marginBottom: 10 },
     expRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
-    expPosition: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#111827' },
+    expPosition: { fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra, color: '#111827' },
     expDates: { fontSize: 8.5, color: '#9ca3af' },
-    expCompany: { fontSize: 9, color: accent, marginBottom: 3, fontFamily: 'Helvetica-Oblique' },
+    expCompany: { fontSize: 9, color: accent, marginBottom: 3, fontFamily: getItalicFont(font), ...italicExtra },
     expDesc: { fontSize: 8.5, lineHeight: 1.55, color: '#374151', marginTop: 2 },
     eduItem: { marginBottom: 8, flexDirection: 'row', justifyContent: 'space-between' },
     eduLeft: { flex: 1 },
-    eduSchool: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#111827' },
+    eduSchool: { fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra, color: '#111827' },
     eduDegree: { fontSize: 9, color: '#6b7280', marginTop: 1 },
     eduDates: { fontSize: 8.5, color: '#9ca3af' },
     skillsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 0 },
@@ -40,7 +46,7 @@ export function ClassicTemplate({ config }: Props) {
     skillName: { fontSize: 9, color: '#374151', marginBottom: 2 },
     skillBarBg: { flexDirection: 'row', gap: 2 },
     langRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 16 },
-    langName: { fontFamily: 'Helvetica-Bold', color: '#374151' },
+    langName: { fontFamily: getBoldFont(font), ...boldExtra, color: '#374151' },
     langLevel: { color: '#9ca3af' },
     interestRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
     interestTag: { fontSize: 8.5, color: '#374151', backgroundColor: '#f3f4f6', paddingVertical: 2.5, paddingHorizontal: 7, borderRadius: 10 },
@@ -105,9 +111,9 @@ export function ClassicTemplate({ config }: Props) {
             {projects.map(proj => (
               <View key={proj.id} style={{ marginBottom: 10 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#111827' }}>{proj.name}</Text>
+                  <Text style={{ fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra, color: '#111827' }}>{proj.name}</Text>
                   {proj.technologies ? (
-                    <Text style={{ fontSize: 8.5, color: '#6b7280', fontFamily: 'Helvetica-Oblique' }}>{proj.technologies}</Text>
+                    <Text style={{ fontSize: 8.5, color: '#6b7280', fontFamily: getItalicFont(font), ...italicExtra }}>{proj.technologies}</Text>
                   ) : null}
                 </View>
                 {proj.description ? <Text style={{ fontSize: 8.5, lineHeight: 1.55, color: '#374151', marginTop: 2 }}>{proj.description}</Text> : null}
@@ -144,10 +150,10 @@ export function ClassicTemplate({ config }: Props) {
             {certificates.map(cert => (
               <View key={cert.id} style={{ marginBottom: 8 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#111827' }}>{cert.name}</Text>
+                  <Text style={{ fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra, color: '#111827' }}>{cert.name}</Text>
                   {cert.date ? <Text style={{ fontSize: 8.5, color: '#9ca3af' }}>{cert.date}</Text> : null}
                 </View>
-                {cert.issuer ? <Text style={{ fontSize: 9, color: accent, fontFamily: 'Helvetica-Oblique' }}>{cert.issuer}</Text> : null}
+                {cert.issuer ? <Text style={{ fontSize: 9, color: accent, fontFamily: getItalicFont(font), ...italicExtra }}>{cert.issuer}</Text> : null}
                 {cert.url ? (
                   <Link src={cert.url.startsWith('http') ? cert.url : `https://${cert.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 1 }}>
                     {cert.url}

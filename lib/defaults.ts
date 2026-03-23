@@ -5,6 +5,7 @@ export const defaultCvConfig: CvConfig = {
     template: 'classic',
     accentColor: '#2563eb',
     photoPosition: 'right',
+    font: 'Helvetica',
     sectionOrder: ['summary', 'experience', 'projects', 'education', 'certificates', 'skills', 'languages', 'interests'],
   },
   personal: {

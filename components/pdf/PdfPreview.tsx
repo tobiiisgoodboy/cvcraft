@@ -20,6 +20,7 @@ interface Props {
   onTemplateChange: (template: 'classic' | 'modern' | 'minimal') => void
   onAccentColorChange: (color: string) => void
   onPhotoPositionChange: (position: 'left' | 'right' | 'none') => void
+  onFontChange: (font: 'Helvetica' | 'Times-Roman' | 'Roboto') => void
 }
 
 const TEMPLATES = [
@@ -28,7 +29,7 @@ const TEMPLATES = [
   { id: 'minimal' as const, label: 'Minimalistyczny' },
 ]
 
-export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPhotoPositionChange }: Props) {
+export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPhotoPositionChange, onFontChange }: Props) {
   const [isClient, setIsClient] = useState(false)
   const [pdfKey, setPdfKey] = useState(0)
 
@@ -82,6 +83,30 @@ export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPh
                 onClick={() => onPhotoPositionChange(opt.id)}
                 className={`flex-1 py-1.5 px-2 text-xs rounded-md border transition-all ${
                   config.meta.photoPosition === opt.id
+                    ? 'bg-blue-600 text-white border-blue-600 font-medium'
+                    : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Czcionka</p>
+          <div className="flex gap-2">
+            {([
+              { id: 'Helvetica' as const, label: 'Helvetica' },
+              { id: 'Times-Roman' as const, label: 'Times' },
+              { id: 'Roboto' as const, label: 'Roboto' },
+            ]).map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => onFontChange(opt.id)}
+                className={`flex-1 py-1.5 px-2 text-xs rounded-md border transition-all ${
+                  config.meta.font === opt.id
                     ? 'bg-blue-600 text-white border-blue-600 font-medium'
                     : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
                 }`}

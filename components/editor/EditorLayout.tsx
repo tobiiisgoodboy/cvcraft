@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { CvConfig, CvConfigSchema } from '@/lib/schema'
 import { defaultCvConfig, STORAGE_KEY } from '@/lib/defaults'
+import { CvFont } from '@/lib/fonts'
 import { storage } from '@/lib/storage'
 import { SectionPersonal } from './SectionPersonal'
 import { SectionSummary } from './SectionSummary'
@@ -83,6 +84,7 @@ function mergeWithDefaults(saved: unknown): CvConfig {
       sectionOrder: Array.isArray((raw.meta as Record<string, unknown>)?.sectionOrder)
         ? ((raw.meta as Record<string, unknown>).sectionOrder as string[])
         : ['summary', 'experience', 'projects', 'education', 'certificates', 'skills', 'languages', 'interests'],
+      font: (((raw.meta as Record<string, unknown>)?.font) as CvFont) ?? 'Helvetica',
     },
     personal: {
       firstName: ((raw.personal as Record<string, unknown>)?.firstName as string) ?? '',
@@ -171,6 +173,11 @@ export function EditorLayout() {
     setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, photoPosition: position } }))
   }
 
+  function handleFontChange(font: 'Helvetica' | 'Times-Roman' | 'Roboto') {
+    setValue('meta.font', font, { shouldDirty: true })
+    setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, font } }))
+  }
+
   if (!hydrated) {
     return (
       <div className="flex items-center justify-center flex-1 text-gray-400">
@@ -257,6 +264,7 @@ export function EditorLayout() {
           onTemplateChange={handleTemplateChange}
           onAccentColorChange={handleAccentColorChange}
           onPhotoPositionChange={handlePhotoPositionChange}
+          onFontChange={handleFontChange}
         />
       </div>
     </div>

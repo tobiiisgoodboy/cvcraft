@@ -3,36 +3,42 @@
 import React from 'react'
 import { Page, View, Text, Image, StyleSheet, Link } from '@react-pdf/renderer'
 import { CvConfig } from '@/lib/schema'
+import { registerFonts, getFontFamily, getBoldFont, getItalicFont, CvFont } from '@/lib/fonts'
 
 interface Props { config: CvConfig }
 
 export function MinimalTemplate({ config }: Props) {
+  registerFonts()
+  const font = (config.meta.font ?? 'Helvetica') as CvFont
   const accent = config.meta.accentColor || '#2563eb'
   const photoPosition = config.meta.photoPosition ?? 'right'
   const { personal, summary, experience, education, skills, languages, interests, certificates, projects } = config
 
+  const boldExtra = font === 'Roboto' ? { fontWeight: 700 as const } : {}
+  const italicExtra = font === 'Roboto' ? { fontStyle: 'italic' as const } : {}
+
   const styles = StyleSheet.create({
-    page: { fontFamily: 'Helvetica', fontSize: 10, color: '#111827', backgroundColor: '#ffffff', paddingHorizontal: 56, paddingTop: 44, paddingBottom: 44 },
+    page: { fontFamily: getFontFamily(font), fontSize: 10, color: '#111827', backgroundColor: '#ffffff', paddingHorizontal: 56, paddingTop: 44, paddingBottom: 44 },
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 6 },
     headerLeft: { flex: 1 },
-    name: { fontSize: 30, fontFamily: 'Helvetica-Bold', color: '#111827', letterSpacing: -1, lineHeight: 1.1 },
+    name: { fontSize: 30, fontFamily: getBoldFont(font), ...boldExtra, color: '#111827', letterSpacing: -1, lineHeight: 1.1 },
     accentLine: { height: 2, backgroundColor: accent, marginTop: 8, marginBottom: 14, width: 48 },
     contactRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 0, marginBottom: 24 },
     contactItem: { fontSize: 8.5, color: '#6b7280' },
     contactSep: { fontSize: 8.5, color: '#d1d5db', marginHorizontal: 6 },
     photo: { width: 68, height: 82, borderRadius: 2, marginLeft: 20 },
     section: { marginBottom: 18 },
-    sectionTitle: { fontSize: 8, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', letterSpacing: 2, color: accent, marginBottom: 10 },
+    sectionTitle: { fontSize: 8, fontFamily: getBoldFont(font), ...boldExtra, textTransform: 'uppercase', letterSpacing: 2, color: accent, marginBottom: 10 },
     expItem: { marginBottom: 11 },
     expRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 1 },
-    expPosition: { fontSize: 10, fontFamily: 'Helvetica-Bold' },
+    expPosition: { fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra },
     expDates: { fontSize: 8.5, color: '#9ca3af' },
-    expCompany: { fontSize: 9, color: '#6b7280', fontFamily: 'Helvetica-Oblique', marginBottom: 3 },
+    expCompany: { fontSize: 9, color: '#6b7280', fontFamily: getItalicFont(font), ...italicExtra, marginBottom: 3 },
     expDesc: { fontSize: 8.5, lineHeight: 1.6, color: '#374151' },
     separator: { borderBottomWidth: 0.5, borderBottomColor: '#e5e7eb', marginVertical: 14 },
     eduItem: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
     eduLeft: { flex: 1 },
-    eduSchool: { fontSize: 10, fontFamily: 'Helvetica-Bold' },
+    eduSchool: { fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra },
     eduDegree: { fontSize: 9, color: '#6b7280', marginTop: 1 },
     eduDates: { fontSize: 8.5, color: '#9ca3af' },
     skillText: { fontSize: 9.5, color: '#374151', lineHeight: 1.7 },
@@ -95,10 +101,10 @@ export function MinimalTemplate({ config }: Props) {
               <View key={proj.id}>
                 <View style={{ marginBottom: 10 }}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 1 }}>
-                    <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold' }}>{proj.name}</Text>
+                    <Text style={{ fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra }}>{proj.name}</Text>
                   </View>
                   {proj.technologies ? (
-                    <Text style={{ fontSize: 9, color: '#6b7280', fontFamily: 'Helvetica-Oblique', marginBottom: 2 }}>{proj.technologies}</Text>
+                    <Text style={{ fontSize: 9, color: '#6b7280', fontFamily: getItalicFont(font), ...italicExtra, marginBottom: 2 }}>{proj.technologies}</Text>
                   ) : null}
                   {proj.description ? <Text style={{ fontSize: 8.5, lineHeight: 1.6, color: '#374151' }}>{proj.description}</Text> : null}
                   {proj.url ? (
@@ -138,10 +144,10 @@ export function MinimalTemplate({ config }: Props) {
             {certificates.map(cert => (
               <View key={cert.id} style={{ marginBottom: 8 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 1 }}>
-                  <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold' }}>{cert.name}</Text>
+                  <Text style={{ fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra }}>{cert.name}</Text>
                   {cert.date ? <Text style={{ fontSize: 8.5, color: '#9ca3af' }}>{cert.date}</Text> : null}
                 </View>
-                {cert.issuer ? <Text style={{ fontSize: 9, color: '#6b7280', fontFamily: 'Helvetica-Oblique' }}>{cert.issuer}</Text> : null}
+                {cert.issuer ? <Text style={{ fontSize: 9, color: '#6b7280', fontFamily: getItalicFont(font), ...italicExtra }}>{cert.issuer}</Text> : null}
                 {cert.url ? (
                   <Link src={cert.url.startsWith('http') ? cert.url : `https://${cert.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 1 }}>
                     {cert.url}
