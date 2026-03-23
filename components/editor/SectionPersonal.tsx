@@ -20,20 +20,20 @@ function Field({
 }) {
   return (
     <div className={cn('flex flex-col gap-1', className)}>
-      <label className="text-sm font-semibold text-gray-800">{label}</label>
+      <label className="text-sm font-semibold text-gray-800 dark:text-gray-200">{label}</label>
       {children}
     </div>
   )
 }
 
 const inputClass =
-  'w-full px-3 py-2 text-sm text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white placeholder:text-gray-300'
+  'w-full px-3 py-2 text-sm text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-800 placeholder:text-gray-300 dark:placeholder:text-gray-600'
 
 function fieldClass(error?: FieldError) {
   if (error) {
     return inputClass + ' border border-red-500 ring-1 ring-red-500'
   }
-  return inputClass + ' border border-gray-200'
+  return inputClass + ' border border-gray-200 dark:border-gray-700'
 }
 
 export function SectionPersonal({ form }: Props) {
@@ -43,8 +43,8 @@ export function SectionPersonal({ form }: Props) {
   return (
     <div className="space-y-4">
       {/* Photo */}
-      <div className="pb-4 border-b border-gray-100">
-        <p className="text-sm font-semibold text-gray-800 mb-3">Zdjecie</p>
+      <div className="pb-4 border-b border-gray-100 dark:border-gray-800">
+        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Zdjecie</p>
         <PhotoUpload
           value={photo}
           onChange={(val) => setValue('personal.photo', val, { shouldDirty: true })}

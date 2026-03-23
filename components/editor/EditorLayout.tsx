@@ -22,6 +22,8 @@ import { CvConfig, CvConfigSchema } from '@/lib/schema'
 import { defaultCvConfig, STORAGE_KEY } from '@/lib/defaults'
 import { CvFont } from '@/lib/fonts'
 import { storage } from '@/lib/storage'
+import { useTheme } from '@/lib/theme'
+import { Sun, Moon } from 'lucide-react'
 import { SectionPersonal } from './SectionPersonal'
 import { SectionSummary } from './SectionSummary'
 import { SectionExperience } from './SectionExperience'
@@ -109,6 +111,7 @@ function mergeWithDefaults(saved: unknown): CvConfig {
 }
 
 export function EditorLayout() {
+  const { theme, toggle } = useTheme()
   const [activeTab, setActiveTab] = useState<TabId>('personal')
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
   const [previewConfig, setPreviewConfig] = useState<CvConfig>(defaultCvConfig)
@@ -181,7 +184,7 @@ export function EditorLayout() {
 
   if (!hydrated) {
     return (
-      <div className="flex items-center justify-center flex-1 text-gray-400">
+      <div className="flex items-center justify-center flex-1 text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-950">
         <div className="text-center space-y-2">
           <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-sm">Ladowanie...</p>
@@ -193,9 +196,9 @@ export function EditorLayout() {
   return (
     <div className="flex flex-1 overflow-hidden">
       {/* Editor Panel (left, 58%) */}
-      <div className="flex flex-col w-[58%] border-r border-gray-200 overflow-hidden">
+      <div className="flex flex-col w-[58%] border-r border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-900">
         {/* Tab bar */}
-        <div className="flex-shrink-0 border-b border-gray-200 bg-white overflow-x-auto">
+        <div className="flex-shrink-0 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-x-auto">
           <div className="flex">
             {TABS.map((tab) => {
               const Icon = tab.icon
@@ -207,8 +210,8 @@ export function EditorLayout() {
                   className={cn(
                     'flex items-center gap-1.5 px-3 py-3 text-xs font-medium whitespace-nowrap transition-all border-b-2',
                     activeTab === tab.id
-                      ? 'border-blue-600 text-blue-700 bg-blue-50/50'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                      ? 'border-blue-600 text-blue-700 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/20'
+                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'
                   )}
                 >
                   <Icon size={13} />
@@ -222,7 +225,7 @@ export function EditorLayout() {
         <CompletionBar form={form} />
 
         {/* Tab content */}
-        <div className="flex-1 overflow-y-auto p-5">
+        <div className="flex-1 overflow-y-auto p-5 bg-white dark:bg-gray-900">
           <form>
             {activeTab === 'personal' && <SectionPersonal form={form} />}
             {activeTab === 'summary' && <SectionSummary form={form} />}
@@ -238,9 +241,19 @@ export function EditorLayout() {
         </div>
 
         {/* Bottom bar */}
-        <div className="flex-shrink-0 border-t border-gray-200 bg-white px-4 py-2.5 flex items-center justify-between">
-          <ConfigControls form={form} />
-          <div className="flex items-center gap-1.5 text-xs text-gray-400">
+        <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2.5 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <ConfigControls form={form} />
+            <button
+              type="button"
+              onClick={toggle}
+              className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              title={theme === 'dark' ? 'Tryb jasny' : 'Tryb ciemny'}
+            >
+              {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+            </button>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500">
             {saveStatus === 'saving' && (
               <>
                 <Save size={12} className="animate-pulse text-blue-500" />
@@ -254,7 +267,7 @@ export function EditorLayout() {
               </>
             )}
             {saveStatus === 'idle' && (
-              <span className="text-gray-300">Automatyczny zapis wlaczony</span>
+              <span className="text-gray-300 dark:text-gray-600">Automatyczny zapis wlaczony</span>
             )}
           </div>
         </div>

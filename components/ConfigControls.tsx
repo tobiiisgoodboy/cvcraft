@@ -56,7 +56,7 @@ export function ConfigControls({ form }: Props) {
       <button
         type="button"
         onClick={handleExport}
-        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 border border-gray-200 hover:border-gray-300 rounded-lg transition-all bg-white"
+        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 rounded-lg transition-all bg-white dark:bg-gray-800"
         title="Eksportuj konfiguracje do pliku JSON"
       >
         <Download size={13} />
@@ -66,7 +66,7 @@ export function ConfigControls({ form }: Props) {
       <button
         type="button"
         onClick={() => fileInputRef.current?.click()}
-        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 border border-gray-200 hover:border-gray-300 rounded-lg transition-all bg-white"
+        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 rounded-lg transition-all bg-white dark:bg-gray-800"
         title="Importuj konfiguracje z pliku JSON"
       >
         <Upload size={13} />
@@ -76,7 +76,7 @@ export function ConfigControls({ form }: Props) {
       <button
         type="button"
         onClick={handleClear}
-        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-500 hover:text-red-700 border border-red-200 hover:border-red-300 rounded-lg transition-all bg-white"
+        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 border border-red-200 dark:border-red-800 hover:border-red-300 dark:hover:border-red-700 rounded-lg transition-all bg-white dark:bg-gray-800"
         title="Wyczysc wszystkie dane"
       >
         <RotateCcw size={13} />

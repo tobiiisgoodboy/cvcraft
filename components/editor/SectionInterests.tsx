@@ -57,7 +57,7 @@ export function SectionInterests({ form }: Props) {
     <div className="space-y-4">
       {/* Preset suggestions */}
       <div>
-        <p className="text-sm font-semibold text-gray-800 mb-2">Sugestie — kliknij aby dodac:</p>
+        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Sugestie — kliknij aby dodac:</p>
         <div className="flex flex-wrap gap-1.5">
           {PRESET_INTERESTS.map((preset) => {
             const isAdded = interests.includes(preset)
@@ -72,7 +72,7 @@ export function SectionInterests({ form }: Props) {
                 className={`text-xs px-2.5 py-1 rounded-full transition-all ${
                   isAdded
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-blue-50 hover:text-blue-700'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-700'
                 }`}
               >
                 {preset}
@@ -84,9 +84,9 @@ export function SectionInterests({ form }: Props) {
 
       {/* Custom interest input */}
       <div>
-        <p className="text-sm font-semibold text-gray-800 mb-2">Wlasne zainteresowanie:</p>
+        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Wlasne zainteresowanie:</p>
         {/* Tags display */}
-        <div className="min-h-[48px] flex flex-wrap gap-2 p-3 border border-gray-200 rounded-xl bg-white focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all">
+        <div className="min-h-[48px] flex flex-wrap gap-2 p-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all">
           {interests.map((interest, i) => (
             <span
               key={i}
@@ -109,7 +109,7 @@ export function SectionInterests({ form }: Props) {
             onKeyDown={handleKeyDown}
             onBlur={addInterest}
             placeholder={interests.length === 0 ? 'Wpisz i nacisnij Enter...' : ''}
-            className="flex-1 min-w-[120px] text-sm outline-none placeholder:text-gray-300 bg-transparent text-gray-900"
+            className="flex-1 min-w-[120px] text-sm outline-none placeholder:text-gray-300 dark:placeholder:text-gray-600 bg-transparent text-gray-900 dark:text-gray-100"
           />
         </div>
       </div>
