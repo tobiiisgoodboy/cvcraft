@@ -32,6 +32,7 @@ import { SectionInterests } from './SectionInterests'
 import { SectionCertificates } from './SectionCertificates'
 import { SectionProjects } from './SectionProjects'
 import { SectionOrder } from './SectionOrder'
+import { CompletionBar } from './CompletionBar'
 import { ConfigControls } from '@/components/ConfigControls'
 import { cn } from '@/lib/utils'
 
@@ -217,6 +218,8 @@ export function EditorLayout() {
             })}
           </div>
         </div>
+
+        <CompletionBar form={form} />
 
         {/* Tab content */}
         <div className="flex-1 overflow-y-auto p-5">
