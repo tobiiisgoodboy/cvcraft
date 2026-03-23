@@ -1,9 +1,10 @@
 'use client'
 
-import { UseFormReturn, useFieldArray } from 'react-hook-form'
+import { UseFormReturn, useFieldArray, useWatch, useController } from 'react-hook-form'
 import { CvConfig } from '@/lib/schema'
 import { Plus, Trash2, ChevronUp, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { AutocompleteInput } from './AutocompleteInput'
 
 interface Props {
   form: UseFormReturn<CvConfig>
@@ -24,6 +25,19 @@ function newItem() {
     current: false,
     description: '',
   }
+}
+
+function PositionField({ form, index }: { form: UseFormReturn<CvConfig>; index: number }) {
+  const { field } = useController({ control: form.control, name: `experience.${index}.position` })
+  return (
+    <AutocompleteInput
+      value={field.value}
+      onChange={field.onChange}
+      onBlur={field.onBlur}
+      placeholder="Frontend Developer"
+      className={inputClass}
+    />
+  )
 }
 
 export function SectionExperience({ form }: Props) {
@@ -86,11 +100,7 @@ export function SectionExperience({ form }: Props) {
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
                 <label className={labelClass}>Stanowisko</label>
-                <input
-                  {...register(`experience.${index}.position`)}
-                  placeholder="Frontend Developer"
-                  className={inputClass}
-                />
+                <PositionField form={form} index={index} />
               </div>
               <div className="flex flex-col gap-1">
                 <label className={labelClass}>Firma</label>
