@@ -11,17 +11,20 @@ export function MinimalTemplate({ config }: Props) {
   registerFonts()
   const font = (config.meta.font ?? 'Helvetica') as CvFont
   const accent = config.meta.accentColor || '#2563eb'
+  const bgColor = config.meta.bgColor || '#ffffff'
+  const textColor = config.meta.textColor || '#111827'
   const photoPosition = config.meta.photoPosition ?? 'right'
+  const skillLayout = config.meta.skillLayout ?? 'bars'
   const { personal, summary, experience, education, skills, languages, interests, certificates, projects } = config
 
   const boldExtra = font === 'Roboto' ? { fontWeight: 700 as const } : {}
   const italicExtra = font === 'Roboto' ? { fontStyle: 'italic' as const } : {}
 
   const styles = StyleSheet.create({
-    page: { fontFamily: getFontFamily(font), fontSize: 10, color: '#111827', backgroundColor: '#ffffff', paddingHorizontal: 56, paddingTop: 44, paddingBottom: 44 },
+    page: { fontFamily: getFontFamily(font), fontSize: 10, color: textColor, backgroundColor: bgColor, paddingHorizontal: 56, paddingTop: 44, paddingBottom: 44 },
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 6 },
     headerLeft: { flex: 1 },
-    name: { fontSize: 30, fontFamily: getBoldFont(font), ...boldExtra, color: '#111827', letterSpacing: -1, lineHeight: 1.1 },
+    name: { fontSize: 30, fontFamily: getBoldFont(font), ...boldExtra, color: textColor, letterSpacing: -1, lineHeight: 1.1 },
     accentLine: { height: 2, backgroundColor: accent, marginTop: 8, marginBottom: 14, width: 48 },
     contactRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 0, marginBottom: 24 },
     contactItem: { fontSize: 8.5, color: '#6b7280' },
@@ -34,17 +37,115 @@ export function MinimalTemplate({ config }: Props) {
     expPosition: { fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra },
     expDates: { fontSize: 8.5, color: '#9ca3af' },
     expCompany: { fontSize: 9, color: '#6b7280', fontFamily: getItalicFont(font), ...italicExtra, marginBottom: 3 },
-    expDesc: { fontSize: 8.5, lineHeight: 1.6, color: '#374151' },
+    expDesc: { fontSize: 8.5, lineHeight: 1.6, color: textColor },
     separator: { borderBottomWidth: 0.5, borderBottomColor: '#e5e7eb', marginVertical: 14 },
     eduItem: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
     eduLeft: { flex: 1 },
     eduSchool: { fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra },
     eduDegree: { fontSize: 9, color: '#6b7280', marginTop: 1 },
     eduDates: { fontSize: 8.5, color: '#9ca3af' },
-    skillText: { fontSize: 9.5, color: '#374151', lineHeight: 1.7 },
-    langText: { fontSize: 9.5, color: '#374151', lineHeight: 1.7 },
-    interestText: { fontSize: 9.5, color: '#374151', lineHeight: 1.7 },
+    skillText: { fontSize: 9.5, color: textColor, lineHeight: 1.7 },
+    langText: { fontSize: 9.5, color: textColor, lineHeight: 1.7 },
+    interestText: { fontSize: 9.5, color: textColor, lineHeight: 1.7 },
+    // skill bars grid
+    skillsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 0 },
+    skillItem: { width: '50%', marginBottom: 6, paddingRight: 12 },
+    skillName: { fontSize: 9, color: textColor, marginBottom: 2 },
+    skillBarBg: { flexDirection: 'row', gap: 2 },
+    // skill tags
+    skillTagsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 4 },
+    // skill dots
+    skillDotsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 0 },
+    skillDotsItem: { width: '50%', marginBottom: 5, paddingRight: 12, flexDirection: 'row', alignItems: 'center', gap: 6 },
+    // skill list
+    skillListItem: { marginBottom: 3 },
   })
+
+  function SkillBar({ level }: { level: string }) {
+    const filled = level === 'basic' ? 1 : level === 'advanced' ? 3 : 2
+    return (
+      <View style={styles.skillBarBg}>
+        {[1, 2, 3].map(i => (
+          <View key={i} style={{ width: 20, height: 3, borderRadius: 2, backgroundColor: i <= filled ? accent : '#e5e7eb' }} />
+        ))}
+      </View>
+    )
+  }
+
+  function renderSkills() {
+    if (!skills.length) return null
+    switch (skillLayout) {
+      case 'bars':
+        return (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Umiejetnosci</Text>
+            <View style={styles.skillsGrid}>
+              {skills.map(skill => (
+                <View key={skill.id} style={styles.skillItem}>
+                  <Text style={styles.skillName}>{skill.name}</Text>
+                  <SkillBar level={skill.level} />
+                </View>
+              ))}
+            </View>
+            <View style={styles.separator} />
+          </View>
+        )
+      case 'tags': {
+        const tagOpacity: Record<string, string> = { basic: '33', medium: '88', advanced: 'cc' }
+        return (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Umiejetnosci</Text>
+            <View style={styles.skillTagsRow}>
+              {skills.map(skill => (
+                <Text key={skill.id} style={{ fontSize: 9, color: accent, backgroundColor: accent + (tagOpacity[skill.level] ?? '66'), paddingVertical: 3, paddingHorizontal: 8, borderRadius: 10 }}>
+                  {skill.name}
+                </Text>
+              ))}
+            </View>
+            <View style={styles.separator} />
+          </View>
+        )
+      }
+      case 'dots': {
+        const dotCount: Record<string, number> = { basic: 1, medium: 2, advanced: 3 }
+        return (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Umiejetnosci</Text>
+            <View style={styles.skillDotsGrid}>
+              {skills.map(skill => {
+                const filled = dotCount[skill.level] ?? 2
+                return (
+                  <View key={skill.id} style={styles.skillDotsItem}>
+                    <Text style={{ fontSize: 9, color: textColor, flex: 1 }}>{skill.name}</Text>
+                    <Text style={{ fontSize: 9, color: accent, letterSpacing: 1 }}>
+                      {[1, 2, 3].map(i => i <= filled ? '\u25CF' : '\u25CB').join('')}
+                    </Text>
+                  </View>
+                )
+              })}
+            </View>
+            <View style={styles.separator} />
+          </View>
+        )
+      }
+      case 'list': {
+        const levelLabel: Record<string, string> = { basic: 'Podstawowy', medium: 'Sredni', advanced: 'Zaawansowany' }
+        return (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Umiejetnosci</Text>
+            {skills.map(skill => (
+              <View key={skill.id} style={styles.skillListItem}>
+                <Text style={{ fontSize: 9, color: textColor }}>{'\u2022'} {skill.name} ({levelLabel[skill.level] ?? skill.level})</Text>
+              </View>
+            ))}
+            <View style={styles.separator} />
+          </View>
+        )
+      }
+      default:
+        return null
+    }
+  }
 
   function formatDate(start: string, end: string, current: boolean) {
     const s = start || ''
@@ -67,7 +168,7 @@ export function MinimalTemplate({ config }: Props) {
         return summary ? (
           <View key="summary" style={styles.section}>
             <Text style={styles.sectionTitle}>O mnie</Text>
-            <Text style={{ fontSize: 9.5, lineHeight: 1.7, color: '#374151' }}>{summary}</Text>
+            <Text style={{ fontSize: 9.5, lineHeight: 1.7, color: textColor }}>{summary}</Text>
             <View style={styles.separator} />
           </View>
         ) : null
@@ -106,7 +207,7 @@ export function MinimalTemplate({ config }: Props) {
                   {proj.technologies ? (
                     <Text style={{ fontSize: 9, color: '#6b7280', fontFamily: getItalicFont(font), ...italicExtra, marginBottom: 2 }}>{proj.technologies}</Text>
                   ) : null}
-                  {proj.description ? <Text style={{ fontSize: 8.5, lineHeight: 1.6, color: '#374151' }}>{proj.description}</Text> : null}
+                  {proj.description ? <Text style={{ fontSize: 8.5, lineHeight: 1.6, color: textColor }}>{proj.description}</Text> : null}
                   {proj.url ? (
                     <Link src={proj.url.startsWith('http') ? proj.url : `https://${proj.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 2 }}>
                       {proj.url}
@@ -160,14 +261,7 @@ export function MinimalTemplate({ config }: Props) {
         ) : null
 
       case 'skills':
-        return skills.length > 0 ? (
-          <View key="skills" style={styles.section}>
-            <Text style={styles.sectionTitle}>Umiejetnosci</Text>
-            <Text style={styles.skillText}>
-              {skills.map((s, i) => `${s.name} (${levelMap[s.level] ?? s.level})${i < skills.length - 1 ? ',  ' : ''}`).join('')}
-            </Text>
-          </View>
-        ) : null
+        return renderSkills()
 
       case 'languages':
         return languages.length > 0 ? (
@@ -191,6 +285,9 @@ export function MinimalTemplate({ config }: Props) {
         return null
     }
   }
+
+  // suppress unused var warning for levelMap — used indirectly via renderSection/skills text logic
+  void levelMap
 
   return (
     <Page size="A4" style={styles.page}>

@@ -3,8 +3,11 @@ import { z } from 'zod'
 export const MetaSchema = z.object({
   template: z.enum(['classic', 'modern', 'minimal']),
   accentColor: z.string(),
+  bgColor: z.string(),
+  textColor: z.string(),
   photoPosition: z.enum(['left', 'right', 'none']),
   font: z.enum(['Helvetica', 'Times-Roman', 'Roboto']),
+  skillLayout: z.enum(['bars', 'tags', 'dots', 'list']),
   sectionOrder: z.array(z.string()),
 })
 

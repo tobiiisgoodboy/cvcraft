@@ -21,6 +21,9 @@ interface Props {
   onAccentColorChange: (color: string) => void
   onPhotoPositionChange: (position: 'left' | 'right' | 'none') => void
   onFontChange: (font: 'Helvetica' | 'Times-Roman' | 'Roboto') => void
+  onBgColorChange: (color: string) => void
+  onTextColorChange: (color: string) => void
+  onSkillLayoutChange: (layout: 'bars' | 'tags' | 'dots' | 'list') => void
 }
 
 const TEMPLATES = [
@@ -29,7 +32,7 @@ const TEMPLATES = [
   { id: 'minimal' as const, label: 'Minimalistyczny' },
 ]
 
-export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPhotoPositionChange, onFontChange }: Props) {
+export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPhotoPositionChange, onFontChange, onBgColorChange, onTextColorChange, onSkillLayoutChange }: Props) {
   const [isClient, setIsClient] = useState(false)
   const [pdfKey, setPdfKey] = useState(0)
 
@@ -117,30 +120,83 @@ export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPh
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 flex-1">
-            <label className="text-xs font-medium text-gray-500 uppercase tracking-wide whitespace-nowrap">
-              Kolor akcentu
-            </label>
-            <input
-              type="color"
-              value={config.meta.accentColor}
-              onChange={(e) => onAccentColorChange(e.target.value)}
-              className="w-8 h-8 rounded cursor-pointer border border-gray-300"
-            />
-            <span className="text-xs text-gray-400 font-mono">{config.meta.accentColor}</span>
+        <div>
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Układ umiejetnosci</p>
+          <div className="flex gap-2">
+            {([
+              { id: 'bars' as const, label: '\u25AC Paski' },
+              { id: 'tags' as const, label: '# Tagi' },
+              { id: 'dots' as const, label: '\u25CF Kropki' },
+              { id: 'list' as const, label: '\u2261 Lista' },
+            ]).map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => onSkillLayoutChange(opt.id)}
+                className={`flex-1 py-1.5 px-1 text-xs rounded-md border transition-all ${
+                  config.meta.skillLayout === opt.id
+                    ? 'bg-blue-600 text-white border-blue-600 font-medium'
+                    : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
           </div>
+        </div>
 
-          {isClient && (
-            <PDFDownloadLink
-              document={<PdfDocument config={config} />}
-              fileName={fileName}
-              className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1.5 rounded-md transition-colors"
+        <div>
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Kolory</p>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1.5">
+              <label className="text-xs text-gray-500">Akcent</label>
+              <input
+                type="color"
+                value={config.meta.accentColor}
+                onChange={(e) => onAccentColorChange(e.target.value)}
+                className="w-7 h-7 rounded cursor-pointer border border-gray-300"
+              />
+            </div>
+            <div className="flex items-center gap-1.5">
+              <label className="text-xs text-gray-500">Tlo</label>
+              <input
+                type="color"
+                value={config.meta.bgColor}
+                onChange={(e) => onBgColorChange(e.target.value)}
+                className="w-7 h-7 rounded cursor-pointer border border-gray-300"
+              />
+            </div>
+            <div className="flex items-center gap-1.5">
+              <label className="text-xs text-gray-500">Tekst</label>
+              <input
+                type="color"
+                value={config.meta.textColor}
+                onChange={(e) => onTextColorChange(e.target.value)}
+                className="w-7 h-7 rounded cursor-pointer border border-gray-300"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                onAccentColorChange('#2563eb')
+                onBgColorChange('#ffffff')
+                onTextColorChange('#111827')
+              }}
+              className="text-xs text-gray-400 hover:text-gray-600 underline ml-auto"
             >
-              <Download size={14} />
-              Pobierz PDF
-            </PDFDownloadLink>
-          )}
+              Reset
+            </button>
+            {isClient && (
+              <PDFDownloadLink
+                document={<PdfDocument config={config} />}
+                fileName={fileName}
+                className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1.5 rounded-md transition-colors"
+              >
+                <Download size={14} />
+                Pobierz PDF
+              </PDFDownloadLink>
+            )}
+          </div>
         </div>
       </div>
 

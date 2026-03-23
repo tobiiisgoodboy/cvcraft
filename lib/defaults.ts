@@ -4,8 +4,11 @@ export const defaultCvConfig: CvConfig = {
   meta: {
     template: 'classic',
     accentColor: '#2563eb',
+    bgColor: '#ffffff',
+    textColor: '#111827',
     photoPosition: 'right',
     font: 'Helvetica',
+    skillLayout: 'bars' as const,
     sectionOrder: ['summary', 'experience', 'projects', 'education', 'certificates', 'skills', 'languages', 'interests'],
   },
   personal: {

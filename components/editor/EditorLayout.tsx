@@ -88,6 +88,9 @@ function mergeWithDefaults(saved: unknown): CvConfig {
         ? ((raw.meta as Record<string, unknown>).sectionOrder as string[])
         : ['summary', 'experience', 'projects', 'education', 'certificates', 'skills', 'languages', 'interests'],
       font: (((raw.meta as Record<string, unknown>)?.font) as CvFont) ?? 'Helvetica',
+      bgColor: ((raw.meta as Record<string, unknown>)?.bgColor as string) ?? '#ffffff',
+      textColor: ((raw.meta as Record<string, unknown>)?.textColor as string) ?? '#111827',
+      skillLayout: (((raw.meta as Record<string, unknown>)?.skillLayout) as CvConfig['meta']['skillLayout']) ?? 'bars',
     },
     personal: {
       firstName: ((raw.personal as Record<string, unknown>)?.firstName as string) ?? '',
@@ -180,6 +183,21 @@ export function EditorLayout() {
   function handleFontChange(font: 'Helvetica' | 'Times-Roman' | 'Roboto') {
     setValue('meta.font', font, { shouldDirty: true })
     setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, font } }))
+  }
+
+  function handleBgColorChange(color: string) {
+    setValue('meta.bgColor', color, { shouldDirty: true })
+    setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, bgColor: color } }))
+  }
+
+  function handleTextColorChange(color: string) {
+    setValue('meta.textColor', color, { shouldDirty: true })
+    setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, textColor: color } }))
+  }
+
+  function handleSkillLayoutChange(layout: 'bars' | 'tags' | 'dots' | 'list') {
+    setValue('meta.skillLayout', layout, { shouldDirty: true })
+    setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, skillLayout: layout } }))
   }
 
   if (!hydrated) {
@@ -281,6 +299,9 @@ export function EditorLayout() {
           onAccentColorChange={handleAccentColorChange}
           onPhotoPositionChange={handlePhotoPositionChange}
           onFontChange={handleFontChange}
+          onBgColorChange={handleBgColorChange}
+          onTextColorChange={handleTextColorChange}
+          onSkillLayoutChange={handleSkillLayoutChange}
         />
       </div>
     </div>

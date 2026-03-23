@@ -11,19 +11,22 @@ export function ClassicTemplate({ config }: Props) {
   registerFonts()
   const font = (config.meta.font ?? 'Helvetica') as CvFont
   const accent = config.meta.accentColor || '#2563eb'
+  const bgColor = config.meta.bgColor || '#ffffff'
+  const textColor = config.meta.textColor || '#111827'
   const photoPosition = config.meta.photoPosition ?? 'right'
+  const skillLayout = config.meta.skillLayout ?? 'bars'
   const { personal, summary, experience, education, skills, languages, interests, certificates, projects } = config
 
   const boldExtra = font === 'Roboto' ? { fontWeight: 700 as const } : {}
   const italicExtra = font === 'Roboto' ? { fontStyle: 'italic' as const } : {}
 
   const styles = StyleSheet.create({
-    page: { fontFamily: getFontFamily(font), fontSize: 10, color: '#1f2937', backgroundColor: '#ffffff', paddingTop: 0, paddingBottom: 36, paddingHorizontal: 0 },
+    page: { fontFamily: getFontFamily(font), fontSize: 10, color: textColor, backgroundColor: bgColor, paddingTop: 0, paddingBottom: 36, paddingHorizontal: 0 },
     topBar: { height: 5, backgroundColor: accent },
     content: { paddingHorizontal: 48, paddingTop: 28 },
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 },
     headerLeft: { flex: 1, paddingRight: 16 },
-    name: { fontSize: 26, fontFamily: getBoldFont(font), ...boldExtra, color: '#111827', marginBottom: 3, letterSpacing: -0.5 },
+    name: { fontSize: 26, fontFamily: getBoldFont(font), ...boldExtra, color: textColor, marginBottom: 3, letterSpacing: -0.5 },
     contactRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 0, marginTop: 6 },
     contactItem: { fontSize: 8.5, color: '#6b7280' },
     contactSep: { fontSize: 8.5, color: '#d1d5db', marginHorizontal: 5 },
@@ -32,24 +35,31 @@ export function ClassicTemplate({ config }: Props) {
     section: { marginBottom: 16 },
     expItem: { marginBottom: 10 },
     expRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
-    expPosition: { fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra, color: '#111827' },
+    expPosition: { fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra, color: textColor },
     expDates: { fontSize: 8.5, color: '#9ca3af' },
     expCompany: { fontSize: 9, color: accent, marginBottom: 3, fontFamily: getItalicFont(font), ...italicExtra },
-    expDesc: { fontSize: 8.5, lineHeight: 1.55, color: '#374151', marginTop: 2 },
+    expDesc: { fontSize: 8.5, lineHeight: 1.55, color: textColor, marginTop: 2 },
     eduItem: { marginBottom: 8, flexDirection: 'row', justifyContent: 'space-between' },
     eduLeft: { flex: 1 },
-    eduSchool: { fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra, color: '#111827' },
+    eduSchool: { fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra, color: textColor },
     eduDegree: { fontSize: 9, color: '#6b7280', marginTop: 1 },
     eduDates: { fontSize: 8.5, color: '#9ca3af' },
     skillsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 0 },
     skillItem: { width: '50%', marginBottom: 6, paddingRight: 12 },
-    skillName: { fontSize: 9, color: '#374151', marginBottom: 2 },
+    skillName: { fontSize: 9, color: textColor, marginBottom: 2 },
     skillBarBg: { flexDirection: 'row', gap: 2 },
     langRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 16 },
-    langName: { fontFamily: getBoldFont(font), ...boldExtra, color: '#374151' },
+    langName: { fontFamily: getBoldFont(font), ...boldExtra, color: textColor },
     langLevel: { color: '#9ca3af' },
     interestRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-    interestTag: { fontSize: 8.5, color: '#374151', backgroundColor: '#f3f4f6', paddingVertical: 2.5, paddingHorizontal: 7, borderRadius: 10 },
+    interestTag: { fontSize: 8.5, color: textColor, backgroundColor: '#f3f4f6', paddingVertical: 2.5, paddingHorizontal: 7, borderRadius: 10 },
+    // skill layout: tags
+    skillTagsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 4 },
+    // skill layout: dots — 2-column grid same as bars
+    skillDotsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 0 },
+    skillDotsItem: { width: '50%', marginBottom: 5, paddingRight: 12, flexDirection: 'row', alignItems: 'center', gap: 6 },
+    // skill layout: list
+    skillListItem: { marginBottom: 3 },
   })
 
   function SkillBar({ level }: { level: string }) {
@@ -61,6 +71,77 @@ export function ClassicTemplate({ config }: Props) {
         ))}
       </View>
     )
+  }
+
+  function renderSkills() {
+    if (!skills.length) return null
+    switch (skillLayout) {
+      case 'bars':
+        return (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Umiejetnosci</Text>
+            <View style={styles.skillsGrid}>
+              {skills.map(skill => (
+                <View key={skill.id} style={styles.skillItem}>
+                  <Text style={styles.skillName}>{skill.name}</Text>
+                  <SkillBar level={skill.level} />
+                </View>
+              ))}
+            </View>
+          </View>
+        )
+      case 'tags': {
+        const tagOpacity: Record<string, string> = { basic: '33', medium: '88', advanced: 'cc' }
+        return (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Umiejetnosci</Text>
+            <View style={styles.skillTagsRow}>
+              {skills.map(skill => (
+                <Text key={skill.id} style={{ fontSize: 9, color: accent, backgroundColor: accent + (tagOpacity[skill.level] ?? '66'), paddingVertical: 3, paddingHorizontal: 8, borderRadius: 10 }}>
+                  {skill.name}
+                </Text>
+              ))}
+            </View>
+          </View>
+        )
+      }
+      case 'dots': {
+        const dotCount: Record<string, number> = { basic: 1, medium: 2, advanced: 3 }
+        return (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Umiejetnosci</Text>
+            <View style={styles.skillDotsGrid}>
+              {skills.map(skill => {
+                const filled = dotCount[skill.level] ?? 2
+                return (
+                  <View key={skill.id} style={styles.skillDotsItem}>
+                    <Text style={{ fontSize: 9, color: textColor, flex: 1 }}>{skill.name}</Text>
+                    <Text style={{ fontSize: 9, color: accent, letterSpacing: 1 }}>
+                      {[1, 2, 3].map(i => i <= filled ? '\u25CF' : '\u25CB').join('')}
+                    </Text>
+                  </View>
+                )
+              })}
+            </View>
+          </View>
+        )
+      }
+      case 'list': {
+        const levelLabel: Record<string, string> = { basic: 'Podstawowy', medium: 'Sredni', advanced: 'Zaawansowany' }
+        return (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Umiejetnosci</Text>
+            {skills.map(skill => (
+              <View key={skill.id} style={styles.skillListItem}>
+                <Text style={{ fontSize: 9, color: textColor }}>{'\u2022'} {skill.name} ({levelLabel[skill.level] ?? skill.level})</Text>
+              </View>
+            ))}
+          </View>
+        )
+      }
+      default:
+        return null
+    }
   }
 
   function formatDate(start: string, end: string, current: boolean) {
@@ -83,7 +164,7 @@ export function ClassicTemplate({ config }: Props) {
         return summary ? (
           <View key="summary" style={styles.section}>
             <Text style={styles.sectionTitle}>Podsumowanie</Text>
-            <Text style={{ fontSize: 9.5, lineHeight: 1.6, color: '#374151' }}>{summary}</Text>
+            <Text style={{ fontSize: 9.5, lineHeight: 1.6, color: textColor }}>{summary}</Text>
           </View>
         ) : null
 
@@ -111,12 +192,12 @@ export function ClassicTemplate({ config }: Props) {
             {projects.map(proj => (
               <View key={proj.id} style={{ marginBottom: 10 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <Text style={{ fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra, color: '#111827' }}>{proj.name}</Text>
+                  <Text style={{ fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra, color: textColor }}>{proj.name}</Text>
                   {proj.technologies ? (
                     <Text style={{ fontSize: 8.5, color: '#6b7280', fontFamily: getItalicFont(font), ...italicExtra }}>{proj.technologies}</Text>
                   ) : null}
                 </View>
-                {proj.description ? <Text style={{ fontSize: 8.5, lineHeight: 1.55, color: '#374151', marginTop: 2 }}>{proj.description}</Text> : null}
+                {proj.description ? <Text style={{ fontSize: 8.5, lineHeight: 1.55, color: textColor, marginTop: 2 }}>{proj.description}</Text> : null}
                 {proj.url ? (
                   <Link src={proj.url.startsWith('http') ? proj.url : `https://${proj.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 2 }}>
                     {proj.url}
@@ -150,7 +231,7 @@ export function ClassicTemplate({ config }: Props) {
             {certificates.map(cert => (
               <View key={cert.id} style={{ marginBottom: 8 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <Text style={{ fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra, color: '#111827' }}>{cert.name}</Text>
+                  <Text style={{ fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra, color: textColor }}>{cert.name}</Text>
                   {cert.date ? <Text style={{ fontSize: 8.5, color: '#9ca3af' }}>{cert.date}</Text> : null}
                 </View>
                 {cert.issuer ? <Text style={{ fontSize: 9, color: accent, fontFamily: getItalicFont(font), ...italicExtra }}>{cert.issuer}</Text> : null}
@@ -165,19 +246,7 @@ export function ClassicTemplate({ config }: Props) {
         ) : null
 
       case 'skills':
-        return skills.length > 0 ? (
-          <View key="skills" style={styles.section}>
-            <Text style={styles.sectionTitle}>Umiejetnosci</Text>
-            <View style={styles.skillsGrid}>
-              {skills.map(skill => (
-                <View key={skill.id} style={styles.skillItem}>
-                  <Text style={styles.skillName}>{skill.name}</Text>
-                  <SkillBar level={skill.level} />
-                </View>
-              ))}
-            </View>
-          </View>
-        ) : null
+        return renderSkills()
 
       case 'languages':
         return languages.length > 0 ? (
