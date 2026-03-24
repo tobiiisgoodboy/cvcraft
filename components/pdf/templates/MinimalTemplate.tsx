@@ -17,14 +17,15 @@ export function MinimalTemplate({ config }: Props) {
   const bgColor = config.meta.bgColor || '#ffffff'
   const textColor = config.meta.textColor || '#111827'
   const photoPosition = config.meta.photoPosition ?? 'right'
-  const skillLayout = config.meta.skillLayout ?? 'bars'
+  const skillLayout = config.meta.skillLayout ?? 'categories'
+  const marginH = config.meta.margins === 'narrow' ? 32 : config.meta.margins === 'wide' ? 80 : 56
   const { personal, summary, experience, education, skills, languages, interests, certificates, projects, awards } = config
 
   const boldExtra = font === 'Roboto' ? { fontWeight: 700 as const } : {}
   const italicExtra = font === 'Roboto' ? { fontStyle: 'italic' as const } : {}
 
   const styles = StyleSheet.create({
-    page: { fontFamily: getFontFamily(font), fontSize: 10, color: textColor, backgroundColor: bgColor, paddingHorizontal: 56, paddingTop: 44, paddingBottom: 44 },
+    page: { fontFamily: getFontFamily(font), fontSize: 10, color: textColor, backgroundColor: bgColor, paddingHorizontal: marginH, paddingTop: 44, paddingBottom: 44 },
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 6 },
     headerLeft: { flex: 1 },
     name: { fontSize: 30, fontFamily: getBoldFont(font), ...boldExtra, color: textColor, letterSpacing: -1, lineHeight: 1.1 },

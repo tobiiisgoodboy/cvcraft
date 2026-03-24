@@ -9,6 +9,7 @@ export const defaultCvConfig: CvConfig = {
     photoPosition: 'right',
     font: 'Helvetica',
     skillLayout: 'categories' as const,
+    margins: 'normal' as const,
     gdprEnabled: false,
     gdprLanguage: 'pl' as const,
     gdprText: '',

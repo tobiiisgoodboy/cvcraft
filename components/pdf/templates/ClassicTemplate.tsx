@@ -17,7 +17,8 @@ export function ClassicTemplate({ config }: Props) {
   const bgColor = config.meta.bgColor || '#ffffff'
   const textColor = config.meta.textColor || '#111827'
   const photoPosition = config.meta.photoPosition ?? 'right'
-  const skillLayout = config.meta.skillLayout ?? 'bars'
+  const skillLayout = config.meta.skillLayout ?? 'categories'
+  const marginH = config.meta.margins === 'narrow' ? 28 : config.meta.margins === 'wide' ? 68 : 48
   const { personal, summary, experience, education, skills, languages, interests, certificates, projects, awards } = config
 
   const boldExtra = font === 'Roboto' ? { fontWeight: 700 as const } : {}
@@ -26,7 +27,7 @@ export function ClassicTemplate({ config }: Props) {
   const styles = StyleSheet.create({
     page: { fontFamily: getFontFamily(font), fontSize: 10, color: textColor, backgroundColor: bgColor, paddingTop: 0, paddingBottom: 36, paddingHorizontal: 0 },
     topBar: { height: 5, backgroundColor: accent },
-    content: { paddingHorizontal: 48, paddingTop: 28 },
+    content: { paddingHorizontal: marginH, paddingTop: 28 },
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 },
     headerLeft: { flex: 1, paddingRight: 16 },
     name: { fontSize: 26, fontFamily: getBoldFont(font), ...boldExtra, color: textColor, marginBottom: 3, letterSpacing: -0.5 },

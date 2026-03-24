@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer'
 import { CvConfig } from '@/lib/schema'
 import { PdfDocument } from './PdfDocument'
+import { estimatePageCount } from '@/lib/pageEstimate'
 import { Download, FileText } from 'lucide-react'
 
 function PdfLoadingState() {
@@ -24,6 +25,7 @@ interface Props {
   onBgColorChange: (color: string) => void
   onTextColorChange: (color: string) => void
   onSkillLayoutChange: (layout: 'bars' | 'tags' | 'dots' | 'list' | 'categories') => void
+  onMarginsChange: (margins: 'narrow' | 'normal' | 'wide') => void
   onGdprChange: (patch: Partial<{ enabled: boolean; language: 'pl' | 'en'; text: string; company: string }>) => void
 }
 
@@ -33,7 +35,7 @@ const TEMPLATES = [
   { id: 'minimal' as const, label: 'Minimalistyczny' },
 ]
 
-export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPhotoPositionChange, onFontChange, onBgColorChange, onTextColorChange, onSkillLayoutChange, onGdprChange }: Props) {
+export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPhotoPositionChange, onFontChange, onBgColorChange, onTextColorChange, onSkillLayoutChange, onMarginsChange, onGdprChange }: Props) {
   const [isClient, setIsClient] = useState(false)
   const [pdfKey, setPdfKey] = useState(0)
 
@@ -48,6 +50,7 @@ export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPh
   const fullName =
     [config.personal.firstName, config.personal.lastName].filter(Boolean).join(' ') || 'cv'
   const fileName = `${fullName.replace(/\s+/g, '_')}.pdf`
+  const estimatedPages = estimatePageCount(config)
 
   return (
     <div className="flex flex-col h-full">
@@ -198,6 +201,30 @@ export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPh
         </div>
 
         <div>
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Marginesy</p>
+          <div className="flex gap-2">
+            {([
+              { id: 'narrow' as const, label: 'Waskie' },
+              { id: 'normal' as const, label: 'Normalne' },
+              { id: 'wide' as const, label: 'Szerokie' },
+            ]).map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => onMarginsChange(opt.id)}
+                className={`flex-1 py-1.5 px-2 text-xs rounded-md border transition-all ${
+                  (config.meta.margins ?? 'normal') === opt.id
+                    ? 'bg-blue-600 text-white border-blue-600 font-medium'
+                    : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
           <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Kolory</p>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5">
@@ -238,6 +265,9 @@ export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPh
             >
               Reset
             </button>
+            <span className="text-xs text-gray-400 ml-auto mr-1" title="Szacowana liczba stron">
+              ~{estimatedPages} {estimatedPages === 1 ? 'strona' : estimatedPages < 5 ? 'strony' : 'stron'}
+            </span>
             {isClient && (
               <PDFDownloadLink
                 document={<PdfDocument config={config} />}

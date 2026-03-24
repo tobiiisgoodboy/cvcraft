@@ -17,7 +17,8 @@ export function ModernTemplate({ config }: Props) {
   const bgColor = config.meta.bgColor || '#ffffff'
   const textColor = config.meta.textColor || '#111827'
   const photoPosition = config.meta.photoPosition ?? 'right'
-  const skillLayout = config.meta.skillLayout ?? 'bars'
+  const skillLayout = config.meta.skillLayout ?? 'categories'
+  const marginH = config.meta.margins === 'narrow' ? 16 : config.meta.margins === 'wide' ? 40 : 28
   const { personal, summary, experience, education, skills, languages, interests, certificates, projects, awards } = config
 
   const boldExtra = font === 'Roboto' ? { fontWeight: 700 as const } : {}
@@ -35,7 +36,7 @@ export function ModernTemplate({ config }: Props) {
     sidebarSkillItem: { marginBottom: 7 },
     sidebarSkillName: { fontSize: 8.5, color: '#ffffff', marginBottom: 2.5 },
     sidebarBarBg: { backgroundColor: 'rgba(255,255,255,0.25)', height: 3, borderRadius: 2, width: '100%' },
-    main: { flex: 1, paddingHorizontal: 28, paddingTop: 32, paddingBottom: 36 },
+    main: { flex: 1, paddingHorizontal: marginH, paddingTop: 32, paddingBottom: 36 },
     mainSection: { marginBottom: 16 },
     mainSectionTitle: { fontSize: 9, fontFamily: getBoldFont(font), ...boldExtra, textTransform: 'uppercase', letterSpacing: 1, color: '#374151', marginBottom: 8, paddingBottom: 4, borderBottomWidth: 1.5, borderBottomColor: accent },
     expItem: { marginBottom: 10, paddingLeft: 10, borderLeftWidth: 2, borderLeftColor: '#e5e7eb' },

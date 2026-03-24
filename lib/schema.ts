@@ -13,6 +13,7 @@ export const MetaSchema = z.object({
   gdprLanguage: z.enum(['pl', 'en']).optional(),
   gdprText: z.string().optional(),
   gdprCompany: z.string().optional(),
+  margins: z.enum(['narrow', 'normal', 'wide']).optional(),
 })
 
 export const PersonalSchema = z.object({

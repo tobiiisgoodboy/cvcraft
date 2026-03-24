@@ -21,6 +21,7 @@ import {
 } from 'lucide-react'
 import { CvConfig, CvConfigSchema } from '@/lib/schema'
 import { defaultCvConfig, STORAGE_KEY } from '@/lib/defaults'
+import { pushHistory } from '@/lib/history'
 import { CvFont } from '@/lib/fonts'
 import { storage } from '@/lib/storage'
 import { useTheme } from '@/lib/theme'
@@ -38,6 +39,7 @@ import { SectionAwards } from './SectionAwards'
 import { SectionOrder } from './SectionOrder'
 import { CompletionBar } from './CompletionBar'
 import { ConfigControls } from '@/components/ConfigControls'
+import { HistoryControls } from './HistoryControls'
 import { cn } from '@/lib/utils'
 
 // Load PDF preview with ssr: false to avoid bundling @react-pdf/renderer on server
@@ -94,6 +96,7 @@ function mergeWithDefaults(saved: unknown): CvConfig {
       bgColor: ((raw.meta as Record<string, unknown>)?.bgColor as string) ?? '#ffffff',
       textColor: ((raw.meta as Record<string, unknown>)?.textColor as string) ?? '#111827',
       skillLayout: (((raw.meta as Record<string, unknown>)?.skillLayout) as CvConfig['meta']['skillLayout']) ?? 'categories',
+      margins: (((raw.meta as Record<string, unknown>)?.margins) as 'narrow' | 'normal' | 'wide') ?? 'normal',
       gdprEnabled: ((raw.meta as Record<string, unknown>)?.gdprEnabled as boolean) ?? false,
       gdprLanguage: (((raw.meta as Record<string, unknown>)?.gdprLanguage) as 'pl' | 'en') ?? 'pl',
       gdprText: ((raw.meta as Record<string, unknown>)?.gdprText as string) ?? '',
@@ -125,6 +128,7 @@ export function EditorLayout() {
   const { theme, toggle } = useTheme()
   const [activeTab, setActiveTab] = useState<TabId>('personal')
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
+  const [historyVersion, setHistoryVersion] = useState(0)
   const [previewConfig, setPreviewConfig] = useState<CvConfig>(defaultCvConfig)
   const [hydrated, setHydrated] = useState(false)
 
@@ -161,6 +165,8 @@ export function EditorLayout() {
     const data = getValues()
     setSaveStatus('saving')
     storage.save(STORAGE_KEY, data).then(() => {
+      pushHistory(data as CvConfig)
+      setHistoryVersion((v) => v + 1)
       setSaveStatus('saved')
       setTimeout(() => setSaveStatus('idle'), 2000)
     })
@@ -206,6 +212,11 @@ export function EditorLayout() {
   function handleSkillLayoutChange(layout: 'bars' | 'tags' | 'dots' | 'list' | 'categories') {
     setValue('meta.skillLayout', layout, { shouldDirty: true })
     setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, skillLayout: layout } }))
+  }
+
+  function handleMarginsChange(margins: 'narrow' | 'normal' | 'wide') {
+    setValue('meta.margins', margins, { shouldDirty: true })
+    setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, margins } }))
   }
 
   function handleGdprChange(patch: Partial<{ enabled: boolean; language: 'pl' | 'en'; text: string; company: string }>) {
@@ -290,6 +301,7 @@ export function EditorLayout() {
         <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ConfigControls form={form} />
+            <HistoryControls form={form} historyVersion={historyVersion} />
             <button
               type="button"
               onClick={toggle}
@@ -330,6 +342,7 @@ export function EditorLayout() {
           onBgColorChange={handleBgColorChange}
           onTextColorChange={handleTextColorChange}
           onSkillLayoutChange={handleSkillLayoutChange}
+          onMarginsChange={handleMarginsChange}
           onGdprChange={handleGdprChange}
         />
       </div>
