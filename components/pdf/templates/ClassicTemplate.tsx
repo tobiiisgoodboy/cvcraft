@@ -4,6 +4,7 @@ import React from 'react'
 import { Page, View, Text, Image, StyleSheet, Link } from '@react-pdf/renderer'
 import { CvConfig } from '@/lib/schema'
 import { registerFonts, getFontFamily, getBoldFont, getItalicFont, CvFont } from '@/lib/fonts'
+import { t, PdfLang } from '@/lib/pdfI18n'
 
 const GDPR_DEFAULT_PL = 'Wyrażam zgodę na przetwarzanie moich danych osobowych przez [firma] w celu prowadzenia rekrutacji na aplikowane przeze mnie stanowisko.'
 const GDPR_DEFAULT_EN = 'I hereby consent to my personal data being processed by [firma] for the purpose of considering my application for the vacancy.'
@@ -19,6 +20,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
   const photoPosition = config.meta.photoPosition ?? 'right'
   const skillLayout = config.meta.skillLayout ?? 'categories'
   const marginH = config.meta.margins === 'narrow' ? 28 : config.meta.margins === 'wide' ? 68 : 48
+  const lang = (config.meta.pdfLanguage ?? 'pl') as PdfLang
   const { personal, summary, experience, education, skills, languages, interests, certificates, projects, awards } = config
 
   const boldExtra = font === 'Roboto' ? { fontWeight: 700 as const } : {}
@@ -90,7 +92,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
       case 'bars':
         return (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Umiejetnosci</Text>
+            <Text style={styles.sectionTitle}>{t('skills', lang)}</Text>
             <View style={styles.skillsGrid}>
               {skills.map(skill => (
                 <View key={skill.id} style={styles.skillItem}>
@@ -104,7 +106,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
       case 'tags': {
         return (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Umiejetnosci</Text>
+            <Text style={styles.sectionTitle}>{t('skills', lang)}</Text>
             <View style={styles.skillTagsRow}>
               {skills.map(skill => (
                 <Text key={skill.id} style={{ fontSize: 9, color: accent, backgroundColor: accent + '22', paddingVertical: 3, paddingHorizontal: 8, borderRadius: 10 }}>
@@ -127,10 +129,10 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
           }
         }
         const entries = Object.entries(grouped)
-        if (uncategorized.length) entries.push(['Inne', uncategorized])
+        if (uncategorized.length) entries.push([t('other', lang), uncategorized])
         return (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Umiejetnosci</Text>
+            <Text style={styles.sectionTitle}>{t('skills', lang)}</Text>
             {entries.map(([cat, catSkills]) => (
               <View key={cat}>
                 <Text style={styles.skillCategoryHeader}>{cat}</Text>
@@ -150,7 +152,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
         const dotCount: Record<string, number> = { basic: 1, medium: 2, advanced: 3 }
         return (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Umiejetnosci</Text>
+            <Text style={styles.sectionTitle}>{t('skills', lang)}</Text>
             <View style={styles.skillDotsGrid}>
               {skills.map(skill => {
                 const filled = dotCount[skill.level] ?? 2
@@ -168,10 +170,10 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
         )
       }
       case 'list': {
-        const levelLabel: Record<string, string> = { basic: 'Podstawowy', medium: 'Sredni', advanced: 'Zaawansowany' }
+        const levelLabel: Record<string, string> = { basic: t('levelBasic', lang), medium: t('levelMedium', lang), advanced: t('levelAdvanced', lang) }
         return (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Umiejetnosci</Text>
+            <Text style={styles.sectionTitle}>{t('skills', lang)}</Text>
             {skills.map(skill => (
               <View key={skill.id} style={styles.skillListItem}>
                 <Text style={{ fontSize: 9, color: textColor }}>{'\u2022'} {skill.name} ({levelLabel[skill.level] ?? skill.level})</Text>
@@ -187,7 +189,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
 
   function formatDate(start: string, end: string, current: boolean) {
     const s = start || ''
-    const e = current ? 'obecnie' : (end || '')
+    const e = current ? t('currently', lang) : (end || '')
     if (!s && !e) return ''
     if (!s) return e
     if (!e) return s
@@ -217,7 +219,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
       case 'summary':
         return summary ? (
           <View key="summary" style={styles.section}>
-            <Text style={styles.sectionTitle}>Podsumowanie</Text>
+            <Text style={styles.sectionTitle}>{t('summary', lang)}</Text>
             <Text style={{ fontSize: 9.5, lineHeight: 1.6, color: textColor }}>{summary}</Text>
           </View>
         ) : null
@@ -225,7 +227,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
       case 'experience':
         return experience.length > 0 ? (
           <View key="experience" style={styles.section}>
-            <Text style={styles.sectionTitle}>Doswiadczenie zawodowe</Text>
+            <Text style={styles.sectionTitle}>{t('experience', lang)}</Text>
             {experience.map(exp => (
               <View key={exp.id} style={styles.expItem}>
                 <View style={styles.expRow}>
@@ -242,7 +244,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
       case 'projects':
         return projects.length > 0 ? (
           <View key="projects" style={styles.section}>
-            <Text style={styles.sectionTitle}>Projekty</Text>
+            <Text style={styles.sectionTitle}>{t('projects', lang)}</Text>
             {projects.map(proj => (
               <View key={proj.id} style={{ marginBottom: 10 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
@@ -265,7 +267,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
       case 'education':
         return education.length > 0 ? (
           <View key="education" style={styles.section}>
-            <Text style={styles.sectionTitle}>Wyksztalcenie</Text>
+            <Text style={styles.sectionTitle}>{t('education', lang)}</Text>
             {education.map(edu => (
               <View key={edu.id} style={styles.eduItem}>
                 <View style={styles.eduLeft}>
@@ -281,7 +283,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
       case 'certificates':
         return certificates.length > 0 ? (
           <View key="certificates" style={styles.section}>
-            <Text style={styles.sectionTitle}>Certyfikaty i kursy</Text>
+            <Text style={styles.sectionTitle}>{t('certificates', lang)}</Text>
             {certificates.map(cert => (
               <View key={cert.id} style={{ marginBottom: 8 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
@@ -302,7 +304,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
       case 'awards':
         return awards && awards.length > 0 ? (
           <View key="awards" style={styles.section}>
-            <Text style={styles.sectionTitle}>Nagrody i wyroznienia</Text>
+            <Text style={styles.sectionTitle}>{t('awards', lang)}</Text>
             {awards.map((award) => (
               <View key={award.id} style={styles.expItem}>
                 <View style={styles.expRow}>
@@ -322,7 +324,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
       case 'languages':
         return languages.length > 0 ? (
           <View key="languages" style={styles.section}>
-            <Text style={styles.sectionTitle}>Jezyki obce</Text>
+            <Text style={styles.sectionTitle}>{t('languages', lang)}</Text>
             <View style={styles.langRow}>
               {languages.map(lang => (
                 <View key={lang.id} style={{ flexDirection: 'row', gap: 3 }}>
@@ -337,7 +339,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
       case 'interests':
         return interests.length > 0 ? (
           <View key="interests" style={styles.section}>
-            <Text style={styles.sectionTitle}>Zainteresowania</Text>
+            <Text style={styles.sectionTitle}>{t('interests', lang)}</Text>
             <View style={styles.interestRow}>
               {interests.map((interest, i) => (
                 <Text key={i} style={styles.interestTag}>{interest}</Text>

@@ -27,6 +27,7 @@ interface Props {
   onTextColorChange: (color: string) => void
   onSkillLayoutChange: (layout: 'bars' | 'tags' | 'dots' | 'list' | 'categories') => void
   onMarginsChange: (margins: 'narrow' | 'normal' | 'wide') => void
+  onPdfLanguageChange: (lang: 'pl' | 'en') => void
   onQrChange: (patch: Partial<{ enabled: boolean; target: 'linkedin' | 'website' }>) => void
   onGdprChange: (patch: Partial<{ enabled: boolean; language: 'pl' | 'en'; text: string; company: string }>) => void
 }
@@ -37,7 +38,7 @@ const TEMPLATES = [
   { id: 'minimal' as const, label: 'Minimalistyczny' },
 ]
 
-export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPhotoPositionChange, onFontChange, onBgColorChange, onTextColorChange, onSkillLayoutChange, onMarginsChange, onQrChange, onGdprChange }: Props) {
+export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPhotoPositionChange, onFontChange, onBgColorChange, onTextColorChange, onSkillLayoutChange, onMarginsChange, onPdfLanguageChange, onQrChange, onGdprChange }: Props) {
   const [isClient, setIsClient] = useState(false)
   const [pdfKey, setPdfKey] = useState(0)
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
@@ -258,6 +259,29 @@ export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPh
         </div>
 
         <div>
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Jezyk PDF</p>
+          <div className="flex gap-2">
+            {([
+              { id: 'pl' as const, label: 'Polski' },
+              { id: 'en' as const, label: 'English' },
+            ]).map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => onPdfLanguageChange(opt.id)}
+                className={`flex-1 py-1.5 px-2 text-xs rounded-md border transition-all ${
+                  (config.meta.pdfLanguage ?? 'pl') === opt.id
+                    ? 'bg-blue-600 text-white border-blue-600 font-medium'
+                    : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
           <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Marginesy</p>
           <div className="flex gap-2">
             {([
@@ -326,14 +350,26 @@ export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPh
               ~{estimatedPages} {estimatedPages === 1 ? 'strona' : estimatedPages < 5 ? 'strony' : 'stron'}
             </span>
             {isClient && (
-              <PDFDownloadLink
-                document={<PdfDocument config={config} qrDataUrl={qrDataUrl} />}
-                fileName={fileName}
-                className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1.5 rounded-md transition-colors"
-              >
-                <Download size={14} />
-                Pobierz PDF
-              </PDFDownloadLink>
+              <>
+                <PDFDownloadLink
+                  document={<PdfDocument config={{ ...config, meta: { ...config.meta, pdfLanguage: 'pl' } }} qrDataUrl={qrDataUrl} />}
+                  fileName={fileName.replace('.pdf', '_PL.pdf')}
+                  className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-2.5 py-1.5 rounded-md transition-colors"
+                  title="Pobierz wersje polska"
+                >
+                  <Download size={13} />
+                  PL
+                </PDFDownloadLink>
+                <PDFDownloadLink
+                  document={<PdfDocument config={{ ...config, meta: { ...config.meta, pdfLanguage: 'en' } }} qrDataUrl={qrDataUrl} />}
+                  fileName={fileName.replace('.pdf', '_EN.pdf')}
+                  className="flex items-center gap-1 bg-gray-700 hover:bg-gray-800 text-white text-xs font-medium px-2.5 py-1.5 rounded-md transition-colors"
+                  title="Download English version"
+                >
+                  <Download size={13} />
+                  EN
+                </PDFDownloadLink>
+              </>
             )}
           </div>
         </div>

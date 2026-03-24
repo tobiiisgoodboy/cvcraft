@@ -4,6 +4,7 @@ import React from 'react'
 import { Page, View, Text, Image, StyleSheet, Link } from '@react-pdf/renderer'
 import { CvConfig } from '@/lib/schema'
 import { registerFonts, getFontFamily, getBoldFont, getItalicFont, CvFont } from '@/lib/fonts'
+import { t, PdfLang } from '@/lib/pdfI18n'
 
 const GDPR_DEFAULT_PL = 'Wyrażam zgodę na przetwarzanie moich danych osobowych przez [firma] w celu prowadzenia rekrutacji na aplikowane przeze mnie stanowisko.'
 const GDPR_DEFAULT_EN = 'I hereby consent to my personal data being processed by [firma] for the purpose of considering my application for the vacancy.'
@@ -19,6 +20,7 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
   const photoPosition = config.meta.photoPosition ?? 'right'
   const skillLayout = config.meta.skillLayout ?? 'categories'
   const marginH = config.meta.margins === 'narrow' ? 16 : config.meta.margins === 'wide' ? 40 : 28
+  const lang = (config.meta.pdfLanguage ?? 'pl') as PdfLang
   const { personal, summary, experience, education, skills, languages, interests, certificates, projects, awards } = config
 
   const boldExtra = font === 'Roboto' ? { fontWeight: 700 as const } : {}
@@ -76,7 +78,7 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
       case 'bars':
         return (
           <View style={styles.sidebarSection}>
-            <Text style={styles.sidebarSectionTitle}>Umiejetnosci</Text>
+            <Text style={styles.sidebarSectionTitle}>{t('skills', lang)}</Text>
             {skills.map(skill => (
               <View key={skill.id} style={styles.sidebarSkillItem}>
                 <Text style={styles.sidebarSkillName}>{skill.name}</Text>
@@ -88,7 +90,7 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
       case 'tags': {
         return (
           <View style={styles.sidebarSection}>
-            <Text style={styles.sidebarSectionTitle}>Umiejetnosci</Text>
+            <Text style={styles.sidebarSectionTitle}>{t('skills', lang)}</Text>
             <View style={styles.sidebarTagsRow}>
               {skills.map(skill => (
                 <Text key={skill.id} style={{ fontSize: 8.5, color: '#ffffff', backgroundColor: 'rgba(255,255,255,0.25)', paddingVertical: 2, paddingHorizontal: 6, borderRadius: 8, marginBottom: 4 }}>
@@ -111,10 +113,10 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
           }
         }
         const entries = Object.entries(grouped)
-        if (uncategorized.length) entries.push(['Inne', uncategorized])
+        if (uncategorized.length) entries.push([t('other', lang), uncategorized])
         return (
           <View style={styles.sidebarSection}>
-            <Text style={styles.sidebarSectionTitle}>Umiejetnosci</Text>
+            <Text style={styles.sidebarSectionTitle}>{t('skills', lang)}</Text>
             {entries.map(([cat, catSkills]) => (
               <View key={cat}>
                 <Text style={styles.sidebarCategoryHeader}>{cat}</Text>
@@ -134,7 +136,7 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
         const dotCount: Record<string, number> = { basic: 1, medium: 2, advanced: 3 }
         return (
           <View style={styles.sidebarSection}>
-            <Text style={styles.sidebarSectionTitle}>Umiejetnosci</Text>
+            <Text style={styles.sidebarSectionTitle}>{t('skills', lang)}</Text>
             {skills.map(skill => {
               const filled = dotCount[skill.level] ?? 2
               return (
@@ -150,10 +152,10 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
         )
       }
       case 'list': {
-        const levelLabel: Record<string, string> = { basic: 'Podst.', medium: 'Sredni', advanced: 'Zaaw.' }
+        const levelLabel: Record<string, string> = { basic: t('levelBasicShort', lang), medium: t('levelMediumShort', lang), advanced: t('levelAdvShort', lang) }
         return (
           <View style={styles.sidebarSection}>
-            <Text style={styles.sidebarSectionTitle}>Umiejetnosci</Text>
+            <Text style={styles.sidebarSectionTitle}>{t('skills', lang)}</Text>
             {skills.map(skill => (
               <Text key={skill.id} style={[styles.sidebarText, { marginBottom: 3 }]}>
                 {'\u2022'} {skill.name} ({levelLabel[skill.level] ?? skill.level})
@@ -178,7 +180,7 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
 
   function formatDate(start: string, end: string, current: boolean) {
     const s = start || ''
-    const e = current ? 'obecnie' : (end || '')
+    const e = current ? t('currently', lang) : (end || '')
     if (!s && !e) return ''
     if (!s) return e
     if (!e) return s
@@ -196,7 +198,7 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
       case 'summary':
         return summary ? (
           <View key="summary" style={styles.mainSection}>
-            <Text style={styles.mainSectionTitle}>Podsumowanie</Text>
+            <Text style={styles.mainSectionTitle}>{t('summary', lang)}</Text>
             <Text style={{ fontSize: 9.5, lineHeight: 1.6, color: textColor }}>{summary}</Text>
           </View>
         ) : null
@@ -204,7 +206,7 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
       case 'experience':
         return experience.length > 0 ? (
           <View key="experience" style={styles.mainSection}>
-            <Text style={styles.mainSectionTitle}>Doswiadczenie zawodowe</Text>
+            <Text style={styles.mainSectionTitle}>{t('experience', lang)}</Text>
             {experience.map(exp => (
               <View key={exp.id} style={styles.expItem}>
                 <Text style={styles.expPosition}>{exp.position}</Text>
@@ -219,7 +221,7 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
       case 'projects':
         return projects.length > 0 ? (
           <View key="projects" style={styles.mainSection}>
-            <Text style={styles.mainSectionTitle}>Projekty</Text>
+            <Text style={styles.mainSectionTitle}>{t('projects', lang)}</Text>
             {projects.map(proj => (
               <View key={proj.id} style={{ marginBottom: 10, paddingLeft: 10, borderLeftWidth: 2, borderLeftColor: '#e5e7eb' }}>
                 <Text style={{ fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra, color: textColor }}>{proj.name}</Text>
@@ -240,7 +242,7 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
       case 'education':
         return education.length > 0 ? (
           <View key="education" style={styles.mainSection}>
-            <Text style={styles.mainSectionTitle}>Wyksztalcenie</Text>
+            <Text style={styles.mainSectionTitle}>{t('education', lang)}</Text>
             {education.map(edu => (
               <View key={edu.id} style={styles.eduItem}>
                 <Text style={styles.eduSchool}>{edu.school}</Text>
@@ -254,7 +256,7 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
       case 'certificates':
         return certificates.length > 0 ? (
           <View key="certificates" style={styles.mainSection}>
-            <Text style={styles.mainSectionTitle}>Certyfikaty i kursy</Text>
+            <Text style={styles.mainSectionTitle}>{t('certificates', lang)}</Text>
             {certificates.map(cert => (
               <View key={cert.id} style={{ marginBottom: 8 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
@@ -275,7 +277,7 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
       case 'awards':
         return awards && awards.length > 0 ? (
           <View key="awards" style={styles.mainSection}>
-            <Text style={styles.mainSectionTitle}>Nagrody i wyroznienia</Text>
+            <Text style={styles.mainSectionTitle}>{t('awards', lang)}</Text>
             {awards.map((award) => (
               <View key={award.id} style={styles.expItem}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
@@ -292,7 +294,7 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
       case 'interests':
         return interests.length > 0 ? (
           <View key="interests" style={styles.mainSection}>
-            <Text style={styles.mainSectionTitle}>Zainteresowania</Text>
+            <Text style={styles.mainSectionTitle}>{t('interests', lang)}</Text>
             <View style={styles.interestRow}>
               {interests.map((interest, i) => (
                 <Text key={i} style={styles.interestTag}>{interest}</Text>
@@ -318,7 +320,7 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
           <Text style={styles.sidebarName}>{personal.firstName}{'\n'}{personal.lastName}</Text>
 
           <View style={styles.sidebarSection}>
-            <Text style={styles.sidebarSectionTitle}>Kontakt</Text>
+            <Text style={styles.sidebarSectionTitle}>{t('contact', lang)}</Text>
             {personal.email ? <Text style={styles.sidebarText}>{'\u2709'}  {personal.email}</Text> : null}
             {personal.phone ? <Text style={styles.sidebarText}>{'\u260E'}  {personal.phone}</Text> : null}
             {personal.city ? <Text style={styles.sidebarText}>{'\u25CE'}  {personal.city}</Text> : null}
@@ -336,7 +338,7 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
 
           {qrDataUrl && (
             <View style={styles.sidebarSection}>
-              <Text style={styles.sidebarSectionTitle}>Profil</Text>
+              <Text style={styles.sidebarSectionTitle}>{t('profile', lang)}</Text>
               <Image src={qrDataUrl} style={{ width: 60, height: 60, backgroundColor: '#ffffff', borderRadius: 4 }} />
             </View>
           )}
@@ -345,10 +347,10 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
 
           {languages.length > 0 && (
             <View style={styles.sidebarSection}>
-              <Text style={styles.sidebarSectionTitle}>Jezyki</Text>
-              {languages.map(lang => (
-                <Text key={lang.id} style={styles.sidebarText}>
-                  {lang.name}{lang.level ? ` \u2014 ${lang.level}` : ''}
+              <Text style={styles.sidebarSectionTitle}>{t('languagesShort', lang)}</Text>
+              {languages.map(l => (
+                <Text key={l.id} style={styles.sidebarText}>
+                  {l.name}{l.level ? ` \u2014 ${l.level}` : ''}
                 </Text>
               ))}
             </View>

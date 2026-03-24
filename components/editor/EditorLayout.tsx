@@ -101,6 +101,7 @@ function mergeWithDefaults(saved: unknown): CvConfig {
       margins: (((raw.meta as Record<string, unknown>)?.margins) as 'narrow' | 'normal' | 'wide') ?? 'normal',
       qrEnabled: ((raw.meta as Record<string, unknown>)?.qrEnabled as boolean) ?? false,
       qrTarget: (((raw.meta as Record<string, unknown>)?.qrTarget) as 'linkedin' | 'website') ?? 'linkedin',
+      pdfLanguage: (((raw.meta as Record<string, unknown>)?.pdfLanguage) as 'pl' | 'en') ?? 'pl',
       gdprEnabled: ((raw.meta as Record<string, unknown>)?.gdprEnabled as boolean) ?? false,
       gdprLanguage: (((raw.meta as Record<string, unknown>)?.gdprLanguage) as 'pl' | 'en') ?? 'pl',
       gdprText: ((raw.meta as Record<string, unknown>)?.gdprText as string) ?? '',
@@ -219,6 +220,11 @@ export function EditorLayout() {
   function handleSkillLayoutChange(layout: 'bars' | 'tags' | 'dots' | 'list' | 'categories') {
     setValue('meta.skillLayout', layout, { shouldDirty: true })
     setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, skillLayout: layout } }))
+  }
+
+  function handlePdfLanguageChange(lang: 'pl' | 'en') {
+    setValue('meta.pdfLanguage', lang, { shouldDirty: true })
+    setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, pdfLanguage: lang } }))
   }
 
   function handleQrChange(patch: Partial<{ enabled: boolean; target: 'linkedin' | 'website' }>) {
@@ -366,6 +372,7 @@ export function EditorLayout() {
           onTextColorChange={handleTextColorChange}
           onSkillLayoutChange={handleSkillLayoutChange}
           onMarginsChange={handleMarginsChange}
+          onPdfLanguageChange={handlePdfLanguageChange}
           onQrChange={handleQrChange}
           onGdprChange={handleGdprChange}
         />

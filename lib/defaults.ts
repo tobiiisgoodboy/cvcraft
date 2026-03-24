@@ -12,6 +12,7 @@ export const defaultCvConfig: CvConfig = {
     margins: 'normal' as const,
     qrEnabled: false,
     qrTarget: 'linkedin' as const,
+    pdfLanguage: 'pl' as const,
     gdprEnabled: false,
     gdprLanguage: 'pl' as const,
     gdprText: '',

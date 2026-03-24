@@ -16,6 +16,7 @@ export const MetaSchema = z.object({
   margins: z.enum(['narrow', 'normal', 'wide']).optional(),
   qrEnabled: z.boolean().optional(),
   qrTarget: z.enum(['linkedin', 'website']).optional(),
+  pdfLanguage: z.enum(['pl', 'en']).optional(),
 })
 
 export const PersonalSchema = z.object({
