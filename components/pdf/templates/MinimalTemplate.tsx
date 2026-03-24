@@ -8,9 +8,9 @@ import { registerFonts, getFontFamily, getBoldFont, getItalicFont, CvFont } from
 const GDPR_DEFAULT_PL = 'Wyrażam zgodę na przetwarzanie moich danych osobowych przez [firma] w celu prowadzenia rekrutacji na aplikowane przeze mnie stanowisko.'
 const GDPR_DEFAULT_EN = 'I hereby consent to my personal data being processed by [firma] for the purpose of considering my application for the vacancy.'
 
-interface Props { config: CvConfig }
+interface Props { config: CvConfig; qrDataUrl?: string | null }
 
-export function MinimalTemplate({ config }: Props) {
+export function MinimalTemplate({ config, qrDataUrl }: Props) {
   registerFonts()
   const font = (config.meta.font ?? 'Helvetica') as CvFont
   const accent = config.meta.accentColor || '#2563eb'
@@ -374,6 +374,9 @@ export function MinimalTemplate({ config }: Props) {
         </View>
         {personal.photo && photoPosition === 'right' && (
           <Image src={personal.photo} style={styles.photo} />
+        )}
+        {qrDataUrl && (
+          <Image src={qrDataUrl} style={{ width: 50, height: 50, marginLeft: personal.photo ? 8 : 16 }} />
         )}
       </View>
       <View style={styles.accentLine} />

@@ -14,6 +14,8 @@ export const MetaSchema = z.object({
   gdprText: z.string().optional(),
   gdprCompany: z.string().optional(),
   margins: z.enum(['narrow', 'normal', 'wide']).optional(),
+  qrEnabled: z.boolean().optional(),
+  qrTarget: z.enum(['linkedin', 'website']).optional(),
 })
 
 export const PersonalSchema = z.object({

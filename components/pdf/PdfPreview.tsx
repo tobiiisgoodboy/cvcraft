@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer'
+import QRCode from 'qrcode'
 import { CvConfig } from '@/lib/schema'
 import { PdfDocument } from './PdfDocument'
 import { estimatePageCount } from '@/lib/pageEstimate'
@@ -26,6 +27,7 @@ interface Props {
   onTextColorChange: (color: string) => void
   onSkillLayoutChange: (layout: 'bars' | 'tags' | 'dots' | 'list' | 'categories') => void
   onMarginsChange: (margins: 'narrow' | 'normal' | 'wide') => void
+  onQrChange: (patch: Partial<{ enabled: boolean; target: 'linkedin' | 'website' }>) => void
   onGdprChange: (patch: Partial<{ enabled: boolean; language: 'pl' | 'en'; text: string; company: string }>) => void
 }
 
@@ -35,9 +37,10 @@ const TEMPLATES = [
   { id: 'minimal' as const, label: 'Minimalistyczny' },
 ]
 
-export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPhotoPositionChange, onFontChange, onBgColorChange, onTextColorChange, onSkillLayoutChange, onMarginsChange, onGdprChange }: Props) {
+export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPhotoPositionChange, onFontChange, onBgColorChange, onTextColorChange, onSkillLayoutChange, onMarginsChange, onQrChange, onGdprChange }: Props) {
   const [isClient, setIsClient] = useState(false)
   const [pdfKey, setPdfKey] = useState(0)
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
 
   useEffect(() => {
     setIsClient(true)
@@ -46,6 +49,16 @@ export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPh
   useEffect(() => {
     setPdfKey((k) => k + 1)
   }, [config.meta.template])
+
+  useEffect(() => {
+    if (!config.meta.qrEnabled) { setQrDataUrl(null); return }
+    const raw = config.meta.qrTarget === 'website' ? config.personal.website : config.personal.linkedin
+    if (!raw) { setQrDataUrl(null); return }
+    const url = raw.startsWith('http') ? raw : `https://${raw}`
+    QRCode.toDataURL(url, { width: 128, margin: 1, color: { dark: '#000000', light: '#ffffff' } })
+      .then(setQrDataUrl)
+      .catch(() => setQrDataUrl(null))
+  }, [config.meta.qrEnabled, config.meta.qrTarget, config.personal.linkedin, config.personal.website])
 
   const fullName =
     [config.personal.firstName, config.personal.lastName].filter(Boolean).join(' ') || 'cv'
@@ -146,6 +159,50 @@ export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPh
               </button>
             ))}
           </div>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Kod QR</p>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={config.meta.qrEnabled ?? false}
+                onChange={(e) => onQrChange({ enabled: e.target.checked })}
+                className="w-3.5 h-3.5 accent-blue-600 cursor-pointer"
+              />
+              <span className="text-xs text-gray-600">Dodaj do PDF</span>
+            </label>
+          </div>
+          {config.meta.qrEnabled && (
+            <div className="flex items-center gap-3">
+              <div className="flex gap-2">
+                {([
+                  { id: 'linkedin' as const, label: 'LinkedIn' },
+                  { id: 'website' as const, label: 'Strona www' },
+                ]).map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => onQrChange({ target: opt.id })}
+                    className={`py-1 px-3 text-xs rounded-md border transition-all ${
+                      (config.meta.qrTarget ?? 'linkedin') === opt.id
+                        ? 'bg-blue-600 text-white border-blue-600 font-medium'
+                        : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              {qrDataUrl && (
+                <img src={qrDataUrl} alt="QR preview" className="w-8 h-8 rounded border border-gray-200" />
+              )}
+              {config.meta.qrEnabled && !qrDataUrl && (
+                <span className="text-xs text-orange-400">Brak URL w danych osobowych</span>
+              )}
+            </div>
+          )}
         </div>
 
         <div>
@@ -270,7 +327,7 @@ export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPh
             </span>
             {isClient && (
               <PDFDownloadLink
-                document={<PdfDocument config={config} />}
+                document={<PdfDocument config={config} qrDataUrl={qrDataUrl} />}
                 fileName={fileName}
                 className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1.5 rounded-md transition-colors"
               >
@@ -292,7 +349,7 @@ export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPh
             showToolbar={false}
             style={{ border: 'none' }}
           >
-            <PdfDocument config={config} />
+            <PdfDocument config={config} qrDataUrl={qrDataUrl} />
           </PDFViewer>
         ) : (
           <PdfLoadingState />

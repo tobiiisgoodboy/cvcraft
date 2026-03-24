@@ -10,6 +10,8 @@ export const defaultCvConfig: CvConfig = {
     font: 'Helvetica',
     skillLayout: 'categories' as const,
     margins: 'normal' as const,
+    qrEnabled: false,
+    qrTarget: 'linkedin' as const,
     gdprEnabled: false,
     gdprLanguage: 'pl' as const,
     gdprText: '',

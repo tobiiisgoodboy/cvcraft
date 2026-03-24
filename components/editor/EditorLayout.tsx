@@ -99,6 +99,8 @@ function mergeWithDefaults(saved: unknown): CvConfig {
       textColor: ((raw.meta as Record<string, unknown>)?.textColor as string) ?? '#111827',
       skillLayout: (((raw.meta as Record<string, unknown>)?.skillLayout) as CvConfig['meta']['skillLayout']) ?? 'categories',
       margins: (((raw.meta as Record<string, unknown>)?.margins) as 'narrow' | 'normal' | 'wide') ?? 'normal',
+      qrEnabled: ((raw.meta as Record<string, unknown>)?.qrEnabled as boolean) ?? false,
+      qrTarget: (((raw.meta as Record<string, unknown>)?.qrTarget) as 'linkedin' | 'website') ?? 'linkedin',
       gdprEnabled: ((raw.meta as Record<string, unknown>)?.gdprEnabled as boolean) ?? false,
       gdprLanguage: (((raw.meta as Record<string, unknown>)?.gdprLanguage) as 'pl' | 'en') ?? 'pl',
       gdprText: ((raw.meta as Record<string, unknown>)?.gdprText as string) ?? '',
@@ -217,6 +219,17 @@ export function EditorLayout() {
   function handleSkillLayoutChange(layout: 'bars' | 'tags' | 'dots' | 'list' | 'categories') {
     setValue('meta.skillLayout', layout, { shouldDirty: true })
     setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, skillLayout: layout } }))
+  }
+
+  function handleQrChange(patch: Partial<{ enabled: boolean; target: 'linkedin' | 'website' }>) {
+    if (patch.enabled !== undefined) {
+      setValue('meta.qrEnabled', patch.enabled, { shouldDirty: true })
+      setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, qrEnabled: patch.enabled } }))
+    }
+    if (patch.target !== undefined) {
+      setValue('meta.qrTarget', patch.target, { shouldDirty: true })
+      setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, qrTarget: patch.target } }))
+    }
   }
 
   function handleVersionSwitch(config: CvConfig) {
@@ -353,6 +366,7 @@ export function EditorLayout() {
           onTextColorChange={handleTextColorChange}
           onSkillLayoutChange={handleSkillLayoutChange}
           onMarginsChange={handleMarginsChange}
+          onQrChange={handleQrChange}
           onGdprChange={handleGdprChange}
         />
       </div>
