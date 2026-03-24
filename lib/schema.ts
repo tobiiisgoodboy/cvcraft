@@ -7,8 +7,12 @@ export const MetaSchema = z.object({
   textColor: z.string(),
   photoPosition: z.enum(['left', 'right', 'none']),
   font: z.enum(['Helvetica', 'Times-Roman', 'Roboto']),
-  skillLayout: z.enum(['bars', 'tags', 'dots', 'list']),
+  skillLayout: z.enum(['bars', 'tags', 'dots', 'list', 'categories']),
   sectionOrder: z.array(z.string()),
+  gdprEnabled: z.boolean().optional(),
+  gdprLanguage: z.enum(['pl', 'en']).optional(),
+  gdprText: z.string().optional(),
+  gdprCompany: z.string().optional(),
 })
 
 export const PersonalSchema = z.object({
@@ -45,6 +49,7 @@ export const SkillItemSchema = z.object({
   id: z.string(),
   name: z.string(),
   level: z.enum(['basic', 'medium', 'advanced']),
+  category: z.string().optional(),
 })
 
 export const LanguageItemSchema = z.object({

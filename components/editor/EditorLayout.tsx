@@ -93,7 +93,11 @@ function mergeWithDefaults(saved: unknown): CvConfig {
       font: (((raw.meta as Record<string, unknown>)?.font) as CvFont) ?? 'Helvetica',
       bgColor: ((raw.meta as Record<string, unknown>)?.bgColor as string) ?? '#ffffff',
       textColor: ((raw.meta as Record<string, unknown>)?.textColor as string) ?? '#111827',
-      skillLayout: (((raw.meta as Record<string, unknown>)?.skillLayout) as CvConfig['meta']['skillLayout']) ?? 'bars',
+      skillLayout: (((raw.meta as Record<string, unknown>)?.skillLayout) as CvConfig['meta']['skillLayout']) ?? 'categories',
+      gdprEnabled: ((raw.meta as Record<string, unknown>)?.gdprEnabled as boolean) ?? false,
+      gdprLanguage: (((raw.meta as Record<string, unknown>)?.gdprLanguage) as 'pl' | 'en') ?? 'pl',
+      gdprText: ((raw.meta as Record<string, unknown>)?.gdprText as string) ?? '',
+      gdprCompany: ((raw.meta as Record<string, unknown>)?.gdprCompany as string) ?? '',
     },
     personal: {
       firstName: ((raw.personal as Record<string, unknown>)?.firstName as string) ?? '',
@@ -199,9 +203,28 @@ export function EditorLayout() {
     setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, textColor: color } }))
   }
 
-  function handleSkillLayoutChange(layout: 'bars' | 'tags' | 'dots' | 'list') {
+  function handleSkillLayoutChange(layout: 'bars' | 'tags' | 'dots' | 'list' | 'categories') {
     setValue('meta.skillLayout', layout, { shouldDirty: true })
     setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, skillLayout: layout } }))
+  }
+
+  function handleGdprChange(patch: Partial<{ enabled: boolean; language: 'pl' | 'en'; text: string; company: string }>) {
+    if (patch.enabled !== undefined) {
+      setValue('meta.gdprEnabled', patch.enabled, { shouldDirty: true })
+      setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, gdprEnabled: patch.enabled } }))
+    }
+    if (patch.language !== undefined) {
+      setValue('meta.gdprLanguage', patch.language, { shouldDirty: true })
+      setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, gdprLanguage: patch.language, gdprText: '' } }))
+    }
+    if (patch.text !== undefined) {
+      setValue('meta.gdprText', patch.text, { shouldDirty: true })
+      setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, gdprText: patch.text } }))
+    }
+    if (patch.company !== undefined) {
+      setValue('meta.gdprCompany', patch.company, { shouldDirty: true })
+      setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, gdprCompany: patch.company } }))
+    }
   }
 
   if (!hydrated) {
@@ -307,6 +330,7 @@ export function EditorLayout() {
           onBgColorChange={handleBgColorChange}
           onTextColorChange={handleTextColorChange}
           onSkillLayoutChange={handleSkillLayoutChange}
+          onGdprChange={handleGdprChange}
         />
       </div>
     </div>

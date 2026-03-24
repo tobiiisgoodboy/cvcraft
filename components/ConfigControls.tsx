@@ -4,7 +4,7 @@ import { useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { CvConfig, CvConfigSchema } from '@/lib/schema'
 import { defaultCvConfig } from '@/lib/defaults'
-import { Download, Upload, RotateCcw } from 'lucide-react'
+import { Download, Upload, RotateCcw, Copy } from 'lucide-react'
 
 interface Props {
   form: UseFormReturn<CvConfig>
@@ -45,6 +45,20 @@ export function ConfigControls({ form }: Props) {
     e.target.value = ''
   }
 
+  function handleDuplicate() {
+    const name = window.prompt('Podaj nazwe kopii CV:', 'Moje CV')
+    if (!name) return
+    const data = getValues()
+    const json = JSON.stringify(data, null, 2)
+    const blob = new Blob([json], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${name.replace(/[^a-zA-Z0-9\-_. ]/g, '').trim() || 'cv'}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   function handleClear() {
     if (window.confirm('Czy na pewno chcesz wyczysc wszystkie dane CV? Tej operacji nie mozna cofnac.')) {
       reset(defaultCvConfig)
@@ -53,6 +67,16 @@ export function ConfigControls({ form }: Props) {
 
   return (
     <div className="flex items-center gap-2">
+      <button
+        type="button"
+        onClick={handleDuplicate}
+        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 rounded-lg transition-all bg-white dark:bg-gray-800"
+        title="Duplikuj CV do pliku JSON"
+      >
+        <Copy size={13} />
+        Duplikuj
+      </button>
+
       <button
         type="button"
         onClick={handleExport}

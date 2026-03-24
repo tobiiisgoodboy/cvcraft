@@ -8,7 +8,11 @@ export const defaultCvConfig: CvConfig = {
     textColor: '#111827',
     photoPosition: 'right',
     font: 'Helvetica',
-    skillLayout: 'bars' as const,
+    skillLayout: 'categories' as const,
+    gdprEnabled: false,
+    gdprLanguage: 'pl' as const,
+    gdprText: '',
+    gdprCompany: '',
     sectionOrder: ['summary', 'experience', 'projects', 'education', 'certificates', 'awards', 'skills', 'languages', 'interests'],
   },
   personal: {

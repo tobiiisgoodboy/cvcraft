@@ -11,17 +11,12 @@ interface Props {
 const inputClass =
   'w-full px-3 py-2 text-sm text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-800 placeholder:text-gray-300 dark:placeholder:text-gray-600'
 
-const LEVELS = [
-  { value: 'basic', label: 'Podstawowy' },
-  { value: 'medium', label: 'Sredniozaawansowany' },
-  { value: 'advanced', label: 'Zaawansowany' },
-]
-
 function newItem() {
   return {
     id: crypto.randomUUID(),
     name: '',
     level: 'medium' as const,
+    category: '',
   }
 }
 
@@ -45,19 +40,14 @@ export function SectionSkills({ form }: Props) {
           <div key={field.id} className="flex items-center gap-2">
             <input
               {...register(`skills.${index}.name`)}
-              placeholder="np. React, Photoshop, MS Excel..."
+              placeholder="Umiejetnosc (np. React, Photoshop...)"
               className={inputClass}
             />
-            <select
-              {...register(`skills.${index}.level`)}
-              className="px-2 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 cursor-pointer flex-shrink-0"
-            >
-              {LEVELS.map((l) => (
-                <option key={l.value} value={l.value}>
-                  {l.label}
-                </option>
-              ))}
-            </select>
+            <input
+              {...register(`skills.${index}.category`)}
+              placeholder="Kategoria (np. Frontend)"
+              className="w-40 flex-shrink-0 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-800 placeholder:text-gray-300 dark:placeholder:text-gray-600"
+            />
             <button
               type="button"
               onClick={() => remove(index)}

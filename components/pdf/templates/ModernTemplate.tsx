@@ -5,6 +5,9 @@ import { Page, View, Text, Image, StyleSheet, Link } from '@react-pdf/renderer'
 import { CvConfig } from '@/lib/schema'
 import { registerFonts, getFontFamily, getBoldFont, getItalicFont, CvFont } from '@/lib/fonts'
 
+const GDPR_DEFAULT_PL = 'Wyrażam zgodę na przetwarzanie moich danych osobowych przez [firma] w celu prowadzenia rekrutacji na aplikowane przeze mnie stanowisko.'
+const GDPR_DEFAULT_EN = 'I hereby consent to my personal data being processed by [firma] for the purpose of considering my application for the vacancy.'
+
 interface Props { config: CvConfig }
 
 export function ModernTemplate({ config }: Props) {
@@ -50,6 +53,11 @@ export function ModernTemplate({ config }: Props) {
     sidebarTagsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 4 },
     // sidebar skill dots row
     sidebarDotsItem: { flexDirection: 'row', alignItems: 'center', marginBottom: 5, gap: 6 },
+    // sidebar categories
+    sidebarCategoryHeader: { fontSize: 7.5, fontFamily: getBoldFont(font), ...boldExtra, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 6, marginBottom: 3 },
+    sidebarCategoryTagsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginBottom: 4 },
+    // gdpr footer
+    gdprText: { fontSize: 6.5, color: '#9ca3af', textAlign: 'center', marginTop: 8, lineHeight: 1.4 },
   })
 
   function SidebarSkillBar({ level }: { level: string }) {
@@ -77,17 +85,47 @@ export function ModernTemplate({ config }: Props) {
           </View>
         )
       case 'tags': {
-        const tagOpacity: Record<string, string> = { basic: '33', medium: '66', advanced: 'bb' }
         return (
           <View style={styles.sidebarSection}>
             <Text style={styles.sidebarSectionTitle}>Umiejetnosci</Text>
             <View style={styles.sidebarTagsRow}>
               {skills.map(skill => (
-                <Text key={skill.id} style={{ fontSize: 8.5, color: '#ffffff', backgroundColor: 'rgba(255,255,255,' + (tagOpacity[skill.level] === '33' ? '0.2' : tagOpacity[skill.level] === '66' ? '0.4' : '0.7') + ')', paddingVertical: 2, paddingHorizontal: 6, borderRadius: 8, marginBottom: 4 }}>
+                <Text key={skill.id} style={{ fontSize: 8.5, color: '#ffffff', backgroundColor: 'rgba(255,255,255,0.25)', paddingVertical: 2, paddingHorizontal: 6, borderRadius: 8, marginBottom: 4 }}>
                   {skill.name}
                 </Text>
               ))}
             </View>
+          </View>
+        )
+      }
+      case 'categories': {
+        const grouped: Record<string, typeof skills> = {}
+        const uncategorized: typeof skills = []
+        for (const skill of skills) {
+          const cat = skill.category?.trim() || ''
+          if (cat) {
+            grouped[cat] = grouped[cat] ? [...grouped[cat], skill] : [skill]
+          } else {
+            uncategorized.push(skill)
+          }
+        }
+        const entries = Object.entries(grouped)
+        if (uncategorized.length) entries.push(['Inne', uncategorized])
+        return (
+          <View style={styles.sidebarSection}>
+            <Text style={styles.sidebarSectionTitle}>Umiejetnosci</Text>
+            {entries.map(([cat, catSkills]) => (
+              <View key={cat}>
+                <Text style={styles.sidebarCategoryHeader}>{cat}</Text>
+                <View style={styles.sidebarCategoryTagsRow}>
+                  {catSkills.map(skill => (
+                    <Text key={skill.id} style={{ fontSize: 8.5, color: '#ffffff', backgroundColor: 'rgba(255,255,255,0.25)', paddingVertical: 2, paddingHorizontal: 6, borderRadius: 8, marginBottom: 4 }}>
+                      {skill.name}
+                    </Text>
+                  ))}
+                </View>
+              </View>
+            ))}
           </View>
         )
       }
@@ -126,6 +164,15 @@ export function ModernTemplate({ config }: Props) {
       default:
         return null
     }
+  }
+
+  function gdprFooter() {
+    if (!config.meta.gdprEnabled) return null
+    const lang = config.meta.gdprLanguage ?? 'pl'
+    let text = config.meta.gdprText?.trim() || (lang === 'pl' ? GDPR_DEFAULT_PL : GDPR_DEFAULT_EN)
+    const company = config.meta.gdprCompany?.trim()
+    if (company) text = text.replace('[firma]', company)
+    return <Text style={styles.gdprText}>{text}</Text>
   }
 
   function formatDate(start: string, end: string, current: boolean) {
@@ -315,6 +362,7 @@ export function ModernTemplate({ config }: Props) {
         )}
 
         {sectionOrder.map(id => renderSection(id))}
+        {gdprFooter()}
       </View>
     </Page>
   )

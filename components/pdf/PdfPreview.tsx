@@ -23,7 +23,8 @@ interface Props {
   onFontChange: (font: 'Helvetica' | 'Times-Roman' | 'Roboto') => void
   onBgColorChange: (color: string) => void
   onTextColorChange: (color: string) => void
-  onSkillLayoutChange: (layout: 'bars' | 'tags' | 'dots' | 'list') => void
+  onSkillLayoutChange: (layout: 'bars' | 'tags' | 'dots' | 'list' | 'categories') => void
+  onGdprChange: (patch: Partial<{ enabled: boolean; language: 'pl' | 'en'; text: string; company: string }>) => void
 }
 
 const TEMPLATES = [
@@ -32,7 +33,7 @@ const TEMPLATES = [
   { id: 'minimal' as const, label: 'Minimalistyczny' },
 ]
 
-export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPhotoPositionChange, onFontChange, onBgColorChange, onTextColorChange, onSkillLayoutChange }: Props) {
+export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPhotoPositionChange, onFontChange, onBgColorChange, onTextColorChange, onSkillLayoutChange, onGdprChange }: Props) {
   const [isClient, setIsClient] = useState(false)
   const [pdfKey, setPdfKey] = useState(0)
 
@@ -124,9 +125,8 @@ export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPh
           <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Układ umiejetnosci</p>
           <div className="flex gap-2">
             {([
-              { id: 'bars' as const, label: '\u25AC Paski' },
+              { id: 'categories' as const, label: '\u229E Kategorie' },
               { id: 'tags' as const, label: '# Tagi' },
-              { id: 'dots' as const, label: '\u25CF Kropki' },
               { id: 'list' as const, label: '\u2261 Lista' },
             ]).map((opt) => (
               <button
@@ -143,6 +143,58 @@ export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPh
               </button>
             ))}
           </div>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Klauzula RODO</p>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={config.meta.gdprEnabled ?? false}
+                onChange={(e) => onGdprChange({ enabled: e.target.checked })}
+                className="w-3.5 h-3.5 accent-blue-600 cursor-pointer"
+              />
+              <span className="text-xs text-gray-600">Dodaj do PDF</span>
+            </label>
+          </div>
+          {config.meta.gdprEnabled && (
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                {([
+                  { id: 'pl' as const, label: 'PL' },
+                  { id: 'en' as const, label: 'EN' },
+                ]).map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => onGdprChange({ language: opt.id })}
+                    className={`py-1 px-3 text-xs rounded-md border transition-all ${
+                      (config.meta.gdprLanguage ?? 'pl') === opt.id
+                        ? 'bg-blue-600 text-white border-blue-600 font-medium'
+                        : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <input
+                type="text"
+                value={config.meta.gdprCompany ?? ''}
+                onChange={(e) => onGdprChange({ company: e.target.value })}
+                placeholder="Nazwa firmy (opcjonalnie)"
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+              <textarea
+                value={config.meta.gdprText ?? ''}
+                onChange={(e) => onGdprChange({ text: e.target.value })}
+                placeholder="Tresc klauzuli (puste = tekst domyslny)"
+                rows={3}
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
+              />
+            </div>
+          )}
         </div>
 
         <div>

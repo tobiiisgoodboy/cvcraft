@@ -5,6 +5,9 @@ import { Page, View, Text, Image, StyleSheet, Link } from '@react-pdf/renderer'
 import { CvConfig } from '@/lib/schema'
 import { registerFonts, getFontFamily, getBoldFont, getItalicFont, CvFont } from '@/lib/fonts'
 
+const GDPR_DEFAULT_PL = 'Wyrażam zgodę na przetwarzanie moich danych osobowych przez [firma] w celu prowadzenia rekrutacji na aplikowane przeze mnie stanowisko.'
+const GDPR_DEFAULT_EN = 'I hereby consent to my personal data being processed by [firma] for the purpose of considering my application for the vacancy.'
+
 interface Props { config: CvConfig }
 
 export function MinimalTemplate({ config }: Props) {
@@ -59,6 +62,13 @@ export function MinimalTemplate({ config }: Props) {
     skillDotsItem: { width: '50%', marginBottom: 5, paddingRight: 12, flexDirection: 'row', alignItems: 'center', gap: 6 },
     // skill list
     skillListItem: { marginBottom: 3 },
+    // skill layout: categories
+    skillCategoryHeader: { fontSize: 8, fontFamily: getBoldFont(font), ...boldExtra, color: accent, marginBottom: 4, marginTop: 8, letterSpacing: 0.5 },
+    skillCategoryTagsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginBottom: 4 },
+    // contact icon
+    contactIcon: { fontSize: 8, color: '#9ca3af', marginRight: 2 },
+    // gdpr footer
+    gdprText: { fontSize: 6.5, color: '#9ca3af', textAlign: 'center', marginTop: 8, lineHeight: 1.4 },
   })
 
   function SkillBar({ level }: { level: string }) {
@@ -91,17 +101,48 @@ export function MinimalTemplate({ config }: Props) {
           </View>
         )
       case 'tags': {
-        const tagOpacity: Record<string, string> = { basic: '33', medium: '88', advanced: 'cc' }
         return (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Umiejetnosci</Text>
             <View style={styles.skillTagsRow}>
               {skills.map(skill => (
-                <Text key={skill.id} style={{ fontSize: 9, color: accent, backgroundColor: accent + (tagOpacity[skill.level] ?? '66'), paddingVertical: 3, paddingHorizontal: 8, borderRadius: 10 }}>
+                <Text key={skill.id} style={{ fontSize: 9, color: accent, backgroundColor: accent + '22', paddingVertical: 3, paddingHorizontal: 8, borderRadius: 10 }}>
                   {skill.name}
                 </Text>
               ))}
             </View>
+            <View style={styles.separator} />
+          </View>
+        )
+      }
+      case 'categories': {
+        const grouped: Record<string, typeof skills> = {}
+        const uncategorized: typeof skills = []
+        for (const skill of skills) {
+          const cat = skill.category?.trim() || ''
+          if (cat) {
+            grouped[cat] = grouped[cat] ? [...grouped[cat], skill] : [skill]
+          } else {
+            uncategorized.push(skill)
+          }
+        }
+        const entries = Object.entries(grouped)
+        if (uncategorized.length) entries.push(['Inne', uncategorized])
+        return (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Umiejetnosci</Text>
+            {entries.map(([cat, catSkills]) => (
+              <View key={cat}>
+                <Text style={styles.skillCategoryHeader}>{cat}</Text>
+                <View style={styles.skillCategoryTagsRow}>
+                  {catSkills.map(skill => (
+                    <Text key={skill.id} style={{ fontSize: 9, color: accent, backgroundColor: accent + '22', paddingVertical: 3, paddingHorizontal: 8, borderRadius: 10 }}>
+                      {skill.name}
+                    </Text>
+                  ))}
+                </View>
+              </View>
+            ))}
             <View style={styles.separator} />
           </View>
         )
@@ -157,7 +198,6 @@ export function MinimalTemplate({ config }: Props) {
   }
 
   const levelMap: Record<string, string> = { basic: 'podstawowy', medium: 'srednio zaawansowany', advanced: 'zaawansowany' }
-  const plainContactItems = [personal.email, personal.phone, personal.city].filter(Boolean)
 
   const DEFAULT_ORDER = ['summary', 'experience', 'projects', 'education', 'certificates', 'awards', 'skills', 'languages', 'interests']
   const sectionOrder = config.meta.sectionOrder && config.meta.sectionOrder.length > 0 ? config.meta.sectionOrder : DEFAULT_ORDER
@@ -307,6 +347,21 @@ export function MinimalTemplate({ config }: Props) {
   // suppress unused var warning for levelMap — used indirectly via renderSection/skills text logic
   void levelMap
 
+  const contactItemsWithIcons: Array<{ value: string; icon: string }> = [
+    { value: personal.email, icon: '\u2709' },
+    { value: personal.phone, icon: '\u260E' },
+    { value: personal.city, icon: '\u25CE' },
+  ].filter(c => Boolean(c.value))
+
+  function gdprFooter() {
+    if (!config.meta.gdprEnabled) return null
+    const lang = config.meta.gdprLanguage ?? 'pl'
+    let text = config.meta.gdprText?.trim() || (lang === 'pl' ? GDPR_DEFAULT_PL : GDPR_DEFAULT_EN)
+    const company = config.meta.gdprCompany?.trim()
+    if (company) text = text.replace('[firma]', company)
+    return <Text style={styles.gdprText}>{text}</Text>
+  }
+
   return (
     <Page size="A4" style={styles.page}>
       <View style={styles.header}>
@@ -322,23 +377,26 @@ export function MinimalTemplate({ config }: Props) {
       </View>
       <View style={styles.accentLine} />
       <View style={styles.contactRow}>
-        {plainContactItems.map((item, i) => (
-          <View key={i} style={{ flexDirection: 'row' }}>
+        {contactItemsWithIcons.map((c, i) => (
+          <View key={i} style={{ flexDirection: 'row', alignItems: 'center' }}>
             {i > 0 && <Text style={styles.contactSep}>{'\u00B7'}</Text>}
-            <Text style={styles.contactItem}>{item}</Text>
+            <Text style={styles.contactIcon}>{c.icon} </Text>
+            <Text style={styles.contactItem}>{c.value}</Text>
           </View>
         ))}
         {personal.linkedin ? (
-          <View style={{ flexDirection: 'row' }}>
-            {(plainContactItems.length > 0) && <Text style={styles.contactSep}>{'\u00B7'}</Text>}
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {(contactItemsWithIcons.length > 0) && <Text style={styles.contactSep}>{'\u00B7'}</Text>}
+            <Text style={styles.contactIcon}>in </Text>
             <Link src={personal.linkedin.startsWith('http') ? personal.linkedin : `https://${personal.linkedin}`} style={styles.contactItem}>
               {personal.linkedin}
             </Link>
           </View>
         ) : null}
         {personal.website ? (
-          <View style={{ flexDirection: 'row' }}>
-            {(plainContactItems.length > 0 || personal.linkedin) && <Text style={styles.contactSep}>{'\u00B7'}</Text>}
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {(contactItemsWithIcons.length > 0 || personal.linkedin) && <Text style={styles.contactSep}>{'\u00B7'}</Text>}
+            <Text style={styles.contactIcon}>{'\u2197'} </Text>
             <Link src={personal.website.startsWith('http') ? personal.website : `https://${personal.website}`} style={styles.contactItem}>
               {personal.website}
             </Link>
@@ -347,6 +405,7 @@ export function MinimalTemplate({ config }: Props) {
       </View>
 
       {sectionOrder.map(id => renderSection(id))}
+      {gdprFooter()}
     </Page>
   )
 }
