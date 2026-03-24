@@ -27,6 +27,7 @@ interface Props {
   onTextColorChange: (color: string) => void
   onSkillLayoutChange: (layout: 'bars' | 'tags' | 'dots' | 'list' | 'categories') => void
   onMarginsChange: (margins: 'narrow' | 'normal' | 'wide') => void
+  onBackToEdit: () => void
   onPdfLanguageChange: (lang: 'pl' | 'en') => void
   onQrChange: (patch: Partial<{ enabled: boolean; target: 'linkedin' | 'website' }>) => void
   onGdprChange: (patch: Partial<{ enabled: boolean; language: 'pl' | 'en'; text: string; company: string }>) => void
@@ -38,7 +39,7 @@ const TEMPLATES = [
   { id: 'minimal' as const, label: 'Minimalistyczny' },
 ]
 
-export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPhotoPositionChange, onFontChange, onBgColorChange, onTextColorChange, onSkillLayoutChange, onMarginsChange, onPdfLanguageChange, onQrChange, onGdprChange }: Props) {
+export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentColorChange, onPhotoPositionChange, onFontChange, onBgColorChange, onTextColorChange, onSkillLayoutChange, onMarginsChange, onPdfLanguageChange, onQrChange, onGdprChange }: Props) {
   const [isClient, setIsClient] = useState(false)
   const [pdfKey, setPdfKey] = useState(0)
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
@@ -68,8 +69,23 @@ export function PdfPreview({ config, onTemplateChange, onAccentColorChange, onPh
 
   return (
     <div className="flex flex-col h-full">
+      {/* Mobile back button */}
+      <div className="md:hidden flex-shrink-0 bg-white border-b border-gray-200 px-4 py-2 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={onBackToEdit}
+          className="flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+          Edytuj
+        </button>
+        <span className="text-xs text-gray-400 ml-1">Podglad PDF</span>
+      </div>
+
       {/* Template selector */}
-      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-4 py-3 space-y-3">
+      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-4 py-3 space-y-3 overflow-y-auto max-h-[45vh] md:max-h-none md:overflow-visible">
         <div>
           <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Szablon</p>
           <div className="flex gap-2">

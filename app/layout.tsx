@@ -53,8 +53,8 @@ export default function RootLayout({
               </div>
               <span className="text-base font-bold text-gray-900 dark:text-gray-100 tracking-tight">CVcraft</span>
             </div>
-            <div className="h-5 w-px bg-gray-200 dark:bg-gray-700" />
-            <span className="text-xs text-gray-400 dark:text-gray-500">Kreator CV online</span>
+            <div className="hidden sm:block h-5 w-px bg-gray-200 dark:bg-gray-700" />
+            <span className="hidden sm:block text-xs text-gray-400 dark:text-gray-500">Kreator CV online</span>
           </header>
 
           {/* Main content */}

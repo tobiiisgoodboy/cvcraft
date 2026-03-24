@@ -18,6 +18,7 @@ import {
   FolderGit2,
   LayoutList,
   Trophy,
+  Eye,
 } from 'lucide-react'
 import { CvConfig, CvConfigSchema } from '@/lib/schema'
 import { defaultCvConfig, STORAGE_KEY } from '@/lib/defaults'
@@ -133,6 +134,7 @@ export function EditorLayout() {
   const { theme, toggle } = useTheme()
   const [activeTab, setActiveTab] = useState<TabId>('personal')
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
+  const [mobileView, setMobileView] = useState<'edit' | 'preview'>('edit')
   const [historyVersion, setHistoryVersion] = useState(0)
   const [versionsVersion, setVersionsVersion] = useState(0)
   const [previewConfig, setPreviewConfig] = useState<CvConfig>(defaultCvConfig)
@@ -280,7 +282,10 @@ export function EditorLayout() {
   return (
     <div className="flex flex-1 overflow-hidden">
       {/* Editor Panel (left, 58%) */}
-      <div className="flex flex-col w-[58%] border-r border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-900">
+      <div className={cn(
+        'flex-col w-full md:w-[58%] border-r border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-900',
+        mobileView === 'edit' ? 'flex' : 'hidden md:flex'
+      )}>
         {/* Tab bar */}
         <div className="flex-shrink-0 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-x-auto">
           <div className="flex">
@@ -326,8 +331,8 @@ export function EditorLayout() {
         </div>
 
         {/* Bottom bar */}
-        <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2.5 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2.5 flex items-center justify-between overflow-x-auto gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <ConfigControls form={form} />
             <HistoryControls form={form} historyVersion={historyVersion} />
             <VersionsControls form={form} onVersionSwitch={handleVersionSwitch} versionsVersion={versionsVersion} />
@@ -338,6 +343,14 @@ export function EditorLayout() {
               title={theme === 'dark' ? 'Tryb jasny' : 'Tryb ciemny'}
             >
               {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileView('preview')}
+              className="md:hidden flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 border border-blue-200 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors flex-shrink-0"
+            >
+              <Eye size={13} />
+              Podglad
             </button>
           </div>
           <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500">
@@ -361,9 +374,13 @@ export function EditorLayout() {
       </div>
 
       {/* Preview Panel (right, 42%) */}
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <div className={cn(
+        'flex-col flex-1 overflow-hidden',
+        mobileView === 'preview' ? 'flex' : 'hidden md:flex'
+      )}>
         <PdfPreview
           config={previewConfig}
+          onBackToEdit={() => setMobileView('edit')}
           onTemplateChange={handleTemplateChange}
           onAccentColorChange={handleAccentColorChange}
           onPhotoPositionChange={handlePhotoPositionChange}
