@@ -5,6 +5,7 @@ import { Page, View, Text, Image, StyleSheet, Link } from '@react-pdf/renderer'
 import { CvConfig } from '@/lib/schema'
 import { registerFonts, getFontFamily, getBoldFont, getItalicFont, CvFont } from '@/lib/fonts'
 import { t, PdfLang } from '@/lib/pdfI18n'
+import { IconMail, IconPhone, IconMapPin, IconLinkedIn, IconGlobe } from '@/lib/pdfIcons'
 
 const GDPR_DEFAULT_PL = 'Wyrażam zgodę na przetwarzanie moich danych osobowych przez [firma] w celu prowadzenia rekrutacji na aplikowane przeze mnie stanowisko.'
 const GDPR_DEFAULT_EN = 'I hereby consent to my personal data being processed by [firma] for the purpose of considering my application for the vacancy.'
@@ -350,11 +351,13 @@ export function MinimalTemplate({ config, qrDataUrl }: Props) {
   // suppress unused var warning for levelMap — used indirectly via renderSection/skills text logic
   void levelMap
 
-  const contactItemsWithIcons: Array<{ value: string; icon: string }> = [
-    { value: personal.email, icon: '\u2709' },
-    { value: personal.phone, icon: '\u260E' },
-    { value: personal.city, icon: '\u25CE' },
-  ].filter(c => Boolean(c.value))
+  const contactItems = [
+    personal.email ? { icon: <IconMail size={8} color="#9ca3af" />, content: <Text style={styles.contactItem}>{personal.email}</Text>, key: 'email' } : null,
+    personal.phone ? { icon: <IconPhone size={8} color="#9ca3af" />, content: <Text style={styles.contactItem}>{personal.phone}</Text>, key: 'phone' } : null,
+    personal.city ? { icon: <IconMapPin size={8} color="#9ca3af" />, content: <Text style={styles.contactItem}>{personal.city}</Text>, key: 'city' } : null,
+    personal.linkedin ? { icon: <IconLinkedIn size={8} />, content: <Link src={personal.linkedin.startsWith('http') ? personal.linkedin : `https://${personal.linkedin}`} style={styles.contactItem}>{personal.linkedin}</Link>, key: 'linkedin' } : null,
+    personal.website ? { icon: <IconGlobe size={8} color="#9ca3af" />, content: <Link src={personal.website.startsWith('http') ? personal.website : `https://${personal.website}`} style={styles.contactItem}>{personal.website}</Link>, key: 'website' } : null,
+  ].filter(Boolean) as Array<{ icon: React.ReactNode; content: React.ReactNode; key: string }>
 
   function gdprFooter() {
     if (!config.meta.gdprEnabled) return null
@@ -383,31 +386,13 @@ export function MinimalTemplate({ config, qrDataUrl }: Props) {
       </View>
       <View style={styles.accentLine} />
       <View style={styles.contactRow}>
-        {contactItemsWithIcons.map((c, i) => (
-          <View key={i} style={{ flexDirection: 'row', alignItems: 'center' }}>
+        {contactItems.map((c, i) => (
+          <View key={c.key} style={{ flexDirection: 'row', alignItems: 'center' }}>
             {i > 0 && <Text style={styles.contactSep}>{'\u00B7'}</Text>}
-            <Text style={styles.contactIcon}>{c.icon} </Text>
-            <Text style={styles.contactItem}>{c.value}</Text>
+            <View style={{ marginRight: 3 }}>{c.icon}</View>
+            {c.content}
           </View>
         ))}
-        {personal.linkedin ? (
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            {(contactItemsWithIcons.length > 0) && <Text style={styles.contactSep}>{'\u00B7'}</Text>}
-            <Text style={styles.contactIcon}>in </Text>
-            <Link src={personal.linkedin.startsWith('http') ? personal.linkedin : `https://${personal.linkedin}`} style={styles.contactItem}>
-              {personal.linkedin}
-            </Link>
-          </View>
-        ) : null}
-        {personal.website ? (
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            {(contactItemsWithIcons.length > 0 || personal.linkedin) && <Text style={styles.contactSep}>{'\u00B7'}</Text>}
-            <Text style={styles.contactIcon}>{'\u2197'} </Text>
-            <Link src={personal.website.startsWith('http') ? personal.website : `https://${personal.website}`} style={styles.contactItem}>
-              {personal.website}
-            </Link>
-          </View>
-        ) : null}
       </View>
 
       {sectionOrder.map(id => renderSection(id))}

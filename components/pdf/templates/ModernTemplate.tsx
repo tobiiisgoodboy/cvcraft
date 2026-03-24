@@ -5,6 +5,7 @@ import { Page, View, Text, Image, StyleSheet, Link } from '@react-pdf/renderer'
 import { CvConfig } from '@/lib/schema'
 import { registerFonts, getFontFamily, getBoldFont, getItalicFont, CvFont } from '@/lib/fonts'
 import { t, PdfLang } from '@/lib/pdfI18n'
+import { IconMail, IconPhone, IconMapPin, IconLinkedIn, IconGlobe } from '@/lib/pdfIcons'
 
 const GDPR_DEFAULT_PL = 'Wyrażam zgodę na przetwarzanie moich danych osobowych przez [firma] w celu prowadzenia rekrutacji na aplikowane przeze mnie stanowisko.'
 const GDPR_DEFAULT_EN = 'I hereby consent to my personal data being processed by [firma] for the purpose of considering my application for the vacancy.'
@@ -321,18 +322,39 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
 
           <View style={styles.sidebarSection}>
             <Text style={styles.sidebarSectionTitle}>{t('contact', lang)}</Text>
-            {personal.email ? <Text style={styles.sidebarText}>{'\u2709'}  {personal.email}</Text> : null}
-            {personal.phone ? <Text style={styles.sidebarText}>{'\u260E'}  {personal.phone}</Text> : null}
-            {personal.city ? <Text style={styles.sidebarText}>{'\u25CE'}  {personal.city}</Text> : null}
+            {personal.email ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                <View style={{ marginRight: 5 }}><IconMail size={8} color="rgba(255,255,255,0.7)" /></View>
+                <Text style={[styles.sidebarText, { marginBottom: 0 }]}>{personal.email}</Text>
+              </View>
+            ) : null}
+            {personal.phone ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                <View style={{ marginRight: 5 }}><IconPhone size={8} color="rgba(255,255,255,0.7)" /></View>
+                <Text style={[styles.sidebarText, { marginBottom: 0 }]}>{personal.phone}</Text>
+              </View>
+            ) : null}
+            {personal.city ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                <View style={{ marginRight: 5 }}><IconMapPin size={8} color="rgba(255,255,255,0.7)" /></View>
+                <Text style={[styles.sidebarText, { marginBottom: 0 }]}>{personal.city}</Text>
+              </View>
+            ) : null}
             {personal.linkedin ? (
-              <Link src={personal.linkedin.startsWith('http') ? personal.linkedin : `https://${personal.linkedin}`} style={styles.sidebarText}>
-                {'in'}  {personal.linkedin}
-              </Link>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                <View style={{ marginRight: 5 }}><IconLinkedIn size={8} /></View>
+                <Link src={personal.linkedin.startsWith('http') ? personal.linkedin : `https://${personal.linkedin}`} style={[styles.sidebarText, { marginBottom: 0 }]}>
+                  {personal.linkedin}
+                </Link>
+              </View>
             ) : null}
             {personal.website ? (
-              <Link src={personal.website.startsWith('http') ? personal.website : `https://${personal.website}`} style={styles.sidebarText}>
-                {'\u2197'}  {personal.website}
-              </Link>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                <View style={{ marginRight: 5 }}><IconGlobe size={8} color="rgba(255,255,255,0.7)" /></View>
+                <Link src={personal.website.startsWith('http') ? personal.website : `https://${personal.website}`} style={[styles.sidebarText, { marginBottom: 0 }]}>
+                  {personal.website}
+                </Link>
+              </View>
             ) : null}
           </View>
 
