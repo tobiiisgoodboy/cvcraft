@@ -58,7 +58,7 @@ export default function RootLayout({
           </header>
 
           {/* Main content */}
-          <main className="flex flex-1 overflow-hidden">
+          <main className="flex flex-1 overflow-hidden min-h-0">
             {children}
           </main>
         </ThemeProvider>
