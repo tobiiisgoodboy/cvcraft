@@ -204,7 +204,7 @@ export function MinimalTemplate({ config, qrDataUrl }: Props) {
   const levelMap: Record<string, string> = { basic: 'podstawowy', medium: 'srednio zaawansowany', advanced: 'zaawansowany' }
 
   const DEFAULT_ORDER = ['summary', 'experience', 'projects', 'education', 'certificates', 'awards', 'skills', 'languages', 'interests']
-  const sectionOrder = config.meta.sectionOrder && config.meta.sectionOrder.length > 0 ? config.meta.sectionOrder : DEFAULT_ORDER
+  const sectionOrder = [...new Set(config.meta.sectionOrder && config.meta.sectionOrder.length > 0 ? config.meta.sectionOrder : DEFAULT_ORDER)]
 
   function renderSection(id: string): React.ReactNode {
     switch (id) {

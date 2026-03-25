@@ -191,7 +191,7 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
   const DEFAULT_ORDER = ['summary', 'experience', 'projects', 'education', 'certificates', 'awards', 'skills', 'languages', 'interests']
   // In ModernTemplate, skills and languages are in the sidebar; only remaining sections go in main column
   const MAIN_SECTIONS = ['summary', 'experience', 'projects', 'education', 'certificates', 'awards', 'interests']
-  const rawOrder = config.meta.sectionOrder && config.meta.sectionOrder.length > 0 ? config.meta.sectionOrder : DEFAULT_ORDER
+  const rawOrder = [...new Set(config.meta.sectionOrder && config.meta.sectionOrder.length > 0 ? config.meta.sectionOrder : DEFAULT_ORDER)]
   const sectionOrder = rawOrder.filter(id => MAIN_SECTIONS.includes(id))
 
   function renderSection(id: string): React.ReactNode {

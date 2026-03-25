@@ -198,7 +198,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
   }
 
   const DEFAULT_ORDER = ['summary', 'experience', 'projects', 'education', 'certificates', 'awards', 'skills', 'languages', 'interests']
-  const sectionOrder = config.meta.sectionOrder && config.meta.sectionOrder.length > 0 ? config.meta.sectionOrder : DEFAULT_ORDER
+  const sectionOrder = [...new Set(config.meta.sectionOrder && config.meta.sectionOrder.length > 0 ? config.meta.sectionOrder : DEFAULT_ORDER)]
 
   const contactItems = [
     personal.email ? { icon: <IconMail size={8} color="#9ca3af" />, content: <Text style={styles.contactItem}>{personal.email}</Text>, key: 'email' } : null,

@@ -33,7 +33,7 @@ const SECTION_LABELS: Record<string, string> = {
   interests: 'Zainteresowania',
 }
 
-const DEFAULT_ORDER = ['summary', 'experience', 'projects', 'education', 'certificates', 'skills', 'languages', 'interests']
+const DEFAULT_ORDER = ['summary', 'experience', 'projects', 'education', 'certificates', 'awards', 'skills', 'languages', 'interests']
 
 function SortableItem({ id }: { id: string }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
@@ -73,8 +73,8 @@ export function SectionOrder({ form }: Props) {
   const { watch, setValue } = form
   const rawOrder = watch('meta.sectionOrder')
   const order: string[] = useMemo(() => {
-    if (Array.isArray(rawOrder) && rawOrder.length > 0) return rawOrder
-    return DEFAULT_ORDER
+    const raw = Array.isArray(rawOrder) && rawOrder.length > 0 ? rawOrder : DEFAULT_ORDER
+    return [...new Set(raw)]
   }, [rawOrder])
 
   const sensors = useSensors(

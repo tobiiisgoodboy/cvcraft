@@ -93,8 +93,8 @@ function mergeWithDefaults(saved: unknown): CvConfig {
       accentColor: ((raw.meta as Record<string, unknown>)?.accentColor as string) ?? '#2563eb',
       photoPosition: ((raw.meta as Record<string, unknown>)?.photoPosition as CvConfig['meta']['photoPosition']) ?? 'right',
       sectionOrder: Array.isArray((raw.meta as Record<string, unknown>)?.sectionOrder)
-        ? ((raw.meta as Record<string, unknown>).sectionOrder as string[])
-        : ['summary', 'experience', 'projects', 'education', 'certificates', 'skills', 'languages', 'interests'],
+        ? [...new Set((raw.meta as Record<string, unknown>).sectionOrder as string[])]
+        : ['summary', 'experience', 'projects', 'education', 'certificates', 'awards', 'skills', 'languages', 'interests'],
       font: (((raw.meta as Record<string, unknown>)?.font) as CvFont) ?? 'Helvetica',
       bgColor: ((raw.meta as Record<string, unknown>)?.bgColor as string) ?? '#ffffff',
       textColor: ((raw.meta as Record<string, unknown>)?.textColor as string) ?? '#111827',
