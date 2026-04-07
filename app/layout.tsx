@@ -1,16 +1,18 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Syne, DM_Sans } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/lib/theme'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const syne = Syne({
+  variable: '--font-syne',
   subsets: ['latin'],
+  weight: ['400', '600', '700', '800'],
 })
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const dmSans = DM_Sans({
+  variable: '--font-dm-sans',
   subsets: ['latin'],
+  weight: ['300', '400', '500', '600'],
 })
 
 export const metadata: Metadata = {
@@ -26,39 +28,30 @@ export default function RootLayout({
   return (
     <html
       lang="pl"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${syne.variable} ${dmSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-gray-50 dark:bg-gray-950">
-        <ThemeProvider>
-          {/* Top bar */}
-          <header className="flex-shrink-0 h-12 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex items-center px-5 gap-4 shadow-sm z-10">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
-                  <polyline points="10 9 9 9 8 9" />
-                </svg>
-              </div>
-              <span className="text-base font-bold text-gray-900 dark:text-gray-100 tracking-tight">CVcraft</span>
-            </div>
-            <div className="hidden sm:block h-5 w-px bg-gray-200 dark:bg-gray-700" />
-            <span className="hidden sm:block text-xs text-gray-400 dark:text-gray-500">Kreator CV online</span>
-          </header>
+      <body className="min-h-full flex flex-col bg-[#f4f5fc] dark:bg-[#07080f] relative overflow-hidden">
 
-          {/* Main content */}
-          <main className="flex flex-1 overflow-hidden min-h-0">
+        {/* Background orbs */}
+        <div
+          aria-hidden
+          className="cv-orb w-[500px] h-[500px] opacity-[0.11] dark:opacity-[0.16]"
+          style={{ top: -130, left: -90, background: '#6c47ff' }}
+        />
+        <div
+          aria-hidden
+          className="cv-orb w-[360px] h-[360px] opacity-[0.08] dark:opacity-[0.12]"
+          style={{ bottom: -60, right: '8%', background: '#06b6d4', animationDelay: '-9s' }}
+        />
+        <div
+          aria-hidden
+          className="cv-orb w-[260px] h-[260px] opacity-[0.07] dark:opacity-[0.10]"
+          style={{ top: '42%', left: '38%', background: '#a855f7', animationDelay: '-5s' }}
+        />
+
+        <ThemeProvider>
+          {/* Main content — EditorLayout renders its own topbar */}
+          <main className="relative z-[1] flex flex-col flex-1 overflow-hidden min-h-0">
             {children}
           </main>
         </ThemeProvider>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import dynamic from 'next/dynamic'
@@ -50,13 +50,12 @@ import { VersionsControls } from './VersionsControls'
 import { PreviewSlideOver } from './PreviewSlideOver'
 import { cn } from '@/lib/utils'
 
-// Load PDF preview client-side only
 const PdfPreview = dynamic(
   () => import('@/components/pdf/PdfPreview').then((m) => m.PdfPreview),
   {
     ssr: false,
     loading: () => (
-      <div className="flex items-center justify-center flex-1 bg-gray-100 text-gray-400">
+      <div className="flex items-center justify-center flex-1 text-gray-400 dark:text-white/30">
         <p className="text-sm">Ladowanie podgladu...</p>
       </div>
     ),
@@ -64,19 +63,37 @@ const PdfPreview = dynamic(
 )
 
 const STEPS = [
-  { id: 'personal', label: 'Dane osobowe', icon: User },
-  { id: 'summary', label: 'Podsumowanie', icon: FileText },
-  { id: 'experience', label: 'Doswiadczenie', icon: Briefcase },
-  { id: 'education', label: 'Wyksztalcenie', icon: GraduationCap },
-  { id: 'skills', label: 'Umiejetnosci', icon: Zap },
-  { id: 'languages', label: 'Jezyki', icon: Globe },
-  { id: 'interests', label: 'Zainteresowania', icon: Heart },
-  { id: 'certificates', label: 'Certyfikaty', icon: Award },
-  { id: 'awards', label: 'Nagrody', icon: Trophy },
-  { id: 'projects', label: 'Projekty', icon: FolderGit2 },
-  { id: 'order', label: 'Kolejnosc', icon: LayoutList },
-  { id: 'preview', label: 'Podglad i pobieranie', icon: Download },
+  { id: 'personal',     label: 'Dane osobowe',         icon: User,        group: 'PROFIL' },
+  { id: 'summary',      label: 'Podsumowanie',          icon: FileText,    group: 'PROFIL' },
+  { id: 'experience',   label: 'Doswiadczenie',         icon: Briefcase,   group: 'DOSWIADCZENIE' },
+  { id: 'education',    label: 'Wyksztalcenie',         icon: GraduationCap, group: 'DOSWIADCZENIE' },
+  { id: 'projects',     label: 'Projekty',              icon: FolderGit2,  group: 'DOSWIADCZENIE' },
+  { id: 'skills',       label: 'Umiejetnosci',          icon: Zap,         group: 'KOMPETENCJE' },
+  { id: 'languages',    label: 'Jezyki',                icon: Globe,       group: 'KOMPETENCJE' },
+  { id: 'interests',    label: 'Zainteresowania',       icon: Heart,       group: 'KOMPETENCJE' },
+  { id: 'certificates', label: 'Certyfikaty',           icon: Award,       group: 'DODATKI' },
+  { id: 'awards',       label: 'Nagrody',               icon: Trophy,      group: 'DODATKI' },
+  { id: 'order',        label: 'Kolejnosc sekcji',      icon: LayoutList,  group: null },
+  { id: 'preview',      label: 'Podglad i pobieranie',  icon: Download,    group: null },
 ] as const
+
+const STEP_SUBTITLES: Record<string, string> = {
+  personal:     'Podstawowe informacje kontaktowe widoczne w naglowku',
+  summary:      'Krotki opis Twojego profilu — pojawi sie pod naglowkiem',
+  experience:   'Historia zatrudnienia od najnowszego do najstarszego',
+  education:    'Ukonzone szkoly, kierunki i daty',
+  skills:       'Kompetencje techniczne i miekkie — mozesz grupowac w kategorie',
+  languages:    'Jezyki obce z poziomem CEFR',
+  interests:    'Zainteresowania i hobby — pokaz kim jestes poza praca',
+  certificates: 'Ukonzone kursy, licencje i certyfikaty branzowe',
+  awards:       'Osiagniecia zawodowe i akademickie',
+  projects:     'Projekty portfolio lub wlasne realizacje',
+  order:        'Przeciagnij sekcje aby zmienic ich kolejnosc w PDF',
+  preview:      'Podglad finalnego CV — pobierz lub zmien ustawienia szablonu',
+}
+
+// Sidebar group order
+const SIDEBAR_GROUPS = ['PROFIL', 'DOSWIADCZENIE', 'KOMPETENCJE', 'DODATKI']
 
 type StepId = (typeof STEPS)[number]['id']
 
@@ -97,17 +114,17 @@ function getStepStatus(vals: any, stepId: string): 'done' | 'partial' | 'empty' 
       if (p?.firstName && p?.lastName && p?.email) return 'done'
       if (p?.firstName || p?.lastName) return 'partial'
       return 'empty'
-    case 'summary': return vals.summary ? 'done' : 'empty'
-    case 'experience': return (vals.experience?.length ?? 0) > 0 ? 'done' : 'empty'
-    case 'education': return (vals.education?.length ?? 0) > 0 ? 'done' : 'empty'
-    case 'skills': return (vals.skills?.length ?? 0) > 0 ? 'done' : 'empty'
-    case 'languages': return (vals.languages?.length ?? 0) > 0 ? 'done' : 'empty'
-    case 'interests': return (vals.interests?.length ?? 0) > 0 ? 'done' : 'empty'
+    case 'summary':      return vals.summary ? 'done' : 'empty'
+    case 'experience':   return (vals.experience?.length ?? 0) > 0 ? 'done' : 'empty'
+    case 'education':    return (vals.education?.length ?? 0) > 0 ? 'done' : 'empty'
+    case 'skills':       return (vals.skills?.length ?? 0) > 0 ? 'done' : 'empty'
+    case 'languages':    return (vals.languages?.length ?? 0) > 0 ? 'done' : 'empty'
+    case 'interests':    return (vals.interests?.length ?? 0) > 0 ? 'done' : 'empty'
     case 'certificates': return (vals.certificates?.length ?? 0) > 0 ? 'done' : 'empty'
-    case 'awards': return (vals.awards?.length ?? 0) > 0 ? 'done' : 'empty'
-    case 'projects': return (vals.projects?.length ?? 0) > 0 ? 'done' : 'empty'
-    case 'order': return 'done'
-    default: return 'empty'
+    case 'awards':       return (vals.awards?.length ?? 0) > 0 ? 'done' : 'empty'
+    case 'projects':     return (vals.projects?.length ?? 0) > 0 ? 'done' : 'empty'
+    case 'order':        return 'done'
+    default:             return 'empty'
   }
 }
 
@@ -176,7 +193,6 @@ export function EditorLayout() {
   const watchedValues = useWatch({ control })
   const debouncedSave = useDebounce(watchedValues, 600)
 
-  // Load from localStorage on mount
   useEffect(() => {
     storage.load(STORAGE_KEY).then((saved) => {
       if (saved) {
@@ -192,7 +208,6 @@ export function EditorLayout() {
     })
   }, [reset])
 
-  // Auto-save on changes (debounced 600ms)
   useEffect(() => {
     if (!hydrated) return
     const data = getValues()
@@ -207,7 +222,13 @@ export function EditorLayout() {
     })
   }, [debouncedSave, hydrated, getValues])
 
-  // Capture current form values as a preview snapshot
+  // Completion percentage based on done steps
+  const completionPct = useMemo(() => {
+    const editSteps = STEPS.filter((s) => s.id !== 'preview' && s.id !== 'order')
+    const doneCount = editSteps.filter((s) => getStepStatus(watchedValues, s.id) === 'done').length
+    return Math.round((doneCount / editSteps.length) * 100)
+  }, [watchedValues])
+
   function capturePreview() {
     setPreviewConfig(getValues() as CvConfig)
   }
@@ -236,7 +257,6 @@ export function EditorLayout() {
     setPreviewConfig(config)
   }
 
-  // PDF meta handlers — update both form and previewConfig
   function handleTemplateChange(template: 'classic' | 'modern' | 'minimal') {
     setValue('meta.template', template, { shouldDirty: true })
     setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, template } }))
@@ -330,251 +350,501 @@ export function EditorLayout() {
   const isFirstStep = currentStepIdx === 0
   const isLastStep = currentStepIdx === STEPS.length - 1
   const currentStep = STEPS[currentStepIdx]
-  // Exclude 'preview' step from progress fraction
   const editStepsCount = STEPS.length - 1
   const progressPct = activeStep === 'preview'
     ? 100
     : ((currentStepIdx + 1) / editStepsCount) * 100
 
+  // Sidebar steps excluding preview
+  const sidebarSteps = STEPS.filter((s) => s.id !== 'preview')
+  const previewStep = STEPS[STEPS.length - 1]
+  // Edit steps for bottom dots (exclude order + preview)
+  const dotSteps = STEPS.filter((s) => s.id !== 'preview' && s.id !== 'order')
+
   if (!hydrated) {
     return (
-      <div className="flex items-center justify-center flex-1 text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-950">
-        <div className="text-center space-y-2">
-          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-sm">Ladowanie...</p>
+      <div className="flex items-center justify-center flex-1 text-gray-400 dark:text-white/30">
+        <div className="text-center space-y-3">
+          <div
+            className="w-9 h-9 rounded-full mx-auto animate-spin"
+            style={{ border: '2.5px solid rgba(124,106,255,0.2)', borderTopColor: '#7c6aff' }}
+          />
+          <p className="text-sm font-medium">Ladowanie...</p>
         </div>
       </div>
     )
   }
 
   return (
-    // Outer: full height, background for "margins" effect on wide screens
-    <div className="flex flex-1 overflow-hidden justify-center bg-gray-100 dark:bg-gray-950">
+    <div className="flex flex-col flex-1 overflow-hidden">
 
-      {/* Centered max-width container */}
-      <div className="flex flex-col w-full max-w-6xl overflow-hidden bg-white dark:bg-gray-900 shadow-sm">
+      {/* ── TOPBAR ───────────────────────────────────────────── */}
+      <header
+        className="flex-shrink-0 h-14 flex items-center gap-3 px-5 border-b border-black/[0.07] dark:border-white/[0.07] z-10"
+        style={{ background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(20px)' }}
+      >
+        {/* Logo */}
+        <div className="flex items-center gap-2.5 flex-shrink-0">
+          <div
+            className="w-8 h-8 rounded-[9px] flex items-center justify-center text-white font-bold text-sm"
+            style={{
+              fontFamily: 'var(--font-syne)',
+              background: 'linear-gradient(135deg, #6c47ff, #06b6d4)',
+              boxShadow: '0 4px 14px rgba(124,106,255,0.4)',
+            }}
+          >CV</div>
+          <span
+            className="text-lg font-bold tracking-tight"
+            style={{
+              fontFamily: 'var(--font-syne)',
+              background: 'linear-gradient(90deg, #6c47ff, #06b6d4)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >CVcraft</span>
+        </div>
 
-        {/* Step navigation bar */}
-        <div className="flex-shrink-0 border-b border-gray-200 dark:border-gray-700 px-4 pt-2 pb-1">
-          <div className="flex items-center gap-2">
+        <div className="flex-1" />
+
+        {/* Autosave status */}
+        <div className="hidden sm:flex items-center gap-1.5 text-xs font-medium text-gray-400 dark:text-white/30 flex-shrink-0">
+          {saveStatus === 'saving' && (
+            <>
+              <Save size={12} className="animate-pulse" style={{ color: '#7c6aff' }} />
+              <span style={{ color: '#7c6aff' }}>Zapisywanie...</span>
+            </>
+          )}
+          {saveStatus === 'saved' && (
+            <>
+              <CheckCircle size={12} className="text-emerald-500" />
+              <span className="text-emerald-500">Zapisano</span>
+            </>
+          )}
+          {saveStatus === 'idle' && (
+            <>
+              <span
+                className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                style={{ background: '#10b981', boxShadow: '0 0 6px #10b981' }}
+              />
+              Zapisano przed chwila
+            </>
+          )}
+        </div>
+
+        {/* Completion chip */}
+        <div
+          className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-semibold flex-shrink-0"
+          style={{ borderColor: 'rgba(0,0,0,0.10)', background: 'rgba(0,0,0,0.03)', color: '#5c5e78' }}
+        >
+          {/* Mini ring */}
+          <svg width="18" height="18" viewBox="0 0 18 18" style={{ transform: 'rotate(-90deg)', flexShrink: 0 }}>
+            <circle cx="9" cy="9" r="7" fill="none" stroke="rgba(0,0,0,0.08)" strokeWidth="2.5" />
+            <circle
+              cx="9" cy="9" r="7" fill="none"
+              stroke="url(#cg)" strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeDasharray="43.98"
+              strokeDashoffset={43.98 * (1 - completionPct / 100)}
+              style={{ transition: 'stroke-dashoffset 0.6s' }}
+            />
+            <defs>
+              <linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#6c47ff" />
+                <stop offset="100%" stopColor="#06d6c7" />
+              </linearGradient>
+            </defs>
+          </svg>
+          Kompletnosc&nbsp;
+          <span style={{ background: 'linear-gradient(90deg,#6c47ff,#06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            {completionPct}%
+          </span>
+        </div>
+
+        {/* Podglad PDF */}
+        <button
+          type="button"
+          onClick={handleOpenPreview}
+          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border transition-all flex-shrink-0"
+          style={{ color: '#7c6aff', borderColor: 'rgba(124,106,255,0.3)', background: 'rgba(124,106,255,0.06)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(124,106,255,0.13)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(124,106,255,0.06)' }}
+        >
+          <Eye size={13} />
+          Podglad PDF
+        </button>
+
+        {/* Pobierz PDF */}
+        <button
+          type="button"
+          onClick={() => handleStepChange('preview')}
+          className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white rounded-lg flex-shrink-0 transition-all"
+          style={{
+            background: 'linear-gradient(135deg, #6c47ff, #7c6aff)',
+            boxShadow: '0 4px 14px rgba(124,106,255,0.4)',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(1.08)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.filter = 'brightness(1)' }}
+        >
+          <Download size={13} />
+          Pobierz PDF
+        </button>
+
+        {/* Theme toggle */}
+        <button
+          type="button"
+          onClick={toggle}
+          className="w-8 h-8 rounded-lg flex items-center justify-center border transition-all flex-shrink-0 text-gray-400 hover:text-gray-600 dark:text-white/40 dark:hover:text-white/70"
+          style={{ borderColor: 'rgba(0,0,0,0.09)', background: 'rgba(0,0,0,0.03)' }}
+          title={theme === 'dark' ? 'Tryb jasny' : 'Tryb ciemny'}
+        >
+          {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+        </button>
+      </header>
+
+      {/* Dark mode topbar override */}
+      <style>{`
+        .dark header[data-topbar] {
+          background: rgba(7,8,15,0.82) !important;
+        }
+      `}</style>
+
+      {/* ── PROGRESS BAR ─────────────────────────────────────── */}
+      <div className="flex-shrink-0 h-[3px] bg-black/[0.05] dark:bg-white/[0.06] overflow-hidden">
+        <div
+          className="h-full transition-all duration-500"
+          style={{
+            width: `${progressPct}%`,
+            background: 'linear-gradient(90deg, #6c47ff, #06b6d4)',
+          }}
+        />
+      </div>
+
+      {/* ── BODY ─────────────────────────────────────────────── */}
+      <div className="flex flex-1 overflow-hidden">
+
+        {/* ── SIDEBAR — flat list, same structure as mockup ────── */}
+        <nav
+          className="hidden md:flex flex-col w-[258px] flex-shrink-0 border-r border-black/[0.07] dark:border-white/[0.07] overflow-hidden"
+          style={{
+            background: 'rgba(255,255,255,0.65)',
+            backdropFilter: 'blur(20px)',
+            position: 'relative',
+          }}
+        >
+          {/* Top glow — same as mockup ::before */}
+          <div
+            className="absolute inset-0 pointer-events-none z-0"
+            style={{ background: 'linear-gradient(170deg, rgba(108,71,255,0.10) 0%, transparent 60%)' }}
+            aria-hidden
+          />
+
+          {/* Flat scrollable list with padding+gap matching mockup exactly */}
+          <div
+            className="flex flex-col flex-1 overflow-y-auto relative z-[1]"
+            style={{ padding: '20px 14px 8px', gap: 4 }}
+          >
+            {sidebarSteps.map((step) => {
+              const status = getStepStatus(watchedValues, step.id)
+              const isActive = activeStep === step.id
+              const stepNumber = STEPS.findIndex((s) => s.id === step.id) + 1
+              const prevStep = sidebarSteps[sidebarSteps.indexOf(step) - 1]
+              const isGroupStart = !prevStep || prevStep.group !== step.group
+
+              return (
+                <>
+                  {/* Section label — rendered inline when group changes */}
+                  {isGroupStart && step.group && (
+                    <div
+                      key={`label-${step.group}`}
+                      style={{
+                        fontSize: 10.5,
+                        fontWeight: 600,
+                        letterSpacing: '0.1em',
+                        textTransform: 'uppercase',
+                        color: 'rgba(147,149,171,0.8)',
+                        padding: '6px 10px 4px',
+                        marginTop: stepNumber === 1 ? 0 : 8,
+                      }}
+                    >
+                      {step.group}
+                    </div>
+                  )}
+                  {/* Divider before order step */}
+                  {step.id === 'order' && (
+                    <div key="divider" style={{ height: 1, background: 'rgba(0,0,0,0.07)', margin: '4px 0' }} />
+                  )}
+                  <button
+                    key={step.id}
+                    type="button"
+                    onClick={() => handleStepChange(step.id)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 11,
+                      padding: '10px 12px',
+                      borderRadius: 8,
+                      border: isActive ? '1px solid rgba(124,106,255,0.35)' : '1px solid transparent',
+                      fontSize: 14,
+                      fontWeight: isActive ? 500 : 400,
+                      color: isActive ? '#14151f' : 'rgba(92,94,120,1)',
+                      cursor: 'pointer',
+                      transition: 'all 0.18s',
+                      background: isActive
+                        ? 'linear-gradient(135deg, rgba(108,71,255,0.18), rgba(6,182,212,0.10))'
+                        : 'transparent',
+                      boxShadow: isActive ? '0 2px 16px rgba(108,71,255,0.12)' : 'none',
+                      textAlign: 'left',
+                      width: '100%',
+                    }}
+                    onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }}
+                    onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
+                  >
+                    {/* Step number badge */}
+                    <div style={{
+                      width: 22, height: 22,
+                      borderRadius: 6,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 11, fontWeight: 700,
+                      flexShrink: 0,
+                      transition: 'all 0.18s',
+                      background: isActive
+                        ? 'linear-gradient(135deg, #6c47ff, #06b6d4)'
+                        : status === 'done'
+                        ? 'rgba(16,185,129,0.18)'
+                        : 'rgba(0,0,0,0.06)',
+                      color: isActive ? '#fff' : status === 'done' ? '#10b981' : 'rgba(92,94,120,0.7)',
+                    }}>
+                      {stepNumber}
+                    </div>
+
+                    {/* Label */}
+                    <span style={{ flex: 1 }}>{step.label}</span>
+
+                    {/* Status dot — flex-shrink:0 at end, same width for all = perfect alignment */}
+                    <span style={{
+                      width: 7, height: 7,
+                      borderRadius: '50%',
+                      flexShrink: 0,
+                      background: isActive
+                        ? '#7c6aff'
+                        : status === 'done'
+                        ? '#10b981'
+                        : status === 'partial'
+                        ? '#f59e0b'
+                        : 'rgba(0,0,0,0.13)',
+                      boxShadow: isActive ? '0 0 6px #7c6aff' : 'none',
+                      transition: 'all 0.18s',
+                    }} />
+                  </button>
+                </>
+              )
+            })}
+          </div>
+
+          {/* Preview step — pinned bottom */}
+          <div className="border-t border-black/[0.07] dark:border-white/[0.07] p-2.5" style={{ position: 'relative', zIndex: 1 }}>
+            <button
+              type="button"
+              onClick={() => handleStepChange(previewStep.id)}
+              className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl transition-all text-[13px] font-semibold"
+              style={activeStep === 'preview' ? {
+                background: 'linear-gradient(135deg, #6c47ff, #7c6aff)',
+                color: '#fff',
+                boxShadow: '0 4px 16px rgba(124,106,255,0.38)',
+              } : {
+                color: '#7c6aff',
+                border: '1px solid rgba(124,106,255,0.22)',
+                background: 'rgba(124,106,255,0.05)',
+              }}
+            >
+              <Download size={14} className="flex-shrink-0" />
+              <span className="flex-1 truncate">{previewStep.label}</span>
+            </button>
+          </div>
+        </nav>
+
+        {/* ── MAIN ─────────────────────────────────────────────── */}
+        <div className="flex flex-col flex-1 overflow-hidden">
+
+          {/* Form steps */}
+          {activeStep !== 'preview' && (
+            <div className="flex-1 overflow-y-auto p-4 md:p-6">
+
+              {/* Section header */}
+              <div className="flex items-start justify-between mb-5">
+                <div>
+                  <h2
+                    className="text-gray-900 dark:text-white font-bold leading-tight"
+                    style={{ fontFamily: 'var(--font-syne)', fontSize: 23, letterSpacing: '-0.4px' }}
+                  >
+                    {currentStep.label}
+                  </h2>
+                  {STEP_SUBTITLES[activeStep] && (
+                    <p className="text-[13px] text-gray-500 dark:text-white/35 mt-1">
+                      {STEP_SUBTITLES[activeStep]}
+                    </p>
+                  )}
+                </div>
+                <span
+                  className="flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full ml-4 mt-0.5"
+                  style={{ background: 'rgba(0,0,0,0.05)', color: '#9395ab' }}
+                >
+                  {currentStepIdx + 1} / {STEPS.length}
+                </span>
+              </div>
+
+              {/* Glass form card */}
+              <div
+                className="cv-editor relative rounded-2xl border border-black/[0.07] dark:border-white/[0.08] p-5 md:p-6 shadow-md"
+                style={{ background: 'rgba(255,255,255,0.78)', backdropFilter: 'blur(16px)' }}
+              >
+                <form>
+                  {activeStep === 'personal'     && <SectionPersonal     form={form} />}
+                  {activeStep === 'summary'      && <SectionSummary      form={form} />}
+                  {activeStep === 'experience'   && <SectionExperience   form={form} />}
+                  {activeStep === 'education'    && <SectionEducation    form={form} />}
+                  {activeStep === 'skills'       && <SectionSkills       form={form} />}
+                  {activeStep === 'languages'    && <SectionLanguages    form={form} />}
+                  {activeStep === 'interests'    && <SectionInterests    form={form} />}
+                  {activeStep === 'certificates' && <SectionCertificates form={form} />}
+                  {activeStep === 'awards'       && <SectionAwards       form={form} />}
+                  {activeStep === 'projects'     && <SectionProjects     form={form} />}
+                  {activeStep === 'order'        && <SectionOrder        form={form} />}
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Preview step */}
+          {activeStep === 'preview' && (
+            <div className="flex flex-col flex-1 overflow-hidden">
+              <div
+                className="flex items-center justify-between px-5 py-2.5 border-b border-black/[0.06] dark:border-white/[0.06] flex-shrink-0"
+                style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(12px)' }}
+              >
+                <span className="text-xs text-gray-500 dark:text-white/40">
+                  Podglad finalnego CV — pobierz lub zmien ustawienia szablonu
+                </span>
+                <button
+                  type="button"
+                  onClick={capturePreview}
+                  className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg transition-all"
+                  style={{ color: '#7c6aff', background: 'rgba(124,106,255,0.07)' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(124,106,255,0.13)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(124,106,255,0.07)' }}
+                >
+                  <RefreshCw size={12} />
+                  Odswiez podglad
+                </button>
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <PdfPreview
+                  config={previewConfig}
+                  onBackToEdit={() => handleStepChange('order')}
+                  {...previewHandlers}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* ── BOTTOM NAV ───────────────────────────────────────── */}
+          <div
+            className="flex-shrink-0 border-t border-black/[0.06] dark:border-white/[0.06] px-4 py-2.5 flex items-center gap-3"
+            style={{ background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(16px)' }}
+          >
             {/* Prev */}
             <button
               type="button"
               onClick={handlePrev}
               disabled={isFirstStep}
               className={cn(
-                'flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-md transition-all flex-shrink-0',
+                'flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg border transition-all flex-shrink-0',
                 isFirstStep
-                  ? 'text-gray-300 dark:text-gray-700 cursor-not-allowed'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  ? 'opacity-30 cursor-not-allowed border-transparent text-gray-400'
+                  : 'border-black/[0.09] text-gray-600 dark:text-white/55 hover:border-[#7c6aff] hover:text-[#7c6aff]'
               )}
             >
-              <ChevronLeft size={14} />
-              Poprzedni
+              <ChevronLeft size={13} />
+              Wstecz
             </button>
 
-            {/* Step label */}
-            <div className="flex-1 flex items-center justify-center gap-2 min-w-0">
-              <span className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">
-                {currentStepIdx + 1}/{STEPS.length}
-              </span>
-              <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
-                {currentStep.label}
-              </span>
-            </div>
-
-            {/* Preview button + Next */}
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <button
-                type="button"
-                onClick={handleOpenPreview}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
-              >
-                <Eye size={13} />
-                Podglad PDF
-              </button>
-
-              <button
-                type="button"
-                onClick={handleNext}
-                disabled={isLastStep}
-                className={cn(
-                  'flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-md transition-all',
-                  isLastStep
-                    ? 'text-gray-300 dark:text-gray-700 cursor-not-allowed'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                )}
-              >
-                Nastepny
-                <ChevronRight size={14} />
-              </button>
-            </div>
-          </div>
-
-          {/* Step progress line */}
-          <div className="mt-2 h-0.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-blue-500 rounded-full transition-all duration-300"
-              style={{ width: `${progressPct}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Content area: sidebar + editor */}
-        <div className="flex flex-1 overflow-hidden">
-
-          {/* Sidebar — desktop only */}
-          <nav className="hidden md:flex flex-col w-52 flex-shrink-0 border-r border-gray-200 dark:border-gray-700 bg-gray-50/60 dark:bg-gray-800/30">
-            {/* Regular edit steps */}
-            <div className="flex flex-col flex-1 py-1 overflow-y-auto">
-              {STEPS.filter((s) => s.id !== 'preview').map((step) => {
-                const Icon = step.icon
-                const status = getStepStatus(watchedValues, step.id)
+            {/* Navigation dots */}
+            <div className="flex items-center gap-1">
+              {dotSteps.map((step) => {
                 const isActive = activeStep === step.id
+                const status = getStepStatus(watchedValues, step.id)
                 return (
-                  <button
+                  <div
                     key={step.id}
-                    type="button"
+                    role="button"
+                    tabIndex={0}
                     onClick={() => handleStepChange(step.id)}
-                    className={cn(
-                      'flex items-center gap-2.5 px-3 py-2.5 text-left transition-all border-r-2',
-                      isActive
-                        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-500'
-                        : 'text-gray-600 dark:text-gray-400 border-transparent hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
-                    )}
-                  >
-                    <Icon size={14} className="flex-shrink-0" />
-                    <span className="flex-1 text-xs truncate">{step.label}</span>
-                    {status === 'done' && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0" />
-                    )}
-                    {status === 'partial' && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0" />
-                    )}
-                    {status === 'empty' && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-gray-200 dark:bg-gray-600 flex-shrink-0" />
-                    )}
-                  </button>
+                    onKeyDown={(e) => e.key === 'Enter' && handleStepChange(step.id)}
+                    title={step.label}
+                    style={{
+                      width: isActive ? 18 : 6,
+                      height: 6,
+                      borderRadius: 99,
+                      flexShrink: 0,
+                      transition: 'all 0.2s',
+                      background: isActive
+                        ? 'linear-gradient(90deg, #6c47ff, #06b6d4)'
+                        : status === 'done'
+                        ? '#10b981'
+                        : 'rgba(0,0,0,0.13)',
+                      cursor: 'pointer',
+                    }}
+                  />
                 )
               })}
             </div>
 
-            {/* Preview step — pinned at bottom */}
-            <div className="border-t border-gray-200 dark:border-gray-700 p-1">
-              {(() => {
-                const step = STEPS[STEPS.length - 1]
-                const Icon = step.icon
-                const isActive = activeStep === step.id
-                return (
-                  <button
-                    type="button"
-                    onClick={() => handleStepChange(step.id)}
-                    className={cn(
-                      'w-full flex items-center gap-2.5 px-3 py-2.5 text-left rounded-md transition-all',
-                      isActive
-                        ? 'bg-blue-600 text-white font-medium'
-                        : 'text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20'
-                    )}
-                  >
-                    <Icon size={14} className="flex-shrink-0" />
-                    <span className="flex-1 text-xs truncate">{step.label}</span>
-                  </button>
-                )
-              })()}
-            </div>
-          </nav>
+            <div className="flex-1" />
 
-          {/* Main content area */}
-          <div className="flex flex-col flex-1 overflow-hidden">
-
-            {/* Form steps */}
-            {activeStep !== 'preview' && (
-              <div className="flex-1 overflow-y-auto p-5 bg-white dark:bg-gray-900">
-                <form>
-                  {activeStep === 'personal' && <SectionPersonal form={form} />}
-                  {activeStep === 'summary' && <SectionSummary form={form} />}
-                  {activeStep === 'experience' && <SectionExperience form={form} />}
-                  {activeStep === 'education' && <SectionEducation form={form} />}
-                  {activeStep === 'skills' && <SectionSkills form={form} />}
-                  {activeStep === 'languages' && <SectionLanguages form={form} />}
-                  {activeStep === 'interests' && <SectionInterests form={form} />}
-                  {activeStep === 'certificates' && <SectionCertificates form={form} />}
-                  {activeStep === 'awards' && <SectionAwards form={form} />}
-                  {activeStep === 'projects' && <SectionProjects form={form} />}
-                  {activeStep === 'order' && <SectionOrder form={form} />}
-                </form>
-              </div>
-            )}
-
-            {/* Final preview step */}
-            {activeStep === 'preview' && (
-              <div className="flex flex-col flex-1 overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex-shrink-0">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    Podglad finalnego CV — pobierz lub zmien ustawienia szablonu
-                  </span>
-                  <button
-                    type="button"
-                    onClick={capturePreview}
-                    className="flex items-center gap-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-2.5 py-1.5 rounded-md transition-colors"
-                  >
-                    <RefreshCw size={12} />
-                    Odswiez podglad
-                  </button>
-                </div>
-                <div className="flex-1 overflow-hidden">
-                  <PdfPreview
-                    config={previewConfig}
-                    onBackToEdit={() => handleStepChange('order')}
-                    {...previewHandlers}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Bottom bar */}
-            <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2 flex items-center justify-between gap-2 overflow-x-auto">
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <ConfigControls form={form} />
-                <HistoryControls form={form} historyVersion={historyVersion} />
-                <VersionsControls
-                  form={form}
-                  onVersionSwitch={handleVersionSwitch}
-                  versionsVersion={versionsVersion}
-                />
-                <button
-                  type="button"
-                  onClick={toggle}
-                  className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                  title={theme === 'dark' ? 'Tryb jasny' : 'Tryb ciemny'}
-                >
-                  {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
-                </button>
-              </div>
-              <div className="flex items-center gap-1.5 text-xs flex-shrink-0">
-                {saveStatus === 'saving' && (
-                  <>
-                    <Save size={12} className="animate-pulse text-blue-500" />
-                    <span className="text-blue-500">Zapisywanie...</span>
-                  </>
-                )}
-                {saveStatus === 'saved' && (
-                  <>
-                    <CheckCircle size={12} className="text-green-500" />
-                    <span className="text-green-500">Zapisano</span>
-                  </>
-                )}
-                {saveStatus === 'idle' && (
-                  <span className="text-gray-300 dark:text-gray-600">Automatyczny zapis wlaczony</span>
-                )}
-              </div>
+            {/* Config / history / versions */}
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <ConfigControls form={form} />
+              <HistoryControls form={form} historyVersion={historyVersion} />
+              <VersionsControls
+                form={form}
+                onVersionSwitch={handleVersionSwitch}
+                versionsVersion={versionsVersion}
+              />
             </div>
 
+            {/* Autosave label */}
+            <span className="hidden sm:block text-xs text-gray-400 dark:text-white/25 flex-shrink-0">
+              Auto-zapis aktywny
+            </span>
+
+            {/* Next */}
+            <button
+              type="button"
+              onClick={handleNext}
+              disabled={isLastStep}
+              className={cn(
+                'flex items-center gap-1 px-4 py-1.5 text-xs font-semibold rounded-lg transition-all flex-shrink-0',
+                isLastStep
+                  ? 'opacity-30 cursor-not-allowed text-gray-400 border border-transparent'
+                  : 'text-white'
+              )}
+              style={!isLastStep ? {
+                background: 'linear-gradient(135deg, #6c47ff, #7c6aff)',
+                boxShadow: '0 4px 14px rgba(124,106,255,0.35)',
+              } : {}}
+              onMouseEnter={(e) => { if (!isLastStep) e.currentTarget.style.filter = 'brightness(1.08)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.filter = 'brightness(1)' }}
+            >
+              Dalej
+              <ChevronRight size={13} />
+            </button>
           </div>
+
         </div>
       </div>
 
-      {/* Preview slide-over — fixed, outside max-width container */}
+      {/* Preview slide-over */}
       {previewOpen && (
         <PreviewSlideOver
           config={previewConfig}
