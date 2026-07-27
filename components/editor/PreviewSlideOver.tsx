@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { X, RefreshCw } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { CvConfig } from '@/lib/schema'
+import type { MetaData } from '@/lib/schema'
 
 const PdfPreview = dynamic(
   () => import('@/components/pdf/PdfPreview').then((m) => m.PdfPreview),
@@ -29,6 +30,7 @@ interface Props {
   onTextColorChange: (c: string) => void
   onSkillLayoutChange: (l: 'bars' | 'tags' | 'dots' | 'list' | 'categories') => void
   onMarginsChange: (m: 'narrow' | 'normal' | 'wide') => void
+  onMetaChange: (patch: Partial<MetaData>) => void
   onPdfLanguageChange: (l: 'pl' | 'en') => void
   onQrChange: (p: Partial<{ enabled: boolean; target: 'linkedin' | 'website' }>) => void
   onGdprChange: (p: Partial<{ enabled: boolean; language: 'pl' | 'en'; text: string; company: string }>) => void

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { PDFViewer, PDFDownloadLink /*, pdf */ } from '@react-pdf/renderer'
 import QRCode from 'qrcode'
 import { CvConfig } from '@/lib/schema'
+import type { MetaData } from '@/lib/schema'
 import { PdfDocument } from './PdfDocument'
 import { estimatePageCount } from '@/lib/pageEstimate'
 import { Download, FileText /*, Mail, X, Loader2 */ } from 'lucide-react'
@@ -27,6 +28,7 @@ interface Props {
   onTextColorChange: (color: string) => void
   onSkillLayoutChange: (layout: 'bars' | 'tags' | 'dots' | 'list' | 'categories') => void
   onMarginsChange: (margins: 'narrow' | 'normal' | 'wide') => void
+  onMetaChange: (patch: Partial<MetaData>) => void
   onBackToEdit: () => void
   onPdfLanguageChange: (lang: 'pl' | 'en') => void
   onQrChange: (patch: Partial<{ enabled: boolean; target: 'linkedin' | 'website' }>) => void
@@ -40,7 +42,7 @@ const TEMPLATES = [
   { id: 'developer' as const, label: 'Programista' },
 ]
 
-export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentColorChange, onPhotoPositionChange, onFontChange, onBgColorChange, onTextColorChange, onSkillLayoutChange, onMarginsChange, onPdfLanguageChange, onQrChange, onGdprChange }: Props) {
+export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentColorChange, onPhotoPositionChange, onFontChange, onBgColorChange, onTextColorChange, onSkillLayoutChange, onMarginsChange, onMetaChange, onPdfLanguageChange, onQrChange, onGdprChange }: Props) {
   const [isClient, setIsClient] = useState(false)
   const [pdfKey, setPdfKey] = useState(0)
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
@@ -177,6 +179,42 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
               </button>
             ))}
           </div>
+          {config.meta.photoPosition !== 'none' && config.personal.photo && (
+            <div className="mt-3 space-y-2">
+              <div className="flex gap-2">
+                {([
+                  { id: 'cover' as const, label: 'Kadr: wypełnij' },
+                  { id: 'contain' as const, label: 'Kadr: całość' },
+                ]).map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => onMetaChange({ photoFit: opt.id })}
+                    className={`flex-1 py-1.5 px-2 text-xs rounded-md border transition-all ${
+                      (config.meta.photoFit ?? 'cover') === opt.id
+                        ? 'bg-blue-600 text-white border-blue-600 font-medium'
+                        : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="text-xs text-gray-500 whitespace-nowrap">Rozmiar zdjęcia</label>
+                <input
+                  type="range"
+                  min={0.6}
+                  max={1.6}
+                  step={0.05}
+                  value={config.meta.photoScale ?? 1}
+                  onChange={(e) => onMetaChange({ photoScale: Number(e.target.value) })}
+                  className="flex-1 accent-blue-600 cursor-pointer"
+                />
+                <span className="text-xs text-gray-400 w-9 text-right">{Math.round((config.meta.photoScale ?? 1) * 100)}%</span>
+              </div>
+            </div>
+          )}
         </div>
 
         <div>
@@ -367,6 +405,33 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
                 {opt.label}
               </button>
             ))}
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Rozmiar czcionki</p>
+            <button
+              type="button"
+              onClick={() => onMetaChange({ fontScale: 1 })}
+              className="text-xs text-gray-400 hover:text-gray-600 underline"
+            >
+              Reset
+            </button>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] text-gray-400">A</span>
+            <input
+              type="range"
+              min={0.85}
+              max={1.15}
+              step={0.01}
+              value={config.meta.fontScale ?? 1}
+              onChange={(e) => onMetaChange({ fontScale: Number(e.target.value) })}
+              className="flex-1 accent-blue-600 cursor-pointer"
+            />
+            <span className="text-sm text-gray-400">A</span>
+            <span className="text-xs text-gray-400 w-9 text-right">{Math.round((config.meta.fontScale ?? 1) * 100)}%</span>
           </div>
         </div>
 

@@ -21,6 +21,10 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
   const bgColor = config.meta.bgColor || '#ffffff'
   const textColor = config.meta.textColor || '#111827'
   const photoPosition = config.meta.photoPosition ?? 'right'
+  const photoScale = config.meta.photoScale ?? 1
+  const photoFit = (config.meta.photoFit ?? 'cover') as 'cover' | 'contain'
+  const fontScale = config.meta.fontScale ?? 1
+  const fs = (n: number) => Math.round(n * fontScale * 100) / 100
   const skillLayout = config.meta.skillLayout ?? 'categories'
   const marginH = config.meta.margins === 'narrow' ? 26 : config.meta.margins === 'wide' ? 60 : 42
   const lang = (config.meta.pdfLanguage ?? 'pl') as PdfLang
@@ -39,7 +43,7 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
     contactRow: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 2 },
     contactCell: { flexDirection: 'row', alignItems: 'center', marginRight: 12, marginTop: 2 },
     contactItem: { fontSize: 8.5, color: muted },
-    photo: { width: 66, height: 82, borderRadius: 3, objectFit: 'cover' },
+    photo: { width: 66 * photoScale, height: 82 * photoScale, borderRadius: 3, objectFit: photoFit },
     headerRule: { height: 2, backgroundColor: accent, marginTop: 8, marginBottom: 14 },
     section: { marginBottom: 12 },
     sectionTitleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 7 },
@@ -69,6 +73,13 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
     gdprText: { fontSize: 6.5, color: faint, textAlign: 'center', marginTop: 10, lineHeight: 1.4 },
   })
 
+  if (fontScale !== 1) {
+    for (const key of Object.keys(styles)) {
+      const s = (styles as unknown as Record<string, { fontSize?: number }>)[key]
+      if (typeof s.fontSize === 'number') s.fontSize = Math.round(s.fontSize * fontScale * 100) / 100
+    }
+  }
+
   function SectionTitle({ label }: { label: string }) {
     return (
       <View style={styles.sectionTitleRow}>
@@ -88,7 +99,7 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
           <View style={styles.section}>
             <SectionTitle label={t('skills', lang)} />
             {skills.map(skill => (
-              <Text key={skill.id} style={{ fontSize: 8.5, color: textColor, marginBottom: 2 }}>
+              <Text key={skill.id} style={{ fontSize: fs(8.5), color: textColor, marginBottom: 2 }}>
                 {'\u203A'} {skill.name} <Text style={{ color: faint }}>({levelLabel[skill.level] ?? skill.level})</Text>
               </Text>
             ))}
@@ -200,14 +211,14 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
             {projects.map(proj => (
               <View key={proj.id} style={{ marginBottom: 8 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <Text style={{ fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra, color: textColor }}>{proj.name}</Text>
+                  <Text style={{ fontSize: fs(10), fontFamily: getBoldFont(font), ...boldExtra, color: textColor }}>{proj.name}</Text>
                   {proj.technologies ? (
-                    <Text style={{ fontSize: 8, color: muted, fontFamily: getItalicFont(font), ...italicExtra }}>{proj.technologies}</Text>
+                    <Text style={{ fontSize: fs(8), color: muted, fontFamily: getItalicFont(font), ...italicExtra }}>{proj.technologies}</Text>
                   ) : null}
                 </View>
-                {proj.description ? <Text style={{ fontSize: 8.5, lineHeight: 1.5, color: textColor, marginTop: 1 }}>{proj.description}</Text> : null}
+                {proj.description ? <Text style={{ fontSize: fs(8.5), lineHeight: 1.5, color: textColor, marginTop: 1 }}>{proj.description}</Text> : null}
                 {proj.url ? (
-                  <Link src={proj.url.startsWith('http') ? proj.url : `https://${proj.url}`} style={{ fontSize: 8, color: accent, marginTop: 1 }}>
+                  <Link src={proj.url.startsWith('http') ? proj.url : `https://${proj.url}`} style={{ fontSize: fs(8), color: accent, marginTop: 1 }}>
                     {proj.url}
                   </Link>
                 ) : null}
@@ -239,12 +250,12 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
             {certificates.map(cert => (
               <View key={cert.id} style={{ marginBottom: 6 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <Text style={{ fontSize: 9.5, fontFamily: getBoldFont(font), ...boldExtra, color: textColor }}>{cert.name}</Text>
-                  {cert.date ? <Text style={{ fontSize: 8, color: faint }}>{cert.date}</Text> : null}
+                  <Text style={{ fontSize: fs(9.5), fontFamily: getBoldFont(font), ...boldExtra, color: textColor }}>{cert.name}</Text>
+                  {cert.date ? <Text style={{ fontSize: fs(8), color: faint }}>{cert.date}</Text> : null}
                 </View>
-                {cert.issuer ? <Text style={{ fontSize: 8.5, color: accent, fontFamily: getItalicFont(font), ...italicExtra }}>{cert.issuer}</Text> : null}
+                {cert.issuer ? <Text style={{ fontSize: fs(8.5), color: accent, fontFamily: getItalicFont(font), ...italicExtra }}>{cert.issuer}</Text> : null}
                 {cert.url ? (
-                  <Link src={cert.url.startsWith('http') ? cert.url : `https://${cert.url}`} style={{ fontSize: 8, color: accent, marginTop: 1 }}>
+                  <Link src={cert.url.startsWith('http') ? cert.url : `https://${cert.url}`} style={{ fontSize: fs(8), color: accent, marginTop: 1 }}>
                     {cert.url}
                   </Link>
                 ) : null}

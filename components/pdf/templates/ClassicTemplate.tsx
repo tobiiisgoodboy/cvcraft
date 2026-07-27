@@ -19,6 +19,10 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
   const bgColor = config.meta.bgColor || '#ffffff'
   const textColor = config.meta.textColor || '#111827'
   const photoPosition = config.meta.photoPosition ?? 'right'
+  const photoScale = config.meta.photoScale ?? 1
+  const photoFit = (config.meta.photoFit ?? 'cover') as 'cover' | 'contain'
+  const fontScale = config.meta.fontScale ?? 1
+  const fs = (n: number) => Math.round(n * fontScale * 100) / 100
   const skillLayout = config.meta.skillLayout ?? 'categories'
   const marginH = config.meta.margins === 'narrow' ? 28 : config.meta.margins === 'wide' ? 68 : 48
   const lang = (config.meta.pdfLanguage ?? 'pl') as PdfLang
@@ -37,7 +41,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
     contactRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 0, marginTop: 6 },
     contactItem: { fontSize: 8.5, color: '#6b7280' },
     contactSep: { fontSize: 8.5, color: '#d1d5db', marginHorizontal: 5 },
-    photo: { width: 72, height: 88, borderRadius: 3, objectFit: 'cover' },
+    photo: { width: 72 * photoScale, height: 88 * photoScale, borderRadius: 3, objectFit: photoFit },
     sectionTitle: { fontSize: 8.5, fontFamily: getBoldFont(font), ...boldExtra, textTransform: 'uppercase', letterSpacing: 1.2, color: accent, marginBottom: 8, paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' },
     section: { marginBottom: 16 },
     expItem: { marginBottom: 10 },
@@ -76,6 +80,13 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
     gdprText: { fontSize: 6.5, color: '#9ca3af', textAlign: 'center', marginTop: 8, lineHeight: 1.4 },
   })
 
+  if (fontScale !== 1) {
+    for (const key of Object.keys(styles)) {
+      const s = (styles as unknown as Record<string, { fontSize?: number }>)[key]
+      if (typeof s.fontSize === 'number') s.fontSize = Math.round(s.fontSize * fontScale * 100) / 100
+    }
+  }
+
   function SkillBar({ level }: { level: string }) {
     const filled = level === 'basic' ? 1 : level === 'advanced' ? 3 : 2
     return (
@@ -110,7 +121,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
             <Text style={styles.sectionTitle}>{t('skills', lang)}</Text>
             <View style={styles.skillTagsRow}>
               {skills.map(skill => (
-                <Text key={skill.id} style={{ fontSize: 9, color: accent, backgroundColor: accent + '22', paddingVertical: 3, paddingHorizontal: 8, borderRadius: 10 }}>
+                <Text key={skill.id} style={{ fontSize: fs(9), color: accent, backgroundColor: accent + '22', paddingVertical: 3, paddingHorizontal: 8, borderRadius: 10 }}>
                   {skill.name}
                 </Text>
               ))}
@@ -139,7 +150,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
                 <Text style={styles.skillCategoryHeader}>{cat}</Text>
                 <View style={styles.skillCategoryTagsRow}>
                   {catSkills.map(skill => (
-                    <Text key={skill.id} style={{ fontSize: 9, color: accent, backgroundColor: accent + '22', paddingVertical: 3, paddingHorizontal: 8, borderRadius: 10 }}>
+                    <Text key={skill.id} style={{ fontSize: fs(9), color: accent, backgroundColor: accent + '22', paddingVertical: 3, paddingHorizontal: 8, borderRadius: 10 }}>
                       {skill.name}
                     </Text>
                   ))}
@@ -159,8 +170,8 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
                 const filled = dotCount[skill.level] ?? 2
                 return (
                   <View key={skill.id} style={styles.skillDotsItem}>
-                    <Text style={{ fontSize: 9, color: textColor, flex: 1 }}>{skill.name}</Text>
-                    <Text style={{ fontSize: 9, color: accent, letterSpacing: 1 }}>
+                    <Text style={{ fontSize: fs(9), color: textColor, flex: 1 }}>{skill.name}</Text>
+                    <Text style={{ fontSize: fs(9), color: accent, letterSpacing: 1 }}>
                       {[1, 2, 3].map(i => i <= filled ? '\u25CF' : '\u25CB').join('')}
                     </Text>
                   </View>
@@ -177,7 +188,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
             <Text style={styles.sectionTitle}>{t('skills', lang)}</Text>
             {skills.map(skill => (
               <View key={skill.id} style={styles.skillListItem}>
-                <Text style={{ fontSize: 9, color: textColor }}>{'\u2022'} {skill.name} ({levelLabel[skill.level] ?? skill.level})</Text>
+                <Text style={{ fontSize: fs(9), color: textColor }}>{'\u2022'} {skill.name} ({levelLabel[skill.level] ?? skill.level})</Text>
               </View>
             ))}
           </View>
@@ -223,7 +234,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
         return summary ? (
           <View key="summary" style={styles.section}>
             <Text style={styles.sectionTitle}>{t('summary', lang)}</Text>
-            <Text style={{ fontSize: 9.5, lineHeight: 1.6, color: textColor }}>{summary}</Text>
+            <Text style={{ fontSize: fs(9.5), lineHeight: 1.6, color: textColor }}>{summary}</Text>
           </View>
         ) : null
 
@@ -251,14 +262,14 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
             {projects.map(proj => (
               <View key={proj.id} style={{ marginBottom: 10 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <Text style={{ fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra, color: textColor }}>{proj.name}</Text>
+                  <Text style={{ fontSize: fs(10), fontFamily: getBoldFont(font), ...boldExtra, color: textColor }}>{proj.name}</Text>
                   {proj.technologies ? (
-                    <Text style={{ fontSize: 8.5, color: '#6b7280', fontFamily: getItalicFont(font), ...italicExtra }}>{proj.technologies}</Text>
+                    <Text style={{ fontSize: fs(8.5), color: '#6b7280', fontFamily: getItalicFont(font), ...italicExtra }}>{proj.technologies}</Text>
                   ) : null}
                 </View>
-                {proj.description ? <Text style={{ fontSize: 8.5, lineHeight: 1.55, color: textColor, marginTop: 2 }}>{proj.description}</Text> : null}
+                {proj.description ? <Text style={{ fontSize: fs(8.5), lineHeight: 1.55, color: textColor, marginTop: 2 }}>{proj.description}</Text> : null}
                 {proj.url ? (
-                  <Link src={proj.url.startsWith('http') ? proj.url : `https://${proj.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 2 }}>
+                  <Link src={proj.url.startsWith('http') ? proj.url : `https://${proj.url}`} style={{ fontSize: fs(8.5), color: accent, marginTop: 2 }}>
                     {proj.url}
                   </Link>
                 ) : null}
@@ -290,12 +301,12 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
             {certificates.map(cert => (
               <View key={cert.id} style={{ marginBottom: 8 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <Text style={{ fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra, color: textColor }}>{cert.name}</Text>
-                  {cert.date ? <Text style={{ fontSize: 8.5, color: '#9ca3af' }}>{cert.date}</Text> : null}
+                  <Text style={{ fontSize: fs(10), fontFamily: getBoldFont(font), ...boldExtra, color: textColor }}>{cert.name}</Text>
+                  {cert.date ? <Text style={{ fontSize: fs(8.5), color: '#9ca3af' }}>{cert.date}</Text> : null}
                 </View>
-                {cert.issuer ? <Text style={{ fontSize: 9, color: accent, fontFamily: getItalicFont(font), ...italicExtra }}>{cert.issuer}</Text> : null}
+                {cert.issuer ? <Text style={{ fontSize: fs(9), color: accent, fontFamily: getItalicFont(font), ...italicExtra }}>{cert.issuer}</Text> : null}
                 {cert.url ? (
-                  <Link src={cert.url.startsWith('http') ? cert.url : `https://${cert.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 1 }}>
+                  <Link src={cert.url.startsWith('http') ? cert.url : `https://${cert.url}`} style={{ fontSize: fs(8.5), color: accent, marginTop: 1 }}>
                     {cert.url}
                   </Link>
                 ) : null}

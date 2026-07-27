@@ -19,6 +19,10 @@ export function MinimalTemplate({ config, qrDataUrl }: Props) {
   const bgColor = config.meta.bgColor || '#ffffff'
   const textColor = config.meta.textColor || '#111827'
   const photoPosition = config.meta.photoPosition ?? 'right'
+  const photoScale = config.meta.photoScale ?? 1
+  const photoFit = (config.meta.photoFit ?? 'cover') as 'cover' | 'contain'
+  const fontScale = config.meta.fontScale ?? 1
+  const fs = (n: number) => Math.round(n * fontScale * 100) / 100
   const skillLayout = config.meta.skillLayout ?? 'categories'
   const marginH = config.meta.margins === 'narrow' ? 32 : config.meta.margins === 'wide' ? 80 : 56
   const lang = (config.meta.pdfLanguage ?? 'pl') as PdfLang
@@ -36,7 +40,7 @@ export function MinimalTemplate({ config, qrDataUrl }: Props) {
     contactRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 0, marginBottom: 24 },
     contactItem: { fontSize: 8.5, color: '#6b7280' },
     contactSep: { fontSize: 8.5, color: '#d1d5db', marginHorizontal: 6 },
-    photo: { width: 68, height: 82, borderRadius: 2, marginLeft: 20, objectFit: 'cover' },
+    photo: { width: 68 * photoScale, height: 82 * photoScale, borderRadius: 2, marginLeft: 20, objectFit: photoFit },
     section: { marginBottom: 18 },
     sectionTitle: { fontSize: 8, fontFamily: getBoldFont(font), ...boldExtra, textTransform: 'uppercase', letterSpacing: 2, color: accent, marginBottom: 10 },
     expItem: { marginBottom: 11 },
@@ -75,6 +79,13 @@ export function MinimalTemplate({ config, qrDataUrl }: Props) {
     gdprText: { fontSize: 6.5, color: '#9ca3af', textAlign: 'center', marginTop: 8, lineHeight: 1.4 },
   })
 
+  if (fontScale !== 1) {
+    for (const key of Object.keys(styles)) {
+      const s = (styles as unknown as Record<string, { fontSize?: number }>)[key]
+      if (typeof s.fontSize === 'number') s.fontSize = Math.round(s.fontSize * fontScale * 100) / 100
+    }
+  }
+
   function SkillBar({ level }: { level: string }) {
     const filled = level === 'basic' ? 1 : level === 'advanced' ? 3 : 2
     return (
@@ -110,7 +121,7 @@ export function MinimalTemplate({ config, qrDataUrl }: Props) {
             <Text style={styles.sectionTitle}>{t('skills', lang)}</Text>
             <View style={styles.skillTagsRow}>
               {skills.map(skill => (
-                <Text key={skill.id} style={{ fontSize: 9, color: accent, backgroundColor: accent + '22', paddingVertical: 3, paddingHorizontal: 8, borderRadius: 10 }}>
+                <Text key={skill.id} style={{ fontSize: fs(9), color: accent, backgroundColor: accent + '22', paddingVertical: 3, paddingHorizontal: 8, borderRadius: 10 }}>
                   {skill.name}
                 </Text>
               ))}
@@ -140,7 +151,7 @@ export function MinimalTemplate({ config, qrDataUrl }: Props) {
                 <Text style={styles.skillCategoryHeader}>{cat}</Text>
                 <View style={styles.skillCategoryTagsRow}>
                   {catSkills.map(skill => (
-                    <Text key={skill.id} style={{ fontSize: 9, color: accent, backgroundColor: accent + '22', paddingVertical: 3, paddingHorizontal: 8, borderRadius: 10 }}>
+                    <Text key={skill.id} style={{ fontSize: fs(9), color: accent, backgroundColor: accent + '22', paddingVertical: 3, paddingHorizontal: 8, borderRadius: 10 }}>
                       {skill.name}
                     </Text>
                   ))}
@@ -161,8 +172,8 @@ export function MinimalTemplate({ config, qrDataUrl }: Props) {
                 const filled = dotCount[skill.level] ?? 2
                 return (
                   <View key={skill.id} style={styles.skillDotsItem}>
-                    <Text style={{ fontSize: 9, color: textColor, flex: 1 }}>{skill.name}</Text>
-                    <Text style={{ fontSize: 9, color: accent, letterSpacing: 1 }}>
+                    <Text style={{ fontSize: fs(9), color: textColor, flex: 1 }}>{skill.name}</Text>
+                    <Text style={{ fontSize: fs(9), color: accent, letterSpacing: 1 }}>
                       {[1, 2, 3].map(i => i <= filled ? '\u25CF' : '\u25CB').join('')}
                     </Text>
                   </View>
@@ -180,7 +191,7 @@ export function MinimalTemplate({ config, qrDataUrl }: Props) {
             <Text style={styles.sectionTitle}>{t('skills', lang)}</Text>
             {skills.map(skill => (
               <View key={skill.id} style={styles.skillListItem}>
-                <Text style={{ fontSize: 9, color: textColor }}>{'\u2022'} {skill.name} ({levelLabel[skill.level] ?? skill.level})</Text>
+                <Text style={{ fontSize: fs(9), color: textColor }}>{'\u2022'} {skill.name} ({levelLabel[skill.level] ?? skill.level})</Text>
               </View>
             ))}
             <View style={styles.separator} />
@@ -212,7 +223,7 @@ export function MinimalTemplate({ config, qrDataUrl }: Props) {
         return summary ? (
           <View key="summary" style={styles.section}>
             <Text style={styles.sectionTitle}>{t('about', lang)}</Text>
-            <Text style={{ fontSize: 9.5, lineHeight: 1.7, color: textColor }}>{summary}</Text>
+            <Text style={{ fontSize: fs(9.5), lineHeight: 1.7, color: textColor }}>{summary}</Text>
             <View style={styles.separator} />
           </View>
         ) : null
@@ -246,14 +257,14 @@ export function MinimalTemplate({ config, qrDataUrl }: Props) {
               <View key={proj.id}>
                 <View style={{ marginBottom: 10 }}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 1 }}>
-                    <Text style={{ fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra }}>{proj.name}</Text>
+                    <Text style={{ fontSize: fs(10), fontFamily: getBoldFont(font), ...boldExtra }}>{proj.name}</Text>
                   </View>
                   {proj.technologies ? (
-                    <Text style={{ fontSize: 9, color: '#6b7280', fontFamily: getItalicFont(font), ...italicExtra, marginBottom: 2 }}>{proj.technologies}</Text>
+                    <Text style={{ fontSize: fs(9), color: '#6b7280', fontFamily: getItalicFont(font), ...italicExtra, marginBottom: 2 }}>{proj.technologies}</Text>
                   ) : null}
-                  {proj.description ? <Text style={{ fontSize: 8.5, lineHeight: 1.6, color: textColor }}>{proj.description}</Text> : null}
+                  {proj.description ? <Text style={{ fontSize: fs(8.5), lineHeight: 1.6, color: textColor }}>{proj.description}</Text> : null}
                   {proj.url ? (
-                    <Link src={proj.url.startsWith('http') ? proj.url : `https://${proj.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 2 }}>
+                    <Link src={proj.url.startsWith('http') ? proj.url : `https://${proj.url}`} style={{ fontSize: fs(8.5), color: accent, marginTop: 2 }}>
                       {proj.url}
                     </Link>
                   ) : null}
@@ -289,12 +300,12 @@ export function MinimalTemplate({ config, qrDataUrl }: Props) {
             {certificates.map(cert => (
               <View key={cert.id} style={{ marginBottom: 8 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 1 }}>
-                  <Text style={{ fontSize: 10, fontFamily: getBoldFont(font), ...boldExtra }}>{cert.name}</Text>
-                  {cert.date ? <Text style={{ fontSize: 8.5, color: '#9ca3af' }}>{cert.date}</Text> : null}
+                  <Text style={{ fontSize: fs(10), fontFamily: getBoldFont(font), ...boldExtra }}>{cert.name}</Text>
+                  {cert.date ? <Text style={{ fontSize: fs(8.5), color: '#9ca3af' }}>{cert.date}</Text> : null}
                 </View>
-                {cert.issuer ? <Text style={{ fontSize: 9, color: '#6b7280', fontFamily: getItalicFont(font), ...italicExtra }}>{cert.issuer}</Text> : null}
+                {cert.issuer ? <Text style={{ fontSize: fs(9), color: '#6b7280', fontFamily: getItalicFont(font), ...italicExtra }}>{cert.issuer}</Text> : null}
                 {cert.url ? (
-                  <Link src={cert.url.startsWith('http') ? cert.url : `https://${cert.url}`} style={{ fontSize: 8.5, color: accent, marginTop: 1 }}>
+                  <Link src={cert.url.startsWith('http') ? cert.url : `https://${cert.url}`} style={{ fontSize: fs(8.5), color: accent, marginTop: 1 }}>
                     {cert.url}
                   </Link>
                 ) : null}

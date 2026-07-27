@@ -136,6 +136,9 @@ function mergeWithDefaults(saved: unknown): CvConfig {
       template: ((raw.meta as Record<string, unknown>)?.template as CvConfig['meta']['template']) ?? 'classic',
       accentColor: ((raw.meta as Record<string, unknown>)?.accentColor as string) ?? '#2563eb',
       photoPosition: ((raw.meta as Record<string, unknown>)?.photoPosition as CvConfig['meta']['photoPosition']) ?? 'right',
+      photoScale: ((raw.meta as Record<string, unknown>)?.photoScale as number) ?? 1,
+      photoFit: (((raw.meta as Record<string, unknown>)?.photoFit) as CvConfig['meta']['photoFit']) ?? 'cover',
+      fontScale: ((raw.meta as Record<string, unknown>)?.fontScale as number) ?? 1,
       sectionOrder: Array.isArray((raw.meta as Record<string, unknown>)?.sectionOrder)
         ? [...new Set((raw.meta as Record<string, unknown>).sectionOrder as string[])]
         : ['summary', 'experience', 'projects', 'education', 'certificates', 'awards', 'skills', 'languages', 'interests'],
@@ -298,6 +301,13 @@ export function EditorLayout() {
     setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, margins } }))
   }
 
+  function handleMetaChange(patch: Partial<CvConfig['meta']>) {
+    for (const [key, value] of Object.entries(patch)) {
+      setValue(`meta.${key}` as `meta.${keyof CvConfig['meta']}`, value as never, { shouldDirty: true })
+    }
+    setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, ...patch } }))
+  }
+
   function handlePdfLanguageChange(lang: 'pl' | 'en') {
     setValue('meta.pdfLanguage', lang, { shouldDirty: true })
     setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, pdfLanguage: lang } }))
@@ -342,6 +352,7 @@ export function EditorLayout() {
     onTextColorChange: handleTextColorChange,
     onSkillLayoutChange: handleSkillLayoutChange,
     onMarginsChange: handleMarginsChange,
+    onMetaChange: handleMetaChange,
     onPdfLanguageChange: handlePdfLanguageChange,
     onQrChange: handleQrChange,
     onGdprChange: handleGdprChange,
