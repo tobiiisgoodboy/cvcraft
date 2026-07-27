@@ -1,18 +1,27 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { CvConfig, CvConfigSchema } from '@/lib/schema'
 import { defaultCvConfig } from '@/lib/defaults'
-import { Download, Upload, RotateCcw, Copy } from 'lucide-react'
+import { Download, Upload, RotateCcw, Copy, CheckCircle2, AlertCircle } from 'lucide-react'
 
 interface Props {
   form: UseFormReturn<CvConfig>
 }
 
+type Toast = { type: 'success' | 'error'; message: string }
+
 export function ConfigControls({ form }: Props) {
   const { getValues, reset } = form
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [toast, setToast] = useState<Toast | null>(null)
+
+  useEffect(() => {
+    if (!toast) return
+    const t = setTimeout(() => setToast(null), 3500)
+    return () => clearTimeout(t)
+  }, [toast])
 
   function handleExport() {
     const data = getValues()
@@ -36,8 +45,9 @@ export function ConfigControls({ form }: Props) {
         const raw = JSON.parse(ev.target?.result as string)
         const parsed = CvConfigSchema.parse(raw)
         reset(parsed)
+        setToast({ type: 'success', message: 'Wczytano ustawienia z pliku.' })
       } catch (err) {
-        alert('Nie udalo sie wczytac pliku konfiguracji. Upewnij sie, ze plik jest prawidlowy.')
+        setToast({ type: 'error', message: 'Nie udalo sie wczytac pliku. Sprawdz, czy JSON jest prawidlowy.' })
         console.error(err)
       }
     }
@@ -114,6 +124,20 @@ export function ConfigControls({ form }: Props) {
         onChange={handleImport}
         className="hidden"
       />
+
+      {toast && (
+        <div
+          role="status"
+          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-sm font-medium border animate-in fade-in slide-in-from-bottom-2 ${
+            toast.type === 'success'
+              ? 'bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800'
+              : 'bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800'
+          }`}
+        >
+          {toast.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+          {toast.message}
+        </div>
+      )}
     </div>
   )
 }
