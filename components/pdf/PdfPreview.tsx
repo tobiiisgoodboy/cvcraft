@@ -131,7 +131,7 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
   */
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col md:flex-row h-full">
       {/* Mobile back button */}
       <div className="md:hidden flex-shrink-0 bg-white border-b border-gray-200 px-4 py-2 flex items-center gap-2">
         <button
@@ -148,7 +148,7 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
       </div>
 
       {/* Template selector */}
-      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-4 py-3 space-y-3 overflow-y-auto max-h-[45vh] md:max-h-none md:overflow-visible">
+      <div className="flex-shrink-0 bg-white border-b md:border-b-0 md:border-r border-gray-200 px-4 py-3 space-y-3 overflow-y-auto max-h-[45vh] md:max-h-none md:h-full md:w-[340px]">
         <div>
           <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Szablon</p>
           <div className="flex gap-2">
@@ -486,7 +486,7 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
 
         <div>
           <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Kolory</p>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center flex-wrap gap-y-2 gap-4">
             <div className="flex items-center gap-1.5">
               <label className="text-xs text-gray-500">Akcent</label>
               <input
