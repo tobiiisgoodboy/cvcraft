@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { PDFViewer, PDFDownloadLink, pdf } from '@react-pdf/renderer'
+import { PDFViewer, PDFDownloadLink /*, pdf */ } from '@react-pdf/renderer'
 import QRCode from 'qrcode'
 import { CvConfig } from '@/lib/schema'
 import { PdfDocument } from './PdfDocument'
 import { estimatePageCount } from '@/lib/pageEstimate'
-import { Download, FileText, Mail, X, Loader2 } from 'lucide-react'
+import { Download, FileText /*, Mail, X, Loader2 */ } from 'lucide-react'
 
 function PdfLoadingState() {
   return (
@@ -43,10 +43,11 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
   const [isClient, setIsClient] = useState(false)
   const [pdfKey, setPdfKey] = useState(0)
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
-  const [emailOpen, setEmailOpen] = useState(false)
-  const [email, setEmail] = useState('')
-  const [sending, setSending] = useState(false)
-  const [sendMsg, setSendMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
+  // Wysylka e-mail wylaczona na razie (patrz project_cvcraft.md)
+  // const [emailOpen, setEmailOpen] = useState(false)
+  // const [email, setEmail] = useState('')
+  // const [sending, setSending] = useState(false)
+  // const [sendMsg, setSendMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
 
   useEffect(() => {
     setIsClient(true)
@@ -71,6 +72,7 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
   const fileName = `${fullName.replace(/\s+/g, '_')}.pdf`
   const estimatedPages = estimatePageCount(config)
 
+  /* Wysylka e-mail wylaczona na razie
   async function sendEmail() {
     if (!email.trim()) {
       setSendMsg({ type: 'err', text: 'Podaj adres e-mail.' })
@@ -111,6 +113,7 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
       setSending(false)
     }
   }
+  */
 
   return (
     <div className="flex flex-col h-full">
@@ -430,6 +433,7 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
                   <Download size={13} />
                   EN
                 </PDFDownloadLink>
+                {/* Wysylka e-mail wylaczona na razie
                 <button
                   type="button"
                   onClick={() => { setSendMsg(null); setEmailOpen(true) }}
@@ -439,6 +443,7 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
                   <Mail size={13} />
                   E-mail
                 </button>
+                */}
               </>
             )}
           </div>
@@ -462,7 +467,7 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
         )}
       </div>
 
-      {/* Email export modal */}
+      {/* Email export modal — wylaczone na razie
       {emailOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
@@ -523,6 +528,7 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
           </div>
         </div>
       )}
+      */}
     </div>
   )
 }

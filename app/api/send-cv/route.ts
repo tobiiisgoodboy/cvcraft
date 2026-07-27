@@ -1,4 +1,13 @@
 import { NextResponse } from 'next/server'
+
+// Wysylka e-mail tymczasowo WYLACZONA (decyzja: na razie nie wysylamy maili).
+// Pelna implementacja przez Resend zachowana ponizej — do wlaczenia w przyszlosci
+// (odkomentowac + ustawic env; rozwazyc darmowy Nodemailer+SMTP zamiast Resend).
+export async function POST() {
+  return NextResponse.json({ error: 'Wysylka e-mail jest tymczasowo wylaczona.' }, { status: 503 })
+}
+
+/*
 import { Resend } from 'resend'
 
 export async function POST(req: Request) {
@@ -55,3 +64,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Nie udalo sie wyslac wiadomosci.' }, { status: 500 })
   }
 }
+*/
