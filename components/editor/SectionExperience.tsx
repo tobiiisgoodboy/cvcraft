@@ -1,8 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import { UseFormReturn, useFieldArray, useController } from 'react-hook-form'
 import { CvConfig } from '@/lib/schema'
-import { Plus, Trash2, GripVertical } from 'lucide-react'
+import { Plus, Trash2, GripVertical, ChevronDown, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { AutocompleteInput } from './AutocompleteInput'
 import {
@@ -80,6 +81,9 @@ function SortableExperienceItem({
   }
 
   const current = watch(`experience.${index}.current`)
+  const positionValue = watch(`experience.${index}.position`)
+  const companyValue = watch(`experience.${index}.company`)
+  const [collapsed, setCollapsed] = useState(false)
 
   return (
     <div
@@ -94,19 +98,38 @@ function SortableExperienceItem({
     >
       {/* Item header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0">
           <button
             type="button"
             {...attributes}
             {...listeners}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-grab active:cursor-grabbing touch-none"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-grab active:cursor-grabbing touch-none flex-shrink-0"
             title="Przeciagnij, aby zmienic kolejnosc"
           >
             <GripVertical size={16} />
           </button>
-          <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide">
-            Pozycja {index + 1}
-          </span>
+          <button
+            type="button"
+            onClick={() => setCollapsed((c) => !c)}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex-shrink-0"
+            title={collapsed ? 'Rozwin pozycje' : 'Zwin pozycje'}
+          >
+            {collapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+          </button>
+          <button
+            type="button"
+            onClick={() => setCollapsed((c) => !c)}
+            className="flex items-center gap-2 min-w-0 text-left"
+          >
+            <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide flex-shrink-0">
+              Pozycja {index + 1}
+            </span>
+            {collapsed && (positionValue || companyValue) && (
+              <span className="text-xs text-gray-500 dark:text-gray-400 truncate normal-case">
+                — {[positionValue, companyValue].filter(Boolean).join(', ')}
+              </span>
+            )}
+          </button>
         </div>
         <button
           type="button"
@@ -119,6 +142,8 @@ function SortableExperienceItem({
         </button>
       </div>
 
+      {!collapsed && (
+      <>
       <div className="grid grid-cols-2 gap-3">
         <div className="flex flex-col gap-1">
           <label className={labelClass}>Stanowisko</label>
@@ -172,6 +197,8 @@ function SortableExperienceItem({
           className={cn(inputClass, 'resize-none leading-relaxed')}
         />
       </div>
+      </>
+      )}
     </div>
   )
 }
@@ -212,7 +239,12 @@ export function SectionExperience({ form }: Props) {
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={fields.map((f) => f.id)} strategy={verticalListSortingStrategy}>
-          <div className="space-y-4">
+          <div
+            className={cn(
+              'space-y-4',
+              fields.length > 2 && 'max-h-[60vh] overflow-y-auto pr-2'
+            )}
+          >
             {fields.map((field, index) => (
               <SortableExperienceItem
                 key={field.id}
