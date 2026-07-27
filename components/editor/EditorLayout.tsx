@@ -44,6 +44,7 @@ import { SectionCertificates } from './SectionCertificates'
 import { SectionProjects } from './SectionProjects'
 import { SectionAwards } from './SectionAwards'
 import { SectionOrder } from './SectionOrder'
+import { VersionBadge } from './VersionBadge'
 import { ConfigControls } from '@/components/ConfigControls'
 import { HistoryControls } from './HistoryControls'
 import { VersionsControls } from './VersionsControls'
@@ -642,8 +643,9 @@ export function EditorLayout() {
             })}
           </div>
 
-          {/* Preview step — pinned bottom */}
-          <div className="border-t border-black/[0.07] dark:border-white/[0.07] p-2.5" style={{ position: 'relative', zIndex: 1 }}>
+          {/* Version + Preview step — pinned bottom */}
+          <div className="border-t border-black/[0.07] dark:border-white/[0.07] p-2.5 space-y-2" style={{ position: 'relative', zIndex: 1 }}>
+            <VersionBadge />
             <button
               type="button"
               onClick={() => handleStepChange(previewStep.id)}
