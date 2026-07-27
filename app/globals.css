@@ -35,9 +35,8 @@
   color: #f0f1f8 !important;
 }
 
-/* Fixed-width controls inside flex rows — override the width:100% rule above */
-.cv-editor select.cv-w-level { width: 13rem !important; flex-shrink: 0 !important; }
-.cv-editor input.cv-w-cat { width: 10rem !important; flex-shrink: 0 !important; }
+/* Fixed-width select inside flex rows — override the width:100% rule above */
+.cv-editor select.cv-w-level { width: 15rem !important; flex-shrink: 0 !important; }
 
 .cv-editor input:focus,
 .cv-editor textarea:focus,
