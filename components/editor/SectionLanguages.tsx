@@ -45,8 +45,7 @@ export function SectionLanguages({ form }: Props) {
             />
             <select
               {...register(`languages.${index}.level`)}
-              className="px-2 py-2 text-sm text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 cursor-pointer"
-              style={{ width: '13rem', flexShrink: 0 }}
+              className="cv-w-level px-2 py-2 text-sm text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 cursor-pointer"
             >
               <option value="" disabled>Wybierz poziom</option>
               <option value="A1">A1 — Poczatkujacy</option>
