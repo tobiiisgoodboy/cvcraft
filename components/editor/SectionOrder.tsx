@@ -24,12 +24,12 @@ import { CvConfig } from '@/lib/schema'
 
 const SECTION_LABELS: Record<string, string> = {
   summary: 'Podsumowanie zawodowe',
-  experience: 'Doswiadczenie zawodowe',
+  experience: 'Doświadczenie zawodowe',
   projects: 'Projekty',
-  education: 'Wyksztalcenie',
+  education: 'Wykształcenie',
   certificates: 'Certyfikaty i kursy',
-  skills: 'Umiejetnosci',
-  languages: 'Jezyki obce',
+  skills: 'Umiejętności',
+  languages: 'Języki obce',
   interests: 'Zainteresowania',
 }
 
@@ -98,7 +98,7 @@ export function SectionOrder({ form }: Props) {
   return (
     <div className="space-y-4">
       <p className="text-sm text-gray-600 dark:text-gray-400">
-        Przeciagnij sekcje aby zmienic kolejnosc w wygenerowanym CV.
+        Przeciągnij sekcje aby zmienić kolejność w wygenerowanym CV.
       </p>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -116,7 +116,7 @@ export function SectionOrder({ form }: Props) {
         onClick={resetOrder}
         className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 underline"
       >
-        Przywroc domyslna kolejnosc
+        Przywróć domyślną kolejność
       </button>
     </div>
   )

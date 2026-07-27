@@ -10,14 +10,14 @@ interface Props {
 }
 
 const PRESET_INTERESTS = [
-  'Fotografia', 'Muzyka', 'Podroze', 'Gotowanie', 'Sport', 'Czytanie', 'Filmy', 'Gry komputerowe',
-  'Fitness', 'Wspinaczka', 'Rower', 'Bieganie', 'Joga', 'Plywanie', 'Pilka nozna', 'Siatkowka',
-  'Kosztykowka', 'Tenis', 'Szachy', 'Programowanie', 'Elektronika', 'Rysunek', 'Malarstwo',
-  'Rzezba', 'Taniec', 'Theater', 'Wolontariat', 'Ekologia', 'Ogrodnictwo', 'Zwierzeta',
-  'Astronomia', 'Historia', 'Psychologia', 'Filozofia', 'Lingwistyka', 'Nauka jezykow',
-  'Kino niezalezne', 'Seriale', 'Anime', 'Komiksy', 'Literatura sci-fi', 'Fantasy',
+  'Fotografia', 'Muzyka', 'Podróże', 'Gotowanie', 'Sport', 'Czytanie', 'Filmy', 'Gry komputerowe',
+  'Fitness', 'Wspinaczka', 'Rower', 'Bieganie', 'Joga', 'Pływanie', 'Piłka nożna', 'Siatkówka',
+  'Koszykówka', 'Tenis', 'Szachy', 'Programowanie', 'Elektronika', 'Rysunek', 'Malarstwo',
+  'Rzeźba', 'Taniec', 'Teatr', 'Wolontariat', 'Ekologia', 'Ogrodnictwo', 'Zwierzęta',
+  'Astronomia', 'Historia', 'Psychologia', 'Filozofia', 'Lingwistyka', 'Nauka języków',
+  'Kino niezależne', 'Seriale', 'Anime', 'Komiksy', 'Literatura sci-fi', 'Fantasy',
   'Podcast', 'Vlogging', 'DIY i majsterkowanie', 'Muzyka elektroniczna', 'Gitara',
-  'Pianino', 'Spiew', 'Windsurfing',
+  'Pianino', 'Śpiew', 'Windsurfing',
 ]
 
 export function SectionInterests({ form }: Props) {
@@ -57,7 +57,7 @@ export function SectionInterests({ form }: Props) {
     <div className="space-y-4">
       {/* Preset suggestions */}
       <div>
-        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Sugestie — kliknij aby dodac:</p>
+        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Sugestie — kliknij aby dodać:</p>
         <div className="flex flex-wrap gap-1.5">
           {PRESET_INTERESTS.map((preset) => {
             const isAdded = interests.includes(preset)
@@ -84,7 +84,7 @@ export function SectionInterests({ form }: Props) {
 
       {/* Custom interest input */}
       <div>
-        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Wlasne zainteresowanie:</p>
+        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Własne zainteresowanie:</p>
         {/* Tags display */}
         <div className="min-h-[48px] flex flex-wrap gap-2 p-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all">
           {interests.map((interest, i) => (
@@ -108,7 +108,7 @@ export function SectionInterests({ form }: Props) {
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
             onBlur={addInterest}
-            placeholder={interests.length === 0 ? 'Wpisz i nacisnij Enter...' : ''}
+            placeholder={interests.length === 0 ? 'Wpisz i naciśnij Enter...' : ''}
             className="flex-1 min-w-[120px] text-sm outline-none placeholder:text-gray-300 dark:placeholder:text-gray-600 bg-transparent text-gray-900 dark:text-gray-100"
           />
         </div>

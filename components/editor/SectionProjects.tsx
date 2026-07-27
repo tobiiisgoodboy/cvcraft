@@ -34,7 +34,7 @@ export function SectionProjects({ form }: Props) {
     <div className="space-y-4">
       {fields.length === 0 && (
         <p className="text-sm text-gray-400 text-center py-6">
-          Brak projektow. Dodaj wlasne projekty, portfolio, open source.
+          Brak projektów. Dodaj własne projekty, portfolio, open source.
         </p>
       )}
 
@@ -97,7 +97,7 @@ export function SectionProjects({ form }: Props) {
             <textarea
               {...register(`projects.${index}.description`)}
               rows={3}
-              placeholder="Krotki opis projektu, jego celu i funkcjonalnosci..."
+              placeholder="Krótki opis projektu, jego celu i funkcjonalności..."
               className={inputClass + ' resize-none leading-relaxed'}
             />
           </div>

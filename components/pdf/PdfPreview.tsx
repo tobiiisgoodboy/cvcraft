@@ -12,7 +12,7 @@ function PdfLoadingState() {
   return (
     <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-400">
       <FileText size={40} className="opacity-40" />
-      <p className="text-sm">Ladowanie podgladu PDF...</p>
+      <p className="text-sm">Ładowanie podglądu PDF...</p>
     </div>
   )
 }
@@ -129,7 +129,7 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
           </svg>
           Edytuj
         </button>
-        <span className="text-xs text-gray-400 ml-1">Podglad PDF</span>
+        <span className="text-xs text-gray-400 ml-1">Podgląd PDF</span>
       </div>
 
       {/* Template selector */}
@@ -314,7 +314,7 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
               <textarea
                 value={config.meta.gdprText ?? ''}
                 onChange={(e) => onGdprChange({ text: e.target.value })}
-                placeholder="Tresc klauzuli (puste = tekst domyslny)"
+                placeholder="Treść klauzuli (puste = tekst domyślny)"
                 rows={3}
                 className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
               />
@@ -323,7 +323,7 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
         </div>
 
         <div>
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Jezyk PDF</p>
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Język PDF</p>
           <div className="flex gap-2">
             {([
               { id: 'pl' as const, label: 'Polski' },

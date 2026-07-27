@@ -11,7 +11,7 @@ const PdfPreview = dynamic(
     ssr: false,
     loading: () => (
       <div className="flex items-center justify-center h-full text-gray-400 text-sm">
-        Ladowanie podgladu...
+        Ładowanie podglądu...
       </div>
     ),
   }
@@ -56,17 +56,17 @@ export function PreviewSlideOver({ config, onClose, onRefresh, ...handlers }: Pr
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            Podglad CV
+            Podgląd CV
           </span>
           <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={onRefresh}
               className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors"
-              title="Odswiez podglad aktualnym stanem formularza"
+              title="Odśwież podgląd aktualnym stanem formularza"
             >
               <RefreshCw size={12} />
-              Odswiez
+              Odśwież
             </button>
             <button
               type="button"

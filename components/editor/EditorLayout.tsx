@@ -57,7 +57,7 @@ const PdfPreview = dynamic(
     ssr: false,
     loading: () => (
       <div className="flex items-center justify-center flex-1 text-gray-400 dark:text-white/30">
-        <p className="text-sm">Ladowanie podgladu...</p>
+        <p className="text-sm">Ładowanie podglądu...</p>
       </div>
     ),
   }
@@ -66,35 +66,35 @@ const PdfPreview = dynamic(
 const STEPS = [
   { id: 'personal',     label: 'Dane osobowe',         icon: User,        group: 'PROFIL' },
   { id: 'summary',      label: 'Podsumowanie',          icon: FileText,    group: 'PROFIL' },
-  { id: 'experience',   label: 'Doswiadczenie',         icon: Briefcase,   group: 'DOSWIADCZENIE' },
-  { id: 'education',    label: 'Wyksztalcenie',         icon: GraduationCap, group: 'DOSWIADCZENIE' },
-  { id: 'projects',     label: 'Projekty',              icon: FolderGit2,  group: 'DOSWIADCZENIE' },
-  { id: 'skills',       label: 'Umiejetnosci',          icon: Zap,         group: 'KOMPETENCJE' },
-  { id: 'languages',    label: 'Jezyki',                icon: Globe,       group: 'KOMPETENCJE' },
+  { id: 'experience',   label: 'Doświadczenie',         icon: Briefcase,   group: 'DOŚWIADCZENIE' },
+  { id: 'education',    label: 'Wykształcenie',         icon: GraduationCap, group: 'DOŚWIADCZENIE' },
+  { id: 'projects',     label: 'Projekty',              icon: FolderGit2,  group: 'DOŚWIADCZENIE' },
+  { id: 'skills',       label: 'Umiejętności',          icon: Zap,         group: 'KOMPETENCJE' },
+  { id: 'languages',    label: 'Języki',                icon: Globe,       group: 'KOMPETENCJE' },
   { id: 'interests',    label: 'Zainteresowania',       icon: Heart,       group: 'KOMPETENCJE' },
   { id: 'certificates', label: 'Certyfikaty',           icon: Award,       group: 'DODATKI' },
   { id: 'awards',       label: 'Nagrody',               icon: Trophy,      group: 'DODATKI' },
-  { id: 'order',        label: 'Kolejnosc sekcji',      icon: LayoutList,  group: null },
-  { id: 'preview',      label: 'Podglad i pobieranie',  icon: Download,    group: null },
+  { id: 'order',        label: 'Kolejność sekcji',      icon: LayoutList,  group: null },
+  { id: 'preview',      label: 'Podgląd i pobieranie',  icon: Download,    group: null },
 ] as const
 
 const STEP_SUBTITLES: Record<string, string> = {
-  personal:     'Podstawowe informacje kontaktowe widoczne w naglowku',
-  summary:      'Krotki opis Twojego profilu — pojawi sie pod naglowkiem',
+  personal:     'Podstawowe informacje kontaktowe widoczne w nagłówku',
+  summary:      'Krótki opis Twojego profilu — pojawi się pod nagłówkiem',
   experience:   'Historia zatrudnienia od najnowszego do najstarszego',
-  education:    'Ukonzone szkoly, kierunki i daty',
-  skills:       'Kompetencje techniczne i miekkie — mozesz grupowac w kategorie',
-  languages:    'Jezyki obce z poziomem CEFR',
-  interests:    'Zainteresowania i hobby — pokaz kim jestes poza praca',
-  certificates: 'Ukonzone kursy, licencje i certyfikaty branzowe',
-  awards:       'Osiagniecia zawodowe i akademickie',
-  projects:     'Projekty portfolio lub wlasne realizacje',
-  order:        'Przeciagnij sekcje aby zmienic ich kolejnosc w PDF',
-  preview:      'Podglad finalnego CV — pobierz lub zmien ustawienia szablonu',
+  education:    'Ukończone szkoły, kierunki i daty',
+  skills:       'Kompetencje techniczne i miękkie — możesz grupować w kategorie',
+  languages:    'Języki obce z poziomem CEFR',
+  interests:    'Zainteresowania i hobby — pokaż kim jesteś poza pracą',
+  certificates: 'Ukończone kursy, licencje i certyfikaty branżowe',
+  awards:       'Osiągnięcia zawodowe i akademickie',
+  projects:     'Projekty portfolio lub własne realizacje',
+  order:        'Przeciągnij sekcje aby zmienić ich kolejność w PDF',
+  preview:      'Podgląd finalnego CV — pobierz lub zmień ustawienia szablonu',
 }
 
 // Sidebar group order
-const SIDEBAR_GROUPS = ['PROFIL', 'DOSWIADCZENIE', 'KOMPETENCJE', 'DODATKI']
+const SIDEBAR_GROUPS = ['PROFIL', 'DOŚWIADCZENIE', 'KOMPETENCJE', 'DODATKI']
 
 type StepId = (typeof STEPS)[number]['id']
 
@@ -474,7 +474,7 @@ export function EditorLayout() {
           onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(124,106,255,0.06)' }}
         >
           <Eye size={13} />
-          Podglad PDF
+          Podgląd PDF
         </button>
 
         {/* Pobierz PDF */}
@@ -760,7 +760,7 @@ export function EditorLayout() {
                 style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(12px)' }}
               >
                 <span className="text-xs text-gray-500 dark:text-white/40">
-                  Podglad finalnego CV — pobierz lub zmien ustawienia szablonu
+                  Podgląd finalnego CV — pobierz lub zmień ustawienia szablonu
                 </span>
                 <button
                   type="button"

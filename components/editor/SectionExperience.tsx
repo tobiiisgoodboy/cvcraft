@@ -104,7 +104,7 @@ function SortableExperienceItem({
             {...attributes}
             {...listeners}
             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-grab active:cursor-grabbing touch-none flex-shrink-0"
-            title="Przeciagnij, aby zmienic kolejnosc"
+            title="Przeciągnij, aby zmienić kolejność"
           >
             <GripVertical size={16} />
           </button>
@@ -112,7 +112,7 @@ function SortableExperienceItem({
             type="button"
             onClick={() => setCollapsed((c) => !c)}
             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex-shrink-0"
-            title={collapsed ? 'Rozwin pozycje' : 'Zwin pozycje'}
+            title={collapsed ? 'Rozwiń pozycję' : 'Zwiń pozycję'}
           >
             {collapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
           </button>
@@ -135,10 +135,10 @@ function SortableExperienceItem({
           type="button"
           onClick={onRemove}
           className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-md transition-colors"
-          title="Usun pozycje"
+          title="Usuń pozycję"
         >
           <Trash2 size={14} />
-          Usun
+          Usuń
         </button>
       </div>
 
@@ -161,7 +161,7 @@ function SortableExperienceItem({
 
       <div className="grid grid-cols-2 gap-3">
         <div className="flex flex-col gap-1">
-          <label className={labelClass}>Data rozpoczecia</label>
+          <label className={labelClass}>Data rozpoczęcia</label>
           <input
             {...register(`experience.${index}.startDate`)}
             placeholder="01/2020"
@@ -169,7 +169,7 @@ function SortableExperienceItem({
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label className={labelClass}>Data zakonczenia</label>
+          <label className={labelClass}>Data zakończenia</label>
           <input
             {...register(`experience.${index}.endDate`)}
             placeholder="12/2023"
@@ -185,15 +185,15 @@ function SortableExperienceItem({
           type="checkbox"
           className="w-4 h-4 rounded border-gray-300 accent-blue-600"
         />
-        <span className="text-sm text-gray-600 dark:text-gray-400">Pracuje tu obecnie</span>
+        <span className="text-sm text-gray-600 dark:text-gray-400">Pracuję tu obecnie</span>
       </label>
 
       <div className="flex flex-col gap-1">
-        <label className={labelClass}>Opis obowiazkow</label>
+        <label className={labelClass}>Opis obowiązków</label>
         <textarea
           {...register(`experience.${index}.description`)}
           rows={6}
-          placeholder="Opisz swoje obowiazki, osiagniecia i projekty..."
+          placeholder="Opisz swoje obowiązki, osiągnięcia i projekty..."
           className={cn(inputClass, 'resize-y min-h-[9rem] leading-relaxed')}
         />
       </div>
@@ -227,13 +227,13 @@ export function SectionExperience({ form }: Props) {
     <div className="space-y-4">
       {fields.length === 0 && (
         <p className="text-sm text-gray-400 text-center py-6">
-          Brak dodanych pozycji. Kliknij przycisk ponizej, aby dodac doswiadczenie.
+          Brak dodanych pozycji. Kliknij przycisk poniżej, aby dodać doświadczenie.
         </p>
       )}
 
       {fields.length > 1 && (
         <p className="text-xs text-gray-400 dark:text-gray-500">
-          Przeciagnij uchwyt <GripVertical size={12} className="inline align-text-bottom" /> aby zmienic kolejnosc pozycji.
+          Przeciągnij uchwyt <GripVertical size={12} className="inline align-text-bottom" /> aby zmienić kolejność pozycji.
         </p>
       )}
 
@@ -264,7 +264,7 @@ export function SectionExperience({ form }: Props) {
         className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-blue-300 dark:border-blue-500/50 rounded-xl text-sm font-semibold text-blue-600 dark:text-blue-400 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all"
       >
         <Plus size={16} />
-        Dodaj kolejna pozycje
+        Dodaj kolejną pozycję
       </button>
     </div>
   )

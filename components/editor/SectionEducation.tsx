@@ -35,7 +35,7 @@ export function SectionEducation({ form }: Props) {
     <div className="space-y-4">
       {fields.length === 0 && (
         <p className="text-sm text-gray-400 text-center py-6">
-          Brak dodanych pozycji. Kliknij przycisk ponizej, aby dodac wyksztalcenie.
+          Brak dodanych pozycji. Kliknij przycisk poniżej, aby dodać wykształcenie.
         </p>
       )}
 
@@ -46,7 +46,7 @@ export function SectionEducation({ form }: Props) {
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide">
-              Wyksztalcenie {index + 1}
+              Wykształcenie {index + 1}
             </span>
             <div className="flex items-center gap-1">
               <button
@@ -76,7 +76,7 @@ export function SectionEducation({ form }: Props) {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className={labelClass}>Szkola / Uczelnia</label>
+            <label className={labelClass}>Szkoła / Uczelnia</label>
             <input
               {...register(`education.${index}.school`)}
               placeholder="Politechnika Warszawska"
@@ -86,10 +86,10 @@ export function SectionEducation({ form }: Props) {
 
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1">
-              <label className={labelClass}>Stopien</label>
+              <label className={labelClass}>Stopień</label>
               <input
                 {...register(`education.${index}.degree`)}
-                placeholder="Inzynier / Magister"
+                placeholder="Inżynier / Magister"
                 className={inputClass}
               />
             </div>
@@ -105,7 +105,7 @@ export function SectionEducation({ form }: Props) {
 
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1">
-              <label className={labelClass}>Data rozpoczecia</label>
+              <label className={labelClass}>Data rozpoczęcia</label>
               <input
                 {...register(`education.${index}.startDate`)}
                 placeholder="10/2016"
@@ -113,7 +113,7 @@ export function SectionEducation({ form }: Props) {
               />
             </div>
             <div className="flex flex-col gap-1">
-              <label className={labelClass}>Data ukonczenia</label>
+              <label className={labelClass}>Data ukończenia</label>
               <input
                 {...register(`education.${index}.endDate`)}
                 placeholder="06/2021"
@@ -130,7 +130,7 @@ export function SectionEducation({ form }: Props) {
         className="w-full flex items-center justify-center gap-2 py-2.5 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-500 dark:text-gray-400 hover:border-blue-400 hover:text-blue-600 transition-all"
       >
         <Plus size={16} />
-        Dodaj wyksztalcenie
+        Dodaj wykształcenie
       </button>
     </div>
   )

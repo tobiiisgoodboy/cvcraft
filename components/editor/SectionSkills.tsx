@@ -31,7 +31,7 @@ export function SectionSkills({ form }: Props) {
     <div className="space-y-3">
       {fields.length === 0 && (
         <p className="text-sm text-gray-400 text-center py-6">
-          Brak dodanych umiejetnosci.
+          Brak dodanych umiejętności.
         </p>
       )}
 
@@ -40,7 +40,7 @@ export function SectionSkills({ form }: Props) {
           <div key={field.id} className="flex items-center gap-2">
             <input
               {...register(`skills.${index}.name`)}
-              placeholder="Umiejetnosc (np. React, Photoshop...)"
+              placeholder="Umiejętność (np. React, Photoshop...)"
               className={inputClass}
               style={{ flex: '65 1 0%', minWidth: 0, width: 'auto' }}
             />
@@ -67,7 +67,7 @@ export function SectionSkills({ form }: Props) {
         className="w-full flex items-center justify-center gap-2 py-2.5 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-500 dark:text-gray-400 hover:border-blue-400 hover:text-blue-600 transition-all"
       >
         <Plus size={16} />
-        Dodaj umiejetnosc
+        Dodaj umiejętność
       </button>
     </div>
   )

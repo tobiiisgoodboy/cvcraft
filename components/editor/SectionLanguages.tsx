@@ -30,7 +30,7 @@ export function SectionLanguages({ form }: Props) {
     <div className="space-y-3">
       {fields.length === 0 && (
         <p className="text-sm text-gray-400 text-center py-6">
-          Brak dodanych jezykow obcych.
+          Brak dodanych języków obcych.
         </p>
       )}
 
@@ -49,12 +49,12 @@ export function SectionLanguages({ form }: Props) {
               style={{ flex: '35 1 0%', minWidth: 0, width: 'auto' }}
             >
               <option value="" disabled>Wybierz poziom</option>
-              <option value="A1">A1 — Poczatkujacy</option>
+              <option value="A1">A1 — Początkujący</option>
               <option value="A2">A2 — Podstawowy</option>
-              <option value="B1">B1 — Sredni</option>
-              <option value="B2">B2 — Sredniozaawansowany</option>
+              <option value="B1">B1 — Średni</option>
+              <option value="B2">B2 — Średniozaawansowany</option>
               <option value="C1">C1 — Zaawansowany</option>
-              <option value="C2">C2 — Biegly</option>
+              <option value="C2">C2 — Biegły</option>
               <option value="Ojczysty">Ojczysty / Native</option>
             </select>
             <button
@@ -74,7 +74,7 @@ export function SectionLanguages({ form }: Props) {
         className="w-full flex items-center justify-center gap-2 py-2.5 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-500 dark:text-gray-400 hover:border-blue-400 hover:text-blue-600 transition-all"
       >
         <Plus size={16} />
-        Dodaj jezyk
+        Dodaj język
       </button>
     </div>
   )
