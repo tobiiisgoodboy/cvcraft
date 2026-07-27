@@ -28,7 +28,7 @@ export function SectionSkills({ form }: Props) {
   })
 
   return (
-    <div className="space-y-3 max-w-4xl">
+    <div className="space-y-3">
       {fields.length === 0 && (
         <p className="text-sm text-gray-400 text-center py-6">
           Brak dodanych umiejetnosci.

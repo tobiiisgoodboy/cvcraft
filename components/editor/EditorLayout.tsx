@@ -351,6 +351,8 @@ export function EditorLayout() {
   const isFirstStep = currentStepIdx === 0
   const isLastStep = currentStepIdx === STEPS.length - 1
   const currentStep = STEPS[currentStepIdx]
+  const prevStepNav = currentStepIdx > 0 ? STEPS[currentStepIdx - 1] : null
+  const nextStepNav = currentStepIdx < STEPS.length - 1 ? STEPS[currentStepIdx + 1] : null
   const editStepsCount = STEPS.length - 1
   const progressPct = activeStep === 'preview'
     ? 100
@@ -698,7 +700,7 @@ export function EditorLayout() {
 
               {/* Glass form card */}
               <div
-                className="cv-editor relative rounded-2xl border border-black/[0.07] dark:border-white/[0.08] p-5 md:p-6 shadow-md"
+                className="cv-editor relative rounded-2xl border border-black/[0.07] dark:border-white/[0.08] p-5 md:p-6 shadow-md max-w-4xl"
                 style={{ background: 'rgba(255,255,255,0.78)', backdropFilter: 'blur(16px)' }}
               >
                 <form>
@@ -714,6 +716,38 @@ export function EditorLayout() {
                   {activeStep === 'projects'     && <SectionProjects     form={form} />}
                   {activeStep === 'order'        && <SectionOrder        form={form} />}
                 </form>
+              </div>
+
+              {/* Prev / Next section navigation */}
+              <div className="flex items-stretch gap-3 mt-5 max-w-4xl">
+                {prevStepNav ? (
+                  <button
+                    type="button"
+                    onClick={() => handleStepChange(prevStepNav.id)}
+                    className="group flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-black/[0.08] dark:border-white/[0.08] hover:border-[#7c6aff] transition-all"
+                  >
+                    <ChevronLeft size={16} className="text-gray-400 group-hover:text-[#7c6aff] transition-colors flex-shrink-0" />
+                    <span className="flex flex-col leading-tight text-left">
+                      <span className="text-[10px] uppercase tracking-wide text-gray-400">Wstecz</span>
+                      <span className="text-[13px] font-semibold text-gray-700 dark:text-white/70">{prevStepNav.label}</span>
+                    </span>
+                  </button>
+                ) : (
+                  <span />
+                )}
+                {nextStepNav && (
+                  <button
+                    type="button"
+                    onClick={() => handleStepChange(nextStepNav.id)}
+                    className="group flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-[#7c6aff]/30 bg-[#7c6aff]/[0.05] hover:bg-[#7c6aff]/[0.10] transition-all ml-auto"
+                  >
+                    <span className="flex flex-col leading-tight text-right">
+                      <span className="text-[10px] uppercase tracking-wide text-[#7c6aff]/70">Dalej</span>
+                      <span className="text-[13px] font-semibold text-[#7c6aff]">{nextStepNav.label}</span>
+                    </span>
+                    <ChevronRight size={16} className="text-[#7c6aff] transition-colors flex-shrink-0" />
+                  </button>
+                )}
               </div>
             </div>
           )}
