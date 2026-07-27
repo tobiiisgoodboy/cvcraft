@@ -5,6 +5,7 @@ import { CvConfig } from '@/lib/schema'
 import { ClassicTemplate } from './templates/ClassicTemplate'
 import { ModernTemplate } from './templates/ModernTemplate'
 import { MinimalTemplate } from './templates/MinimalTemplate'
+import { DeveloperTemplate } from './templates/DeveloperTemplate'
 
 interface Props {
   config: CvConfig
@@ -23,6 +24,12 @@ export function PdfDocument({ config, qrDataUrl }: Props) {
       return (
         <Document>
           <MinimalTemplate config={config} qrDataUrl={qrDataUrl} />
+        </Document>
+      )
+    case 'developer':
+      return (
+        <Document>
+          <DeveloperTemplate config={config} qrDataUrl={qrDataUrl} />
         </Document>
       )
     default:

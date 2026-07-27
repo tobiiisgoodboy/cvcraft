@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const MetaSchema = z.object({
-  template: z.enum(['classic', 'modern', 'minimal']),
+  template: z.enum(['classic', 'modern', 'minimal', 'developer']),
   accentColor: z.string(),
   bgColor: z.string(),
   textColor: z.string(),

@@ -19,7 +19,7 @@ function PdfLoadingState() {
 
 interface Props {
   config: CvConfig
-  onTemplateChange: (template: 'classic' | 'modern' | 'minimal') => void
+  onTemplateChange: (template: 'classic' | 'modern' | 'minimal' | 'developer') => void
   onAccentColorChange: (color: string) => void
   onPhotoPositionChange: (position: 'left' | 'right' | 'none') => void
   onFontChange: (font: 'Helvetica' | 'Times-Roman' | 'Roboto') => void
@@ -37,6 +37,7 @@ const TEMPLATES = [
   { id: 'classic' as const, label: 'Klasyczny' },
   { id: 'modern' as const, label: 'Nowoczesny' },
   { id: 'minimal' as const, label: 'Minimalistyczny' },
+  { id: 'developer' as const, label: 'Programista' },
 ]
 
 export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentColorChange, onPhotoPositionChange, onFontChange, onBgColorChange, onTextColorChange, onSkillLayoutChange, onMarginsChange, onPdfLanguageChange, onQrChange, onGdprChange }: Props) {

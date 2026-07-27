@@ -258,7 +258,7 @@ export function EditorLayout() {
     setPreviewConfig(config)
   }
 
-  function handleTemplateChange(template: 'classic' | 'modern' | 'minimal') {
+  function handleTemplateChange(template: 'classic' | 'modern' | 'minimal' | 'developer') {
     setValue('meta.template', template, { shouldDirty: true })
     setPreviewConfig((prev) => ({ ...prev, meta: { ...prev.meta, template } }))
   }

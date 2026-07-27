@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CVcraft — Mockup Style C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  /* ── TOKENS ─────────────────────────────────────────────── */
+  :root {
+    --radius: 14px;
+    --radius-sm: 8px;
+    --radius-lg: 20px;
+
+    /* gradient palette */
+    --g1: #6c47ff;   /* violet */
+    --g2: #a855f7;   /* purple */
+    --g3: #06b6d4;   /* cyan */
+    --g4: #10b981;   /* emerald */
+
+    --accent: #7c6aff;
+    --accent-glow: rgba(124,106,255,.35);
+    --accent2: #06d6c7;
+  }
+
+  [data-theme="dark"] {
+    --bg:       #07080f;
+    --bg2:      #0e1018;
+    --bg3:      #141620;
+    --surface:  rgba(20,22,32,.75);
+    --surface2: rgba(30,33,48,.6);
+    --border:   rgba(255,255,255,.08);
+    --border2:  rgba(255,255,255,.13);
+    --text:     #f0f1f8;
+    --text-2:   #9395a8;
+    --text-3:   #5c5e72;
+    --input-bg: rgba(255,255,255,.05);
+    --shadow:   0 8px 32px rgba(0,0,0,.55);
+    --sidebar-glow: rgba(108,71,255,.18);
+  }
+
+  [data-theme="light"] {
+    --bg:       #f4f5fc;
+    --bg2:      #eaecf7;
+    --bg3:      #ffffff;
+    --surface:  rgba(255,255,255,.82);
+    --surface2: rgba(245,246,254,.9);
+    --border:   rgba(0,0,0,.08);
+    --border2:  rgba(0,0,0,.13);
+    --text:     #14151f;
+    --text-2:   #5c5e78;
+    --text-3:   #9395ab;
+    --input-bg: rgba(0,0,0,.04);
+    --shadow:   0 8px 32px rgba(80,60,180,.10);
+    --sidebar-glow: rgba(108,71,255,.10);
+  }
+
+  /* ── RESET ──────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    background: var(--bg);
+    color: var(--text);
+    transition: background .3s, color .3s;
+    overflow: hidden;
+  }
+
+  /* ── BACKGROUND ORBS ────────────────────────────────────── */
+  .orbs {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    overflow: hidden;
+  }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: .18;
+    animation: drift 18s ease-in-out infinite alternate;
+  }
+  [data-theme="light"] .orb { opacity: .09; }
+  .orb-1 { width: 520px; height: 520px; background: var(--g1); top: -140px; left: -100px; animation-delay: 0s; }
+  .orb-2 { width: 380px; height: 380px; background: var(--g3); bottom: -80px; right: 10%; animation-delay: -7s; }
+  .orb-3 { width: 260px; height: 260px; background: var(--g2); top: 40%; left: 35%; animation-delay: -4s; }
+
+  @keyframes drift {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(40px, -30px) scale(1.08); }
+  }
+
+  /* ── SHELL ──────────────────────────────────────────────── */
+  .shell {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column;
+    height: 100vh;
+  }
+
+  /* ── TOPBAR ─────────────────────────────────────────────── */
+  .topbar {
+    display: flex; align-items: center; gap: 16px;
+    padding: 0 24px;
+    height: 58px;
+    background: var(--surface);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none;
+  }
+  .logo-mark {
+    width: 32px; height: 32px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, var(--g1), var(--g3));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    color: #fff;
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--g1), var(--g3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -.3px;
+  }
+
+  .topbar-spacer { flex: 1; }
+
+  .completion-chip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 14px;
+    border-radius: 99px;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-2);
+    font-weight: 500;
+  }
+  .completion-pct {
+    font-weight: 700;
+    font-size: 13px;
+    background: linear-gradient(90deg, var(--g1), var(--g3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .completion-ring {
+    width: 20px; height: 20px;
+    position: relative;
+  }
+  .completion-ring svg { width: 20px; height: 20px; transform: rotate(-90deg); }
+  .completion-ring circle {
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+  }
+  .ring-bg   { stroke: var(--border2); }
+  .ring-fill { stroke: url(#grad); stroke-dasharray: 50.27; stroke-dashoffset: 15; transition: stroke-dashoffset .6s cubic-bezier(.4,0,.2,1); }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 18px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border2);
+    transition: all .18s;
+    background: var(--input-bg);
+    color: var(--text);
+  }
+  .btn:hover { background: var(--surface2); border-color: var(--accent); transform: translateY(-1px); box-shadow: 0 4px 16px var(--accent-glow); }
+  .btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--g1), var(--g2));
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 4px 20px var(--accent-glow);
+  }
+  .btn-primary:hover { filter: brightness(1.1); box-shadow: 0 6px 28px var(--accent-glow); transform: translateY(-1px); }
+
+  .theme-toggle {
+    width: 36px; height: 36px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--input-bg);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-2);
+    transition: all .18s;
+  }
+  .theme-toggle:hover { color: var(--text); border-color: var(--accent); background: var(--surface2); }
+
+  /* ── BODY ───────────────────────────────────────────────── */
+  .body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ────────────────────────────────────────────── */
+  .sidebar {
+    width: 258px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 14px;
+    gap: 4px;
+    background: var(--surface);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    position: relative;
+  }
+  .sidebar::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(170deg, var(--sidebar-glow) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .sidebar-section-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    padding: 6px 10px 4px;
+    margin-top: 8px;
+  }
+  .sidebar-section-label:first-child { margin-top: 0; }
+
+  .step {
+    display: flex; align-items: center; gap: 11px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all .18s;
+    position: relative;
+    border: 1px solid transparent;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-2);
+    user-select: none;
+  }
+  .step:hover { background: var(--input-bg); color: var(--text); }
+
+  .step.active {
+    background: linear-gradient(135deg, rgba(108,71,255,.18), rgba(6,182,212,.10));
+    border-color: rgba(124,106,255,.35);
+    color: var(--text);
+    box-shadow: 0 2px 16px rgba(108,71,255,.12);
+  }
+  .step.active .step-icon { color: var(--accent); }
+  .step.active .step-num { background: linear-gradient(135deg, var(--g1), var(--g3)); color: #fff; }
+
+  .step.done .step-num { background: rgba(16,185,129,.18); color: #10b981; }
+  .step.done .step-icon { color: #10b981; }
+
+  .step-num {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    background: var(--input-bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-3);
+    flex-shrink: 0;
+    transition: all .18s;
+  }
+
+  .step-label { flex: 1; }
+
+  .step-status {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--border2);
+    flex-shrink: 0;
+  }
+  .step.active .step-status { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+  .step.done .step-status  { background: #10b981; }
+
+  /* ── MAIN ───────────────────────────────────────────────── */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 28px 32px;
+    gap: 24px;
+  }
+
+  /* progress bar */
+  .progress-bar-wrap {
+    height: 3px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    width: 45%;
+    background: linear-gradient(90deg, var(--g1), var(--g3));
+    border-radius: 99px;
+    transition: width .6s cubic-bezier(.4,0,.2,1);
+    position: relative;
+  }
+  .progress-bar-fill::after {
+    content: '';
+    position: absolute; right: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--g3);
+    box-shadow: 0 0 10px var(--g3);
+  }
+
+  /* section header */
+  .section-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 16px;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -.5px;
+    line-height: 1.15;
+    color: var(--text);
+  }
+  .section-sub {
+    font-size: 14px;
+    color: var(--text-2);
+    margin-top: 5px;
+    font-weight: 400;
+  }
+  .step-badge {
+    flex-shrink: 0;
+    padding: 5px 13px;
+    border-radius: 99px;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-2);
+    white-space: nowrap;
+  }
+
+  /* card */
+  .card {
+    background: var(--surface);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    flex: 1;
+    overflow-y: auto;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(124,106,255,.4), rgba(6,214,199,.3), transparent);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+
+  /* form grid */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 24px;
+  }
+  .form-grid .full { grid-column: 1 / -1; }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .field label {
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    color: var(--text-2);
+    text-transform: uppercase;
+  }
+
+  .field input,
+  .field textarea,
+  .field select {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    background: var(--input-bg);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    outline: none;
+    transition: all .2s;
+    -webkit-appearance: none;
+  }
+  .field input::placeholder,
+  .field textarea::placeholder { color: var(--text-3); }
+
+  .field input:focus,
+  .field textarea:focus,
+  .field select:focus {
+    border-color: var(--accent);
+    background: rgba(124,106,255,.07);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  .field textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
+
+  .field-hint {
+    font-size: 12px;
+    color: var(--text-3);
+    margin-top: -2px;
+  }
+
+  /* photo upload */
+  .photo-drop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 28px 20px;
+    border-radius: var(--radius-sm);
+    border: 2px dashed var(--border2);
+    background: var(--input-bg);
+    cursor: pointer;
+    transition: all .2s;
+    color: var(--text-2);
+    font-size: 14px;
+    text-align: center;
+  }
+  .photo-drop:hover {
+    border-color: var(--accent);
+    background: rgba(124,106,255,.07);
+    color: var(--text);
+  }
+  .photo-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--g1), var(--g2));
+    display: flex; align-items: center; justify-content: center;
+    opacity: .7;
+  }
+  .photo-icon svg { width: 20px; height: 20px; color: #fff; }
+
+  /* ── BOTTOM NAV ─────────────────────────────────────────── */
+  .bottom-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .bottom-nav .spacer { flex: 1; }
+
+  .nav-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-2);
+  }
+  .nav-dots {
+    display: flex; gap: 5px;
+  }
+  .nav-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--border2);
+    transition: all .2s;
+  }
+  .nav-dot.active { background: var(--accent); width: 18px; border-radius: 99px; box-shadow: 0 0 8px var(--accent); }
+  .nav-dot.done   { background: #10b981; }
+
+  /* ── SCROLLBAR ──────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  /* ── AUTOSAVE BADGE ─────────────────────────────────────── */
+  .autosave {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--text-3);
+  }
+  .autosave-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: .5; transform: scale(.8); }
+  }
+
+  /* ── SECTION DIVIDER ────────────────────────────────────── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+    margin: 8px 0;
+  }
+
+  /* ── FADE IN ────────────────────────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .card { animation: fadeUp .4s cubic-bezier(.4,0,.2,1) both; }
+  .section-header { animation: fadeUp .35s cubic-bezier(.4,0,.2,1) .05s both; }
+
+  /* ── ICON HELPER ────────────────────────────────────────── */
+  .icon { display: inline-flex; }
+</style>
+</head>
+<body>
+
+<div class="orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="shell">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <a class="logo" href="#">
+      <div class="logo-mark">CV</div>
+      <span class="logo-text">CVcraft</span>
+    </a>
+
+    <div class="topbar-spacer"></div>
+
+    <div class="autosave">
+      <div class="autosave-dot"></div>
+      Zapisano przed chwilą
+    </div>
+
+    <div class="completion-chip">
+      <div class="completion-ring">
+        <svg viewBox="0 0 20 20">
+          <defs>
+            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%"   stop-color="#6c47ff"/>
+              <stop offset="100%" stop-color="#06d6c7"/>
+            </linearGradient>
+          </defs>
+          <circle class="ring-bg"   cx="10" cy="10" r="8"/>
+          <circle class="ring-fill" cx="10" cy="10" r="8"/>
+        </svg>
+      </div>
+      <span>Kompletność</span>
+      <span class="completion-pct">45%</span>
+    </div>
+
+    <button class="btn" onclick="alert('Podgląd PDF')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      Podgląd PDF
+    </button>
+
+    <button class="btn btn-primary" onclick="alert('Pobierz PDF')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Pobierz PDF
+    </button>
+
+    <button class="theme-toggle" onclick="toggleTheme()" title="Zmień motyw">
+      <svg id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </header>
+
+  <!-- BODY -->
+  <div class="body">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+      <div class="sidebar-section-label">Profil</div>
+
+      <div class="step active" onclick="setStep(this, 0)">
+        <div class="step-num">1</div>
+        <span class="step-label">Dane osobowe</span>
+        <div class="step-status"></div>
+      </div>
+
+      <div class="step done" onclick="setStep(this, 1)">
+        <div class="step-num">2</div>
+        <span class="step-label">Podsumowanie</span>
+        <div class="step-status"></div>
+      </div>
+
+      <div class="sidebar-section-label">Doświadczenie</div>
+
+      <div class="step done" onclick="setStep(this, 2)">
+        <div class="step-num">3</div>
+        <span class="step-label">Doświadczenie</span>
+        <div class="step-status"></div>
+      </div>
+
+      <div class="step" onclick="setStep(this, 3)">
+        <div class="step-num">4</div>
+        <span class="step-label">Edukacja</span>
+        <div class="step-status"></div>
+      </div>
+
+      <div class="step" onclick="setStep(this, 4)">
+        <div class="step-num">5</div>
+        <span class="step-label">Projekty</span>
+        <div class="step-status"></div>
+      </div>
+
+      <div class="sidebar-section-label">Kompetencje</div>
+
+      <div class="step" onclick="setStep(this, 5)">
+        <div class="step-num">6</div>
+        <span class="step-label">Umiejętności</span>
+        <div class="step-status"></div>
+      </div>
+
+      <div class="step" onclick="setStep(this, 6)">
+        <div class="step-num">7</div>
+        <span class="step-label">Języki</span>
+        <div class="step-status"></div>
+      </div>
+
+      <div class="step" onclick="setStep(this, 7)">
+        <div class="step-num">8</div>
+        <span class="step-label">Zainteresowania</span>
+        <div class="step-status"></div>
+      </div>
+
+      <div class="sidebar-section-label">Dodatki</div>
+
+      <div class="step" onclick="setStep(this, 8)">
+        <div class="step-num">9</div>
+        <span class="step-label">Certyfikaty</span>
+        <div class="step-status"></div>
+      </div>
+
+      <div class="step" onclick="setStep(this, 9)">
+        <div class="step-num">10</div>
+        <span class="step-label">Nagrody</span>
+        <div class="step-status"></div>
+      </div>
+
+      <div class="divider" style="margin: 10px 0 6px;"></div>
+
+      <div class="step" onclick="setStep(this, 10)">
+        <div class="step-num" style="font-size:9px">⇅</div>
+        <span class="step-label">Kolejność sekcji</span>
+        <div class="step-status"></div>
+      </div>
+    </nav>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- progress bar -->
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+
+      <!-- section header -->
+      <div class="section-header">
+        <div>
+          <div class="section-title" id="section-title">Dane osobowe</div>
+          <div class="section-sub" id="section-sub">Podstawowe informacje kontaktowe widoczne w nagłówku CV</div>
+        </div>
+        <div class="step-badge" id="step-badge">1 / 11</div>
+      </div>
+
+      <!-- form card -->
+      <div class="card" id="form-card">
+        <div class="form-grid" id="form-content">
+
+          <div class="field">
+            <label>Imię</label>
+            <input type="text" placeholder="np. Anna">
+          </div>
+
+          <div class="field">
+            <label>Nazwisko</label>
+            <input type="text" placeholder="np. Kowalska">
+          </div>
+
+          <div class="field full">
+            <label>Stanowisko</label>
+            <input type="text" placeholder="np. UX Designer · Product Manager · Frontend Developer">
+          </div>
+
+          <div class="field">
+            <label>E-mail</label>
+            <input type="email" placeholder="anna@example.com">
+          </div>
+
+          <div class="field">
+            <label>Telefon</label>
+            <input type="tel" placeholder="+48 500 000 000">
+          </div>
+
+          <div class="field">
+            <label>Miasto</label>
+            <input type="text" placeholder="np. Warszawa">
+          </div>
+
+          <div class="field">
+            <label>LinkedIn</label>
+            <input type="url" placeholder="linkedin.com/in/anna-kowalska">
+          </div>
+
+          <div class="field full">
+            <label>Strona WWW / Portfolio</label>
+            <input type="url" placeholder="https://portfolio.dev">
+          </div>
+
+          <div class="field full">
+            <label>Zdjęcie profilowe</label>
+            <div class="photo-drop">
+              <div class="photo-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </div>
+              <span>Kliknij lub przeciągnij zdjęcie tutaj</span>
+              <span style="font-size:12px;color:var(--text-3)">JPG, PNG · maks. 2 MB</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- bottom nav -->
+      <div class="bottom-nav">
+        <button class="btn" id="btn-prev" onclick="navigate(-1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="15 18 9 12 15 6"/></svg>
+          Wstecz
+        </button>
+
+        <div class="nav-dots" id="nav-dots"></div>
+
+        <div class="spacer"></div>
+
+        <div class="autosave">
+          <div class="autosave-dot"></div>
+          Auto-zapis aktywny
+        </div>
+
+        <button class="btn btn-primary" id="btn-next" onclick="navigate(1)">
+          Dalej
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+const STEPS = [
+  {
+    title: 'Dane osobowe',
+    sub: 'Podstawowe informacje kontaktowe widoczne w nagłówku CV',
+    progress: 45,
+    pct: 45,
+    done: false
+  },
+  {
+    title: 'Podsumowanie zawodowe',
+    sub: 'Kilka zdań o sobie — pojawi się tuż pod nagłówkiem',
+    progress: 100,
+    pct: 72,
+    done: true
+  },
+  {
+    title: 'Doświadczenie zawodowe',
+    sub: 'Historia zatrudnienia — od najnowszego do najstarszego',
+    progress: 100,
+    pct: 72,
+    done: true
+  },
+  {
+    title: 'Edukacja',
+    sub: 'Ukończone szkoły, kierunki, daty',
+    progress: 0,
+    pct: 45,
+    done: false
+  },
+  {
+    title: 'Projekty',
+    sub: 'Projekty portfolio lub własne realizacje',
+    progress: 0,
+    pct: 45,
+    done: false
+  },
+  {
+    title: 'Umiejętności',
+    sub: 'Techniczne i miękkie — możesz grupować w kategorie',
+    progress: 0,
+    pct: 45,
+    done: false
+  },
+  {
+    title: 'Języki',
+    sub: 'Języki obce z poziomem CEFR',
+    progress: 0,
+    pct: 45,
+    done: false
+  },
+  {
+    title: 'Zainteresowania',
+    sub: 'Dodaj kilka tagów — pokaż kim jesteś poza pracą',
+    progress: 0,
+    pct: 45,
+    done: false
+  },
+  {
+    title: 'Certyfikaty',
+    sub: 'Ukończone kursy, licencje i certyfikaty branżowe',
+    progress: 0,
+    pct: 45,
+    done: false
+  },
+  {
+    title: 'Nagrody i wyróżnienia',
+    sub: 'Osiągnięcia zawodowe i akademickie',
+    progress: 0,
+    pct: 45,
+    done: false
+  },
+  {
+    title: 'Kolejność sekcji',
+    sub: 'Przeciągnij sekcje aby zmienić ich kolejność w PDF',
+    progress: 0,
+    pct: 45,
+    done: false
+  },
+];
+
+let currentStep = 0;
+
+const FORMS = [
+  /* 0 – Dane osobowe */
+  `<div class="field"><label>Imię</label><input type="text" placeholder="np. Anna"></div>
+   <div class="field"><label>Nazwisko</label><input type="text" placeholder="np. Kowalska"></div>
+   <div class="field full"><label>Stanowisko / tytuł zawodowy</label><input type="text" placeholder="np. UX Designer · Frontend Developer"></div>
+   <div class="field"><label>E-mail</label><input type="email" placeholder="anna@example.com"></div>
+   <div class="field"><label>Telefon</label><input type="tel" placeholder="+48 500 000 000"></div>
+   <div class="field"><label>Miasto</label><input type="text" placeholder="np. Warszawa"></div>
+   <div class="field"><label>LinkedIn</label><input type="url" placeholder="linkedin.com/in/anna-kowalska"></div>
+   <div class="field full"><label>Strona WWW / Portfolio</label><input type="url" placeholder="https://portfolio.dev"></div>
+   <div class="field full"><label>Zdjęcie profilowe</label><div class="photo-drop"><div class="photo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><span>Kliknij lub przeciągnij zdjęcie</span><span style="font-size:12px;color:var(--text-3)">JPG, PNG · maks. 2 MB</span></div></div>`,
+
+  /* 1 – Podsumowanie */
+  `<div class="field full"><label>Podsumowanie zawodowe</label><textarea placeholder="Krótkie (3-5 zdań) podsumowanie Twojego profilu zawodowego. Opisz swoją specjalizację, doświadczenie i cel zawodowy..."></textarea><p class="field-hint">Zalecana długość: 300–600 znaków · widoczne w nagłówku CV</p></div>`,
+
+  /* 2 – Doświadczenie */
+  `<div class="field full"><label>Firma</label><input type="text" placeholder="np. Google · Startup XYZ · Freelance"></div>
+   <div class="field"><label>Stanowisko</label><input type="text" placeholder="np. Senior Developer"></div>
+   <div class="field"><label>Lokalizacja</label><input type="text" placeholder="Warszawa / Zdalnie"></div>
+   <div class="field"><label>Data rozpoczęcia</label><input type="month"></div>
+   <div class="field"><label>Data zakończenia</label><input type="month" placeholder="lub zostaw puste (obecna)"></div>
+   <div class="field full"><label>Opis obowiązków i osiągnięć</label><textarea placeholder="• Opisz główne zadania i odpowiedzialności&#10;• Podkreśl mierzalne osiągnięcia (np. wzrost o 30%)&#10;• Użyj czasowników akcji: opracowałem, wdrożyłem, zarządzałem..."></textarea></div>`,
+
+  /* 3 – Edukacja */
+  `<div class="field full"><label>Uczelnia / Szkoła</label><input type="text" placeholder="np. Politechnika Warszawska"></div>
+   <div class="field"><label>Kierunek</label><input type="text" placeholder="np. Informatyka"></div>
+   <div class="field"><label>Tytuł</label><input type="text" placeholder="np. mgr inż."></div>
+   <div class="field"><label>Data od</label><input type="month"></div>
+   <div class="field"><label>Data do</label><input type="month"></div>
+   <div class="field full"><label>Dodatkowe informacje</label><textarea style="min-height:80px" placeholder="Specjalizacja, temat pracy dyplomowej, wyróżnienia..."></textarea></div>`,
+
+  /* 4 – Projekty */
+  `<div class="field full"><label>Nazwa projektu</label><input type="text" placeholder="np. CVcraft — kreator CV online"></div>
+   <div class="field"><label>Rola</label><input type="text" placeholder="np. Full-stack developer"></div>
+   <div class="field"><label>Link / URL</label><input type="url" placeholder="https://github.com/..."></div>
+   <div class="field full"><label>Opis projektu</label><textarea placeholder="Co to jest, jakie technologie, co zrobiłeś/aś, jakie efekty..."></textarea></div>`,
+
+  /* 5 – Umiejętności */
+  `<div class="field full"><label>Dodaj umiejętność</label><input type="text" placeholder="np. React, Python, Zarządzanie projektem..."></div>
+   <div class="field full"><p class="field-hint" style="font-size:14px;color:var(--text-2);margin:0">Możesz grupować umiejętności w kategorie (np. Frontend, Backend, Narzędzia). Przeciągnij tagi aby zmienić kolejność.</p></div>`,
+
+  /* 6 – Języki */
+  `<div class="field"><label>Język</label><input type="text" placeholder="np. Angielski"></div>
+   <div class="field"><label>Poziom</label><select><option>A1 – Początkujący</option><option>A2</option><option>B1</option><option selected>B2 – Średniozaawansowany</option><option>C1</option><option>C2 – Biegły</option><option>Ojczysty</option></select></div>`,
+
+  /* 7 – Zainteresowania */
+  `<div class="field full"><label>Zainteresowania i hobby</label><input type="text" placeholder="np. Fotografia, Wspinaczka, Open source, UX design..."><p class="field-hint">Oddziel tagiem Enter lub przecinkiem</p></div>`,
+
+  /* 8 – Certyfikaty */
+  `<div class="field full"><label>Nazwa certyfikatu</label><input type="text" placeholder="np. AWS Solutions Architect Associate"></div>
+   <div class="field"><label>Wydawca</label><input type="text" placeholder="np. Amazon Web Services"></div>
+   <div class="field"><label>Data uzyskania</label><input type="month"></div>
+   <div class="field full"><label>ID certyfikatu / link</label><input type="url" placeholder="Opcjonalnie — link do weryfikacji"></div>`,
+
+  /* 9 – Nagrody */
+  `<div class="field full"><label>Tytuł nagrody</label><input type="text" placeholder="np. Najlepszy projekt roku · Hackathon 1st place"></div>
+   <div class="field"><label>Przyznane przez</label><input type="text" placeholder="np. IEEE · Firma XYZ"></div>
+   <div class="field"><label>Data</label><input type="month"></div>
+   <div class="field full"><label>Opis</label><textarea style="min-height:80px" placeholder="Krótki opis..."></textarea></div>`,
+
+  /* 10 – Kolejność */
+  `<div class="field full"><p style="color:var(--text-2);font-size:14px;margin-bottom:16px">Przeciągnij sekcje poniżej aby zmienić ich kolejność w wygenerowanym PDF.</p>
+   ${['Doświadczenie zawodowe','Edukacja','Umiejętności','Języki','Projekty','Certyfikaty','Zainteresowania','Nagrody'].map((s,i)=>`
+   <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;background:var(--input-bg);border:1px solid var(--border);margin-bottom:8px;cursor:grab;transition:all .18s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+     <span style="color:var(--text-3);font-size:16px">⠿</span>
+     <span style="font-weight:500;font-size:14px">${s}</span>
+     <span style="margin-left:auto;font-size:12px;color:var(--text-3)">${i+1}</span>
+   </div>`).join('')}
+   </div>`,
+];
+
+function buildDots() {
+  const container = document.getElementById('nav-dots');
+  container.innerHTML = '';
+  STEPS.forEach((s, i) => {
+    const d = document.createElement('div');
+    d.className = 'nav-dot' + (i === currentStep ? ' active' : (s.done ? ' done' : ''));
+    d.onclick = () => goTo(i);
+    container.appendChild(d);
+  });
+}
+
+function goTo(idx) {
+  currentStep = Math.max(0, Math.min(STEPS.length - 1, idx));
+  const s = STEPS[currentStep];
+
+  // update sidebar
+  document.querySelectorAll('.step').forEach((el, i) => {
+    el.classList.toggle('active', i === currentStep);
+  });
+
+  // update header
+  document.getElementById('section-title').textContent = s.title;
+  document.getElementById('section-sub').textContent = s.sub;
+  document.getElementById('step-badge').textContent = `${currentStep + 1} / ${STEPS.length}`;
+
+  // update progress
+  document.getElementById('progress-fill').style.width = s.progress + '%';
+
+  // update ring (dashoffset = 50.27 * (1 - pct/100))
+  const offset = 50.27 * (1 - s.pct / 100);
+  document.querySelector('.ring-fill').style.strokeDashoffset = offset;
+  document.querySelector('.completion-pct').textContent = s.pct + '%';
+
+  // update form
+  const fc = document.getElementById('form-content');
+  fc.style.opacity = '0';
+  fc.style.transform = 'translateY(8px)';
+  setTimeout(() => {
+    fc.innerHTML = FORMS[currentStep] || FORMS[0];
+    fc.style.transition = 'opacity .25s, transform .25s';
+    fc.style.opacity = '1';
+    fc.style.transform = 'translateY(0)';
+  }, 150);
+
+  // nav buttons
+  document.getElementById('btn-prev').style.opacity = currentStep === 0 ? '.35' : '1';
+  document.getElementById('btn-prev').style.pointerEvents = currentStep === 0 ? 'none' : 'auto';
+  document.getElementById('btn-next').textContent = currentStep === STEPS.length - 1 ? '✓ Gotowe' : '';
+  if (currentStep < STEPS.length - 1) {
+    document.getElementById('btn-next').innerHTML = 'Dalej <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="9 18 15 12 9 6"/></svg>';
+  } else {
+    document.getElementById('btn-next').innerHTML = '✓ Gotowe';
+  }
+
+  buildDots();
+}
+
+function setStep(el, idx) { goTo(idx); }
+function navigate(dir) { goTo(currentStep + dir); }
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const dark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', dark ? 'light' : 'dark');
+  document.getElementById('icon-sun').style.display = dark ? 'inline' : 'none';
+  document.getElementById('icon-moon').style.display = dark ? 'none' : 'inline';
+}
+
+// init
+buildDots();
+document.getElementById('btn-prev').style.opacity = '.35';
+document.getElementById('btn-prev').style.pointerEvents = 'none';
+</script>
+</body>
+</html>

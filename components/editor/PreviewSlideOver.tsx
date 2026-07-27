@@ -21,7 +21,7 @@ interface Props {
   config: CvConfig
   onClose: () => void
   onRefresh: () => void
-  onTemplateChange: (t: 'classic' | 'modern' | 'minimal') => void
+  onTemplateChange: (t: 'classic' | 'modern' | 'minimal' | 'developer') => void
   onAccentColorChange: (c: string) => void
   onPhotoPositionChange: (p: 'left' | 'right' | 'none') => void
   onFontChange: (f: 'Helvetica' | 'Times-Roman' | 'Roboto') => void
