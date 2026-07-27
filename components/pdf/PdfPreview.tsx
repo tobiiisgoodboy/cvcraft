@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer'
+import { PDFViewer, PDFDownloadLink, pdf } from '@react-pdf/renderer'
 import QRCode from 'qrcode'
 import { CvConfig } from '@/lib/schema'
 import { PdfDocument } from './PdfDocument'
 import { estimatePageCount } from '@/lib/pageEstimate'
-import { Download, FileText } from 'lucide-react'
+import { Download, FileText, Mail, X, Loader2 } from 'lucide-react'
 
 function PdfLoadingState() {
   return (
@@ -43,6 +43,10 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
   const [isClient, setIsClient] = useState(false)
   const [pdfKey, setPdfKey] = useState(0)
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
+  const [emailOpen, setEmailOpen] = useState(false)
+  const [email, setEmail] = useState('')
+  const [sending, setSending] = useState(false)
+  const [sendMsg, setSendMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
 
   useEffect(() => {
     setIsClient(true)
@@ -66,6 +70,47 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
     [config.personal.firstName, config.personal.lastName].filter(Boolean).join(' ') || 'cv'
   const fileName = `${fullName.replace(/\s+/g, '_')}.pdf`
   const estimatedPages = estimatePageCount(config)
+
+  async function sendEmail() {
+    if (!email.trim()) {
+      setSendMsg({ type: 'err', text: 'Podaj adres e-mail.' })
+      return
+    }
+    setSending(true)
+    setSendMsg(null)
+    try {
+      const blob = await pdf(
+        <PdfDocument
+          config={{ ...config, meta: { ...config.meta, pdfLanguage: 'pl' } }}
+          qrDataUrl={qrDataUrl}
+        />
+      ).toBlob()
+      const dataUrl: string = await new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.onerror = reject
+        reader.readAsDataURL(blob)
+      })
+      const pdfBase64 = dataUrl.split(',')[1]
+      const res = await fetch('/api/send-cv', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: email.trim(),
+          fileName,
+          pdfBase64,
+          configJson: JSON.stringify(config, null, 2),
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data?.error || 'Nie udalo sie wyslac wiadomosci.')
+      setSendMsg({ type: 'ok', text: 'Wyslano! Sprawdz skrzynke (takze folder spam).' })
+    } catch (e) {
+      setSendMsg({ type: 'err', text: e instanceof Error ? e.message : 'Blad wysylki.' })
+    } finally {
+      setSending(false)
+    }
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -385,6 +430,15 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
                   <Download size={13} />
                   EN
                 </PDFDownloadLink>
+                <button
+                  type="button"
+                  onClick={() => { setSendMsg(null); setEmailOpen(true) }}
+                  className="flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-2.5 py-1.5 rounded-md transition-colors"
+                  title="Wyslij PDF + szablon (JSON) na e-mail"
+                >
+                  <Mail size={13} />
+                  E-mail
+                </button>
               </>
             )}
           </div>
@@ -407,6 +461,68 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
           <PdfLoadingState />
         )}
       </div>
+
+      {/* Email export modal */}
+      {emailOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => !sending && setEmailOpen(false)}
+        >
+          <div
+            className="w-full max-w-sm bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-5 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">
+                Wyslij CV na e-mail
+              </h3>
+              <button
+                type="button"
+                onClick={() => !sending && setEmailOpen(false)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Na podany adres wyslemy Twoje CV w formacie PDF oraz szablon (JSON) do ponownej edycji
+              w CVcraft.
+            </p>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && !sending && sendEmail()}
+              placeholder="twoj@email.pl"
+              disabled={sending}
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-60"
+            />
+            {sendMsg && (
+              <p className={`text-xs ${sendMsg.type === 'ok' ? 'text-emerald-600' : 'text-red-500'}`}>
+                {sendMsg.text}
+              </p>
+            )}
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => !sending && setEmailOpen(false)}
+                className="px-3 py-2 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                Anuluj
+              </button>
+              <button
+                type="button"
+                onClick={sendEmail}
+                disabled={sending}
+                className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 rounded-lg transition-colors"
+              >
+                {sending ? <Loader2 size={14} className="animate-spin" /> : <Mail size={14} />}
+                {sending ? 'Wysylanie...' : 'Wyslij'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
