@@ -39,7 +39,7 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
     contactRow: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 2 },
     contactCell: { flexDirection: 'row', alignItems: 'center', marginRight: 12, marginTop: 2 },
     contactItem: { fontSize: 8.5, color: muted },
-    photo: { width: 66, height: 82, borderRadius: 3 },
+    photo: { width: 66, height: 82, borderRadius: 3, objectFit: 'cover' },
     headerRule: { height: 2, backgroundColor: accent, marginTop: 8, marginBottom: 14 },
     section: { marginBottom: 12 },
     sectionTitleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 7 },

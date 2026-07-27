@@ -36,7 +36,7 @@ export function MinimalTemplate({ config, qrDataUrl }: Props) {
     contactRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 0, marginBottom: 24 },
     contactItem: { fontSize: 8.5, color: '#6b7280' },
     contactSep: { fontSize: 8.5, color: '#d1d5db', marginHorizontal: 6 },
-    photo: { width: 68, height: 82, borderRadius: 2, marginLeft: 20 },
+    photo: { width: 68, height: 82, borderRadius: 2, marginLeft: 20, objectFit: 'cover' },
     section: { marginBottom: 18 },
     sectionTitle: { fontSize: 8, fontFamily: getBoldFont(font), ...boldExtra, textTransform: 'uppercase', letterSpacing: 2, color: accent, marginBottom: 10 },
     expItem: { marginBottom: 11 },

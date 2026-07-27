@@ -37,7 +37,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
     contactRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 0, marginTop: 6 },
     contactItem: { fontSize: 8.5, color: '#6b7280' },
     contactSep: { fontSize: 8.5, color: '#d1d5db', marginHorizontal: 5 },
-    photo: { width: 72, height: 88, borderRadius: 3 },
+    photo: { width: 72, height: 88, borderRadius: 3, objectFit: 'cover' },
     sectionTitle: { fontSize: 8.5, fontFamily: getBoldFont(font), ...boldExtra, textTransform: 'uppercase', letterSpacing: 1.2, color: accent, marginBottom: 8, paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' },
     section: { marginBottom: 16 },
     expItem: { marginBottom: 10 },

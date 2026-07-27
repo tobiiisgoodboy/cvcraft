@@ -30,7 +30,7 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
   const styles = StyleSheet.create({
     page: { fontFamily: getFontFamily(font), fontSize: 10, flexDirection: 'row', backgroundColor: bgColor },
     sidebar: { width: '32%', backgroundColor: accent, minHeight: '100%', paddingBottom: 36 },
-    sidebarPhoto: { width: '100%', height: 130 },
+    sidebarPhoto: { width: '100%', height: 130, objectFit: 'cover' },
     sidebarContent: { paddingHorizontal: 18, paddingTop: 16 },
     sidebarName: { fontSize: 16, fontFamily: getBoldFont(font), ...boldExtra, color: '#ffffff', marginBottom: 3, lineHeight: 1.2 },
     sidebarSection: { marginTop: 18 },
