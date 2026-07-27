@@ -40,7 +40,7 @@ export function SectionLanguages({ form }: Props) {
             <input
               {...register(`languages.${index}.name`)}
               placeholder="Angielski"
-              className={inputClass}
+              className={`${inputClass} flex-1 min-w-0`}
             />
             <select
               {...register(`languages.${index}.level`)}
