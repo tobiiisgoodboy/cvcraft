@@ -10,6 +10,7 @@ export const defaultCvConfig: CvConfig = {
     photoScale: 1,
     photoFit: 'cover' as const,
     fontScale: 1,
+    sectionScales: {},
     font: 'Helvetica',
     skillLayout: 'categories' as const,
     margins: 'normal' as const,

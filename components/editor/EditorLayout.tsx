@@ -139,6 +139,7 @@ function mergeWithDefaults(saved: unknown): CvConfig {
       photoScale: ((raw.meta as Record<string, unknown>)?.photoScale as number) ?? 1,
       photoFit: (((raw.meta as Record<string, unknown>)?.photoFit) as CvConfig['meta']['photoFit']) ?? 'cover',
       fontScale: ((raw.meta as Record<string, unknown>)?.fontScale as number) ?? 1,
+      sectionScales: ((raw.meta as Record<string, unknown>)?.sectionScales as Record<string, number>) ?? {},
       sectionOrder: Array.isArray((raw.meta as Record<string, unknown>)?.sectionOrder)
         ? [...new Set((raw.meta as Record<string, unknown>).sectionOrder as string[])]
         : ['summary', 'experience', 'projects', 'education', 'certificates', 'awards', 'skills', 'languages', 'interests'],

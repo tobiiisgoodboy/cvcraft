@@ -31,7 +31,7 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
   const boldExtra = font === 'Roboto' ? { fontWeight: 700 as const } : {}
   const italicExtra = font === 'Roboto' ? { fontStyle: 'italic' as const } : {}
 
-  const styles = StyleSheet.create({
+  const baseStyles = StyleSheet.create({
     page: { fontFamily: getFontFamily(font), fontSize: 10, flexDirection: 'row', backgroundColor: bgColor },
     sidebar: { width: '32%', backgroundColor: accent, minHeight: '100%', paddingBottom: 36 },
     sidebarPhoto: { width: '100%', height: 130 * photoScale, objectFit: photoFit },
@@ -68,12 +68,23 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
     gdprText: { fontSize: 6.5, color: '#9ca3af', textAlign: 'center', marginTop: 8, lineHeight: 1.4 },
   })
 
-  if (fontScale !== 1) {
-    for (const key of Object.keys(styles)) {
-      const s = (styles as unknown as Record<string, { fontSize?: number }>)[key]
-      if (typeof s.fontSize === 'number') s.fontSize = Math.round(s.fontSize * fontScale * 100) / 100
+  const sectionScales = config.meta.sectionScales ?? {}
+  const styleCache: Record<number, typeof baseStyles> = {}
+  function stylesFor(scale: number): typeof baseStyles {
+    const cacheKey = Math.round(scale * 1000)
+    const cached = styleCache[cacheKey]
+    if (cached) return cached
+    const cloned: Record<string, Record<string, unknown>> = {}
+    for (const k of Object.keys(baseStyles)) {
+      const s = { ...(baseStyles as unknown as Record<string, Record<string, unknown>>)[k] }
+      if (typeof s.fontSize === 'number') s.fontSize = Math.round((s.fontSize as number) * scale * 100) / 100
+      cloned[k] = s
     }
+    const created = StyleSheet.create(cloned as never) as unknown as typeof baseStyles
+    styleCache[cacheKey] = created
+    return created
   }
+  const styles = stylesFor(fontScale)
 
   function SidebarSkillBar({ level }: { level: string }) {
     const pct = level === 'basic' ? '33%' : level === 'advanced' ? '100%' : '66%'
@@ -84,8 +95,10 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
     )
   }
 
-  function renderSidebarSkills() {
+  function renderSidebarSkills(scale: number) {
     if (!skills.length) return null
+    const styles = stylesFor(scale)
+    const fs = (n: number) => Math.round(n * scale * 100) / 100
     switch (skillLayout) {
       case 'bars':
         return (
@@ -206,6 +219,9 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
   const sectionOrder = rawOrder.filter(id => MAIN_SECTIONS.includes(id))
 
   function renderSection(id: string): React.ReactNode {
+    const scale = fontScale * (sectionScales[id] ?? 1)
+    const styles = stylesFor(scale)
+    const fs = (n: number) => Math.round(n * scale * 100) / 100
     switch (id) {
       case 'summary':
         return summary ? (
@@ -376,18 +392,21 @@ export function ModernTemplate({ config, qrDataUrl }: Props) {
             </View>
           )}
 
-          {renderSidebarSkills()}
+          {renderSidebarSkills(fontScale * (sectionScales['skills'] ?? 1))}
 
-          {languages.length > 0 && (
-            <View style={styles.sidebarSection}>
-              <Text style={styles.sidebarSectionTitle}>{t('languagesShort', lang)}</Text>
-              {languages.map(l => (
-                <Text key={l.id} style={styles.sidebarText}>
-                  {l.name}{l.level ? ` \u2014 ${l.level}` : ''}
-                </Text>
-              ))}
-            </View>
-          )}
+          {languages.length > 0 && (() => {
+            const langStyles = stylesFor(fontScale * (sectionScales['languages'] ?? 1))
+            return (
+              <View style={langStyles.sidebarSection}>
+                <Text style={langStyles.sidebarSectionTitle}>{t('languagesShort', lang)}</Text>
+                {languages.map(l => (
+                  <Text key={l.id} style={langStyles.sidebarText}>
+                    {l.name}{l.level ? ` \u2014 ${l.level}` : ''}
+                  </Text>
+                ))}
+              </View>
+            )
+          })()}
         </View>
       </View>
 

@@ -24,7 +24,6 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
   const photoScale = config.meta.photoScale ?? 1
   const photoFit = (config.meta.photoFit ?? 'cover') as 'cover' | 'contain'
   const fontScale = config.meta.fontScale ?? 1
-  const fs = (n: number) => Math.round(n * fontScale * 100) / 100
   const skillLayout = config.meta.skillLayout ?? 'categories'
   const marginH = config.meta.margins === 'narrow' ? 26 : config.meta.margins === 'wide' ? 60 : 42
   const lang = (config.meta.pdfLanguage ?? 'pl') as PdfLang
@@ -35,7 +34,7 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
   const muted = '#6b7280'
   const faint = '#9ca3af'
 
-  const styles = StyleSheet.create({
+  const baseStyles = StyleSheet.create({
     page: { fontFamily: getFontFamily(font), fontSize: 9, color: textColor, backgroundColor: bgColor, paddingTop: 30, paddingBottom: 34, paddingHorizontal: marginH },
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 },
     headerLeft: { flex: 1, paddingRight: 14 },
@@ -73,14 +72,26 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
     gdprText: { fontSize: 6.5, color: faint, textAlign: 'center', marginTop: 10, lineHeight: 1.4 },
   })
 
-  if (fontScale !== 1) {
-    for (const key of Object.keys(styles)) {
-      const s = (styles as unknown as Record<string, { fontSize?: number }>)[key]
-      if (typeof s.fontSize === 'number') s.fontSize = Math.round(s.fontSize * fontScale * 100) / 100
+  const sectionScales = config.meta.sectionScales ?? {}
+  const styleCache: Record<number, typeof baseStyles> = {}
+  function stylesFor(scale: number): typeof baseStyles {
+    const cacheKey = Math.round(scale * 1000)
+    const cached = styleCache[cacheKey]
+    if (cached) return cached
+    const cloned: Record<string, Record<string, unknown>> = {}
+    for (const k of Object.keys(baseStyles)) {
+      const s = { ...(baseStyles as unknown as Record<string, Record<string, unknown>>)[k] }
+      if (typeof s.fontSize === 'number') s.fontSize = Math.round((s.fontSize as number) * scale * 100) / 100
+      cloned[k] = s
     }
+    const created = StyleSheet.create(cloned as never) as unknown as typeof baseStyles
+    styleCache[cacheKey] = created
+    return created
   }
+  const styles = stylesFor(fontScale)
 
-  function SectionTitle({ label }: { label: string }) {
+  function SectionTitle({ label, scale }: { label: string; scale: number }) {
+    const styles = stylesFor(scale)
     return (
       <View style={styles.sectionTitleRow}>
         <View style={styles.sectionSquare} />
@@ -90,14 +101,16 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
     )
   }
 
-  function renderSkills() {
+  function renderSkills(scale: number) {
     if (!skills.length) return null
+    const styles = stylesFor(scale)
+    const fs = (n: number) => Math.round(n * scale * 100) / 100
     switch (skillLayout) {
       case 'list': {
         const levelLabel: Record<string, string> = { basic: t('levelBasic', lang), medium: t('levelMedium', lang), advanced: t('levelAdvanced', lang) }
         return (
           <View style={styles.section}>
-            <SectionTitle label={t('skills', lang)} />
+            <SectionTitle scale={scale} label={t('skills', lang)} />
             {skills.map(skill => (
               <Text key={skill.id} style={{ fontSize: fs(8.5), color: textColor, marginBottom: 2 }}>
                 {'\u203A'} {skill.name} <Text style={{ color: faint }}>({levelLabel[skill.level] ?? skill.level})</Text>
@@ -118,7 +131,7 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
         if (uncategorized.length) entries.push([t('other', lang), uncategorized])
         return (
           <View style={styles.section}>
-            <SectionTitle label={t('skills', lang)} />
+            <SectionTitle scale={scale} label={t('skills', lang)} />
             {entries.map(([cat, catSkills]) => (
               <View key={cat}>
                 <Text style={styles.catHeader}>{cat}</Text>
@@ -136,7 +149,7 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
         // tags / bars / dots -> ujednolicony blok tagow (developer = keywordy)
         return (
           <View style={styles.section}>
-            <SectionTitle label={t('skills', lang)} />
+            <SectionTitle scale={scale} label={t('skills', lang)} />
             <View style={styles.tagsRow}>
               {skills.map(skill => (
                 <Text key={skill.id} style={styles.tag}>{skill.name}</Text>
@@ -178,11 +191,14 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
   }
 
   function renderSection(id: string): React.ReactNode {
+    const scale = fontScale * (sectionScales[id] ?? 1)
+    const styles = stylesFor(scale)
+    const fs = (n: number) => Math.round(n * scale * 100) / 100
     switch (id) {
       case 'summary':
         return summary ? (
           <View key="summary" style={styles.section}>
-            <SectionTitle label={t('summary', lang)} />
+            <SectionTitle scale={scale} label={t('summary', lang)} />
             <Text style={styles.summaryText}>{summary}</Text>
           </View>
         ) : null
@@ -190,7 +206,7 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
       case 'experience':
         return experience.length > 0 ? (
           <View key="experience" style={styles.section}>
-            <SectionTitle label={t('experience', lang)} />
+            <SectionTitle scale={scale} label={t('experience', lang)} />
             {experience.map(exp => (
               <View key={exp.id} style={styles.expItem}>
                 <View style={styles.expRow}>
@@ -207,7 +223,7 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
       case 'projects':
         return projects.length > 0 ? (
           <View key="projects" style={styles.section}>
-            <SectionTitle label={t('projects', lang)} />
+            <SectionTitle scale={scale} label={t('projects', lang)} />
             {projects.map(proj => (
               <View key={proj.id} style={{ marginBottom: 8 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
@@ -230,7 +246,7 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
       case 'education':
         return education.length > 0 ? (
           <View key="education" style={styles.section}>
-            <SectionTitle label={t('education', lang)} />
+            <SectionTitle scale={scale} label={t('education', lang)} />
             {education.map(edu => (
               <View key={edu.id} style={styles.eduItem}>
                 <View style={styles.eduLeft}>
@@ -246,7 +262,7 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
       case 'certificates':
         return certificates.length > 0 ? (
           <View key="certificates" style={styles.section}>
-            <SectionTitle label={t('certificates', lang)} />
+            <SectionTitle scale={scale} label={t('certificates', lang)} />
             {certificates.map(cert => (
               <View key={cert.id} style={{ marginBottom: 6 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
@@ -267,7 +283,7 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
       case 'awards':
         return awards && awards.length > 0 ? (
           <View key="awards" style={styles.section}>
-            <SectionTitle label={t('awards', lang)} />
+            <SectionTitle scale={scale} label={t('awards', lang)} />
             {awards.map((award) => (
               <View key={award.id} style={styles.expItem}>
                 <View style={styles.expRow}>
@@ -282,12 +298,12 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
         ) : null
 
       case 'skills':
-        return <View key="skills">{renderSkills()}</View>
+        return <View key="skills">{renderSkills(scale)}</View>
 
       case 'languages':
         return languages.length > 0 ? (
           <View key="languages" style={styles.section}>
-            <SectionTitle label={t('languages', lang)} />
+            <SectionTitle scale={scale} label={t('languages', lang)} />
             <View style={styles.langRow}>
               {languages.map(l => (
                 <View key={l.id} style={styles.langCell}>
@@ -302,7 +318,7 @@ export function DeveloperTemplate({ config, qrDataUrl }: Props) {
       case 'interests':
         return interests.length > 0 ? (
           <View key="interests" style={styles.section}>
-            <SectionTitle label={t('interests', lang)} />
+            <SectionTitle scale={scale} label={t('interests', lang)} />
             <View style={styles.tagsRow}>
               {interests.map((interest, i) => (
                 <Text key={i} style={styles.interestTag}>{interest}</Text>

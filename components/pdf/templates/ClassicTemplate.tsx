@@ -22,7 +22,6 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
   const photoScale = config.meta.photoScale ?? 1
   const photoFit = (config.meta.photoFit ?? 'cover') as 'cover' | 'contain'
   const fontScale = config.meta.fontScale ?? 1
-  const fs = (n: number) => Math.round(n * fontScale * 100) / 100
   const skillLayout = config.meta.skillLayout ?? 'categories'
   const marginH = config.meta.margins === 'narrow' ? 28 : config.meta.margins === 'wide' ? 68 : 48
   const lang = (config.meta.pdfLanguage ?? 'pl') as PdfLang
@@ -31,7 +30,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
   const boldExtra = font === 'Roboto' ? { fontWeight: 700 as const } : {}
   const italicExtra = font === 'Roboto' ? { fontStyle: 'italic' as const } : {}
 
-  const styles = StyleSheet.create({
+  const baseStyles = StyleSheet.create({
     page: { fontFamily: getFontFamily(font), fontSize: 10, color: textColor, backgroundColor: bgColor, paddingTop: 0, paddingBottom: 36, paddingHorizontal: 0 },
     topBar: { height: 5, backgroundColor: accent },
     content: { paddingHorizontal: marginH, paddingTop: 28 },
@@ -80,12 +79,23 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
     gdprText: { fontSize: 6.5, color: '#9ca3af', textAlign: 'center', marginTop: 8, lineHeight: 1.4 },
   })
 
-  if (fontScale !== 1) {
-    for (const key of Object.keys(styles)) {
-      const s = (styles as unknown as Record<string, { fontSize?: number }>)[key]
-      if (typeof s.fontSize === 'number') s.fontSize = Math.round(s.fontSize * fontScale * 100) / 100
+  const sectionScales = config.meta.sectionScales ?? {}
+  const styleCache: Record<number, typeof baseStyles> = {}
+  function stylesFor(scale: number): typeof baseStyles {
+    const cacheKey = Math.round(scale * 1000)
+    const cached = styleCache[cacheKey]
+    if (cached) return cached
+    const cloned: Record<string, Record<string, unknown>> = {}
+    for (const k of Object.keys(baseStyles)) {
+      const s = { ...(baseStyles as unknown as Record<string, Record<string, unknown>>)[k] }
+      if (typeof s.fontSize === 'number') s.fontSize = Math.round((s.fontSize as number) * scale * 100) / 100
+      cloned[k] = s
     }
+    const created = StyleSheet.create(cloned as never) as unknown as typeof baseStyles
+    styleCache[cacheKey] = created
+    return created
   }
+  const styles = stylesFor(fontScale)
 
   function SkillBar({ level }: { level: string }) {
     const filled = level === 'basic' ? 1 : level === 'advanced' ? 3 : 2
@@ -98,8 +108,10 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
     )
   }
 
-  function renderSkills() {
+  function renderSkills(scale: number) {
     if (!skills.length) return null
+    const styles = stylesFor(scale)
+    const fs = (n: number) => Math.round(n * scale * 100) / 100
     switch (skillLayout) {
       case 'bars':
         return (
@@ -229,6 +241,9 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
   }
 
   function renderSection(id: string): React.ReactNode {
+    const scale = fontScale * (sectionScales[id] ?? 1)
+    const styles = stylesFor(scale)
+    const fs = (n: number) => Math.round(n * scale * 100) / 100
     switch (id) {
       case 'summary':
         return summary ? (
@@ -333,7 +348,7 @@ export function ClassicTemplate({ config, qrDataUrl }: Props) {
         ) : null
 
       case 'skills':
-        return renderSkills()
+        return renderSkills(scale)
 
       case 'languages':
         return languages.length > 0 ? (

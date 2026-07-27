@@ -9,6 +9,7 @@ export const MetaSchema = z.object({
   photoScale: z.number().optional(),
   photoFit: z.enum(['cover', 'contain']).optional(),
   fontScale: z.number().optional(),
+  sectionScales: z.record(z.string(), z.number()).optional(),
   font: z.enum(['Helvetica', 'Times-Roman', 'Roboto']),
   skillLayout: z.enum(['bars', 'tags', 'dots', 'list', 'categories']),
   sectionOrder: z.array(z.string()),

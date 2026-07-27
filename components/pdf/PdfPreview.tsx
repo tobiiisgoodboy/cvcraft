@@ -42,6 +42,18 @@ const TEMPLATES = [
   { id: 'developer' as const, label: 'Programista' },
 ]
 
+const SECTION_LABELS = [
+  { id: 'summary', label: 'Podsumowanie' },
+  { id: 'experience', label: 'Doświadczenie' },
+  { id: 'projects', label: 'Projekty' },
+  { id: 'education', label: 'Wykształcenie' },
+  { id: 'certificates', label: 'Certyfikaty' },
+  { id: 'awards', label: 'Nagrody' },
+  { id: 'skills', label: 'Umiejętności' },
+  { id: 'languages', label: 'Języki' },
+  { id: 'interests', label: 'Zainteresowania' },
+]
+
 export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentColorChange, onPhotoPositionChange, onFontChange, onBgColorChange, onTextColorChange, onSkillLayoutChange, onMarginsChange, onMetaChange, onPdfLanguageChange, onQrChange, onGdprChange }: Props) {
   const [isClient, setIsClient] = useState(false)
   const [pdfKey, setPdfKey] = useState(0)
@@ -432,6 +444,43 @@ export function PdfPreview({ config, onBackToEdit, onTemplateChange, onAccentCol
             />
             <span className="text-sm text-gray-400">A</span>
             <span className="text-xs text-gray-400 w-9 text-right">{Math.round((config.meta.fontScale ?? 1) * 100)}%</span>
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Rozmiar czcionki — per sekcja</p>
+            <button
+              type="button"
+              onClick={() => onMetaChange({ sectionScales: {} })}
+              className="text-xs text-gray-400 hover:text-gray-600 underline"
+            >
+              Reset
+            </button>
+          </div>
+          <div className="space-y-1.5">
+            {SECTION_LABELS.map(({ id, label }) => {
+              const val = config.meta.sectionScales?.[id] ?? 1
+              return (
+                <div key={id} className="flex items-center gap-2">
+                  <span className="text-xs text-gray-500 w-28 truncate">{label}</span>
+                  <input
+                    type="range"
+                    min={0.7}
+                    max={1.3}
+                    step={0.05}
+                    value={val}
+                    onChange={(e) =>
+                      onMetaChange({
+                        sectionScales: { ...(config.meta.sectionScales ?? {}), [id]: Number(e.target.value) },
+                      })
+                    }
+                    className="flex-1 accent-blue-600 cursor-pointer"
+                  />
+                  <span className="text-xs text-gray-400 w-9 text-right">{Math.round(val * 100)}%</span>
+                </div>
+              )
+            })}
           </div>
         </div>
 
