@@ -2,6 +2,7 @@
 
 import { Document } from '@react-pdf/renderer'
 import { CvConfig } from '@/lib/schema'
+import { sanitizePdfConfig } from '@/lib/pdfText'
 import { ClassicTemplate } from './templates/ClassicTemplate'
 import { ModernTemplate } from './templates/ModernTemplate'
 import { MinimalTemplate } from './templates/MinimalTemplate'
@@ -12,7 +13,8 @@ interface Props {
   qrDataUrl?: string | null
 }
 
-export function PdfDocument({ config, qrDataUrl }: Props) {
+export function PdfDocument({ config: rawConfig, qrDataUrl }: Props) {
+  const config = sanitizePdfConfig(rawConfig)
   switch (config.meta.template) {
     case 'modern':
       return (
