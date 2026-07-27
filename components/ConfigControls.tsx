@@ -128,13 +128,13 @@ export function ConfigControls({ form }: Props) {
       {toast && (
         <div
           role="status"
-          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-sm font-medium border animate-in fade-in slide-in-from-bottom-2 ${
+          className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-6 py-4 rounded-xl shadow-xl text-base font-semibold border-2 animate-in fade-in slide-in-from-top-2 ${
             toast.type === 'success'
-              ? 'bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800'
-              : 'bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800'
+              ? 'bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-300 dark:border-green-700'
+              : 'bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 border-red-300 dark:border-red-700'
           }`}
         >
-          {toast.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+          {toast.type === 'success' ? <CheckCircle2 size={22} /> : <AlertCircle size={22} />}
           {toast.message}
         </div>
       )}
