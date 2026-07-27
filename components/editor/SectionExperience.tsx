@@ -192,9 +192,9 @@ function SortableExperienceItem({
         <label className={labelClass}>Opis obowiazkow</label>
         <textarea
           {...register(`experience.${index}.description`)}
-          rows={3}
+          rows={6}
           placeholder="Opisz swoje obowiazki, osiagniecia i projekty..."
-          className={cn(inputClass, 'resize-none leading-relaxed')}
+          className={cn(inputClass, 'resize-y min-h-[9rem] leading-relaxed')}
         />
       </div>
       </>
@@ -242,7 +242,7 @@ export function SectionExperience({ form }: Props) {
           <div
             className={cn(
               'space-y-4',
-              fields.length > 2 && 'max-h-[60vh] overflow-y-auto pr-2'
+              fields.length > 2 && 'max-h-[70vh] overflow-y-auto pr-2'
             )}
           >
             {fields.map((field, index) => (
